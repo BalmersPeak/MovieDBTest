@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Users/kupnc_000/Downloads/slf4j-simple-1.7.21.jar"/>
+	<classpathentry kind="lib" path="C:/Users/kupnc_000/Downloads/slf4j-api-1.7.21.jar"/>
+	<classpathentry kind="lib" path="C:/Users/kupnc_000/Downloads/jackson-databind-2.7.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/kupnc_000/Downloads/jackson-core-2.7.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/kupnc_000/Downloads/jackson-annotations-2.7.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/kupnc_000/Downloads/commons-lang3-3.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/kupnc_000/Downloads/commons-codec-1.10.jar"/>
+	<classpathentry kind="lib" path="C:/Users/kupnc_000/Downloads/themoviedbapi-1.3.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

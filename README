@@ -1,0 +1,14 @@
+Plugins
+	Checkstyle Plug-in 6.16.0 - coding convention checker
+	FindBugs Eclipse Plugin 3.0.1 - defect detection tool using static analysis
+	ObjectAid UML Explorer (online) - UML creater (only the second one) http://www.objectaid.com/download
+	STAN4J (online) - Code structure analysis calculation http://stan4j.com/general/download-ide.html
+	EclEmma Java Code Coverage 2.3.3 - code coverage analysis tool
+	RCPTT Eclipse UI Testing Tool - automatic UI testing tool
+
+MovieDB API-
+	https://github.com/holgerbrandl/themoviedbapi
+	Nick's API key - 811ffa781385ed56e1ec64c193eb93f4
+
+	Copy Jar files add them to the projects build path as referenced libs by using project > properties > Java Build Paths > Libs > Add External Jars
+	
