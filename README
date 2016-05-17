@@ -11,4 +11,11 @@ MovieDB API-
 	Nick's API key - 811ffa781385ed56e1ec64c193eb93f4
 
 	Copy Jar files add them to the projects build path as referenced libs by using project > properties > Java Build Paths > Libs > Add External Jars
+
+ObjectAid Class Diagram Options:
+	-show icons
+	+add dependencies
+	+always add relationships
+	-show association multiplicity 
+	-show association labels
 	
