@@ -13,6 +13,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseAdapter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -136,25 +138,25 @@ public class Tmdb_App {
 		frmL.getContentPane().add(tabbedPane, BorderLayout.CENTER);
 		
 		JPanel panel_1 = new JPanel(){
-			public void paintComponent(Graphics g) {  
-				Image img = null;
-				URL url = null;
-				try {
-					url = new URL("https://unsplash.it/640/825/?random");
-				} catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				try {
-					img = ImageIO.read(url);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}  
-				
-				g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(), this);
-		
-			}
+//			public void paintComponent(Graphics g) {  
+//				Image img = null;
+//				URL url = null;
+//				try {
+//					url = new URL("https://unsplash.it/640/825/?random");
+//				} catch (MalformedURLException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				try {
+//					img = ImageIO.read(url);
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}  
+//				
+//				g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(), this);
+//		
+//			}
 		};
 		tabbedPane.addTab("Home", null, panel_1, null);
 		GridBagLayout gbl_panel_1 = new GridBagLayout();
@@ -184,25 +186,25 @@ public class Tmdb_App {
 		panel_1.add(lblHighestRated, gbc_lblHighestRated);
 		
 		JPanel panel = new JPanel(){
-			public void paintComponent(Graphics g) {  
-				Image img = null;
-				URL url = null;
-				try {
-					url = new URL("https://unsplash.it/640/825/?random");
-				} catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				try {
-					img = ImageIO.read(url);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}  
-				
-				g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(), this);
-		
-			}
+//			public void paintComponent(Graphics g) {  
+//				Image img = null;
+//				URL url = null;
+//				try {
+//					url = new URL("https://unsplash.it/640/825/?random");
+//				} catch (MalformedURLException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				try {
+//					img = ImageIO.read(url);
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}  
+//				
+//				g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(), this);
+//		
+//			}
 		};
 		
 		panel.setBorder(new EmptyBorder(2, 3, 2, 3));
@@ -214,8 +216,18 @@ public class Tmdb_App {
 		gbl_panel.rowWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
 		panel.setLayout(gbl_panel);
 		
+		String defaultSearchStr = "Search Movies, People, TV Shows, etc.";
+		
 		txtSearchMoviesPeople = new JTextField();
-		txtSearchMoviesPeople.setText("Search Movies, People, TV Shows, etc.");
+		txtSearchMoviesPeople.setText(defaultSearchStr);
+		txtSearchMoviesPeople.addActionListener(actionHandler);
+		txtSearchMoviesPeople.addMouseListener(new MouseAdapter(){
+			public void mouseClicked(MouseEvent e){
+				if(txtSearchMoviesPeople.getText().equals(defaultSearchStr)){
+					txtSearchMoviesPeople.setText("");
+				}
+            }
+		});
 		GridBagConstraints gbc_txtSearchMoviesPeople = new GridBagConstraints();
 		gbc_txtSearchMoviesPeople.weightx = 81.0;
 		gbc_txtSearchMoviesPeople.ipadx = 80;
@@ -228,7 +240,7 @@ public class Tmdb_App {
 		txtSearchMoviesPeople.setColumns(10);
 		
 		searchButton = new JButton("Search");
-		searchButton.addActionListener(buttonHandler);
+		searchButton.addActionListener(actionHandler);
 		GridBagConstraints gbc_btnNewButton_1 = new GridBagConstraints();
 		gbc_btnNewButton_1.insets = new Insets(0, 0, 5, 0);
 		gbc_btnNewButton_1.fill = GridBagConstraints.HORIZONTAL;
@@ -372,11 +384,11 @@ public class Tmdb_App {
 		panel_2.add(btnNewButton, gbc_btnNewButton);
 	}
 
-	private ActionListener buttonHandler = new ActionListener() {
+	private ActionListener actionHandler = new ActionListener() {
 		
 		public void actionPerformed(ActionEvent e){
 			Object which = e.getSource();
-			if(which == searchButton){
+			if(which == searchButton || which == txtSearchMoviesPeople){
 				search.Multi(txtSearchMoviesPeople.getText());
 			}
 		}
