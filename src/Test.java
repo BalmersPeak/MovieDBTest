@@ -19,8 +19,6 @@ public class Test {
 		TmdbPeople people = tmdbApi.getPeople();
 		
 		TmdbMovies movies = tmdbApi.getMovies();
-
-		TmdbKeywords keywords = tmdbApi.getKeywords();
 		
 		TmdbTV tvSeries = tmdbApi.getTvSeries();
 		
@@ -29,7 +27,7 @@ public class Test {
 //		System.out.println(resultsPage.getResults());
 //		System.out.println(keyword.toString());
 		
-		MultiListResultsPage resultPage = search.searchMulti("Steve", "en", 0);
+		MultiListResultsPage resultPage = search.searchMulti("Ryan", "en", 0);
 		
 		System.out.println(resultPage.getResults());
 		

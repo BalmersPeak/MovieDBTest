@@ -1,5 +1,3 @@
-package testing;
-
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -37,11 +35,14 @@ import javax.swing.JInternalFrame;
 import javax.swing.JTabbedPane;
 import java.awt.FlowLayout;
 import javax.swing.BoxLayout;
-import net.miginfocom.swing.MigLayout;
+//import net.miginfocom.swing.MigLayout;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.Insets;
 import javax.swing.border.EmptyBorder;
+
+import info.movito.themoviedbapi.TmdbApi;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -49,16 +50,40 @@ import java.awt.Graphics;
 import javax.swing.ImageIcon;
 import javax.swing.JTable;
 
+//User Defined
+import info.movito.themoviedbapi.*;
+import info.movito.themoviedbapi.model.Multi.MediaType;
+import info.movito.themoviedbapi.TmdbSearch.*;
+import info.movito.themoviedbapi.model.*;
+import info.movito.themoviedbapi.model.changes.*;
+import info.movito.themoviedbapi.model.config.*;
+import info.movito.themoviedbapi.model.core.*;
+import info.movito.themoviedbapi.model.keywords.*;
+import info.movito.themoviedbapi.model.people.*;
+import info.movito.themoviedbapi.model.tv.*;
+import info.movito.themoviedbapi.tools.*;
+
+
 public class Tmdb_App {
 
+	//User Defined
+	TmdbApi tmdbApi;
+	MovieModel movieModel;
+	PeopleModel peopleModel;
+	TvModel tvModel;
+	Search search;
+	
+	
+	
 	private JFrame frmL;
 	private final Action action = new SwingAction();
 	private JTextField textField_3;
 	private JTextField textField_4;
 	private JTextField txtSearchMoviesPeople;
-	private JTable table;
-	private JTable table_1;
-	private JTable table_2;
+	private JButton searchButton;
+	private JTable tableMovie;
+	private JTable tablePeople;
+	private JTable tableTv;
 
 	/**
 	 * Launch the application.
@@ -81,6 +106,20 @@ public class Tmdb_App {
 	 */
 	public Tmdb_App() {
 		initialize();
+		
+		//User Defined
+		
+		tmdbApi = new TmdbApi("811ffa781385ed56e1ec64c193eb93f4");
+		
+		movieModel = new MovieModel();
+		peopleModel = new PeopleModel();
+		tvModel = new TvModel();
+		
+		search = new Search(tmdbApi, movieModel, peopleModel, tvModel);
+		
+		tableMovie.setModel(movieModel);
+		tablePeople.setModel(peopleModel);
+		tableTv.setModel(tvModel);
 	}
 
 	/**
@@ -188,13 +227,14 @@ public class Tmdb_App {
 		panel.add(txtSearchMoviesPeople, gbc_txtSearchMoviesPeople);
 		txtSearchMoviesPeople.setColumns(10);
 		
-		JButton btnNewButton_1 = new JButton("Search");
+		searchButton = new JButton("Search");
+		searchButton.addActionListener(buttonHandler);
 		GridBagConstraints gbc_btnNewButton_1 = new GridBagConstraints();
 		gbc_btnNewButton_1.insets = new Insets(0, 0, 5, 0);
 		gbc_btnNewButton_1.fill = GridBagConstraints.HORIZONTAL;
 		gbc_btnNewButton_1.gridx = 2;
 		gbc_btnNewButton_1.gridy = 0;
-		panel.add(btnNewButton_1, gbc_btnNewButton_1);
+		panel.add(searchButton, gbc_btnNewButton_1);
 		
 		JTabbedPane tabbedPane_1 = new JTabbedPane(JTabbedPane.TOP);
 		GridBagConstraints gbc_tabbedPane_1 = new GridBagConstraints();
@@ -214,12 +254,20 @@ public class Tmdb_App {
 		gbl_panel_3.rowWeights = new double[]{1.0, Double.MIN_VALUE};
 		panel_3.setLayout(gbl_panel_3);
 		
-		table = new JTable();
+		tableMovie = new JTable();
+		tableMovie.setToolTipText("");
+		tableMovie.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+		tableMovie.getTableHeader().setReorderingAllowed(false);
+		tableMovie.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+
+            }
+        });
 		GridBagConstraints gbc_table = new GridBagConstraints();
 		gbc_table.fill = GridBagConstraints.BOTH;
 		gbc_table.gridx = 0;
 		gbc_table.gridy = 0;
-		panel_3.add(table, gbc_table);
+		panel_3.add(tableMovie, gbc_table);
 		
 		JPanel panel_4 = new JPanel();
 		tabbedPane_1.addTab("People", null, panel_4, null);
@@ -230,12 +278,20 @@ public class Tmdb_App {
 		gbl_panel_4.rowWeights = new double[]{1.0, Double.MIN_VALUE};
 		panel_4.setLayout(gbl_panel_4);
 		
-		table_1 = new JTable();
+		tablePeople = new JTable();
+		tablePeople.setToolTipText("");
+		tablePeople.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+		tablePeople.getTableHeader().setReorderingAllowed(false);
+		tablePeople.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+ 
+            }
+        });
 		GridBagConstraints gbc_table_1 = new GridBagConstraints();
 		gbc_table_1.fill = GridBagConstraints.BOTH;
 		gbc_table_1.gridx = 0;
 		gbc_table_1.gridy = 0;
-		panel_4.add(table_1, gbc_table_1);
+		panel_4.add(tablePeople, gbc_table_1);
 		
 		JPanel panel_5 = new JPanel();
 		tabbedPane_1.addTab("TV Shows", null, panel_5, null);
@@ -246,12 +302,20 @@ public class Tmdb_App {
 		gbl_panel_5.rowWeights = new double[]{1.0, Double.MIN_VALUE};
 		panel_5.setLayout(gbl_panel_5);
 		
-		table_2 = new JTable();
+		tableTv = new JTable();
+		tableTv.setToolTipText("");
+		tableTv.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+		tableTv.getTableHeader().setReorderingAllowed(false);
+		tableTv.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+
+            }
+        });
 		GridBagConstraints gbc_table_2 = new GridBagConstraints();
 		gbc_table_2.fill = GridBagConstraints.BOTH;
 		gbc_table_2.gridx = 0;
 		gbc_table_2.gridy = 0;
-		panel_5.add(table_2, gbc_table_2);
+		panel_5.add(tableTv, gbc_table_2);
 		
 		JPanel panel_2 = new JPanel();
 		panel_2.setForeground(Color.LIGHT_GRAY);
@@ -308,6 +372,17 @@ public class Tmdb_App {
 		panel_2.add(btnNewButton, gbc_btnNewButton);
 	}
 
+	private ActionListener buttonHandler = new ActionListener() {
+		
+		public void actionPerformed(ActionEvent e){
+			Object which = e.getSource();
+			if(which == searchButton){
+				search.Multi(txtSearchMoviesPeople.getText());
+			}
+		}
+		
+	};
+	
 	private class SwingAction extends AbstractAction {
 		public SwingAction() {
 			putValue(NAME, "SwingAction");
