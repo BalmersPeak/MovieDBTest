@@ -23,6 +23,11 @@ public class Search {
 	TmdbTV tvSeries;
 	TmdbSearch search;
 	
+	MultiListResultsPage resultPage;
+	String prevStr;
+	
+	int i = 1;
+	
 	public Search(TmdbApi tmdbApi, MovieModel movieModel, PeopleModel peopleModel, TvModel tvModel){
 		this.movieModel = movieModel;
 		this.peopleModel = peopleModel;
@@ -36,11 +41,21 @@ public class Search {
 	
 	public void Multi(String searchStr){
 		
-		movieModel.clear();
-		peopleModel.clear();
-		tvModel.clear();
 		
-		MultiListResultsPage resultPage = search.searchMulti(searchStr, "en", 0);
+		
+		if(!searchStr.equals(prevStr)){
+			i = 1;
+			resultPage = new MultiListResultsPage();
+			
+			movieModel.clear();
+			peopleModel.clear();
+			tvModel.clear();
+		}
+		
+		prevStr = searchStr;
+		
+		resultPage = search.searchMulti(searchStr, "en", i);
+		i++;
 		
 		Iterator<Multi> iterator = resultPage.iterator();
 		
@@ -74,5 +89,4 @@ public class Search {
 			}
 		}
 	}
-	
 }

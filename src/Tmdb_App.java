@@ -24,6 +24,7 @@ import javax.swing.JFormattedTextField;
 import java.awt.Button;
 import java.awt.GridBagConstraints;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -79,14 +80,16 @@ public class Tmdb_App {
 	
 	
 	private JFrame frmL;
-	private final Action action = new SwingAction();
-	private JTextField textField_3;
-	private JTextField textField_4;
+	private JTextField userNameTextField;
+	private JTextField passwordTextField;
 	private JTextField txtSearchMoviesPeople;
 	private JButton searchButton;
 	private JTable tableMovie;
 	private JTable tablePeople;
 	private JTable tableTv;
+	private JTextField resultTitleField;
+	private JTextField resultDirectorField;
+	private JTextField resultDateField;
 
 	/**
 	 * Launch the application.
@@ -138,7 +141,7 @@ public class Tmdb_App {
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		frmL.getContentPane().add(tabbedPane, BorderLayout.CENTER);
 		
-		JPanel panel_1 = new JPanel(){
+		JPanel homePanel = new JPanel(){
 //			public void paintComponent(Graphics g) {  
 //				Image img = null;
 //				URL url = null;
@@ -159,13 +162,13 @@ public class Tmdb_App {
 //		
 //			}
 		};
-		tabbedPane.addTab("Home", null, panel_1, null);
+		tabbedPane.addTab("Home", null, homePanel, null);
 		GridBagLayout gbl_panel_1 = new GridBagLayout();
 		gbl_panel_1.columnWidths = new int[]{0, 0, 0};
 		gbl_panel_1.rowHeights = new int[]{0, 0, 0};
 		gbl_panel_1.columnWeights = new double[]{1.0, 1.0, Double.MIN_VALUE};
 		gbl_panel_1.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
-		panel_1.setLayout(gbl_panel_1);
+		homePanel.setLayout(gbl_panel_1);
 		
 		JLabel lblNewReleases = new JLabel("New Releases");
 		lblNewReleases.setFont(new Font("Tahoma", Font.PLAIN, 18));
@@ -175,7 +178,7 @@ public class Tmdb_App {
 		gbc_lblNewReleases.insets = new Insets(0, 0, 0, 5);
 		gbc_lblNewReleases.gridx = 0;
 		gbc_lblNewReleases.gridy = 1;
-		panel_1.add(lblNewReleases, gbc_lblNewReleases);
+		homePanel.add(lblNewReleases, gbc_lblNewReleases);
 		
 		JLabel lblHighestRated = new JLabel("Highest rated");
 		lblHighestRated.setFont(new Font("Tahoma", Font.PLAIN, 18));
@@ -184,9 +187,9 @@ public class Tmdb_App {
 		gbc_lblHighestRated.fill = GridBagConstraints.HORIZONTAL;
 		gbc_lblHighestRated.gridx = 1;
 		gbc_lblHighestRated.gridy = 1;
-		panel_1.add(lblHighestRated, gbc_lblHighestRated);
+		homePanel.add(lblHighestRated, gbc_lblHighestRated);
 		
-		JPanel panel = new JPanel(){
+		JPanel searchPanel = new JPanel(){
 //			public void paintComponent(Graphics g) {  
 //				Image img = null;
 //				URL url = null;
@@ -208,14 +211,14 @@ public class Tmdb_App {
 //			}
 		};
 		
-		panel.setBorder(new EmptyBorder(2, 3, 2, 3));
-		tabbedPane.addTab("Search", null, panel, null);
+		searchPanel.setBorder(new EmptyBorder(2, 3, 2, 3));
+		tabbedPane.addTab("Search", null, searchPanel, null);
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[]{0, 0, 0, 0};
 		gbl_panel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0};
 		gbl_panel.columnWeights = new double[]{1.0, 0.0, 1.0, Double.MIN_VALUE};
 		gbl_panel.rowWeights = new double[]{0.0, 1.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-		panel.setLayout(gbl_panel);
+		searchPanel.setLayout(gbl_panel);
 		
 		String defaultSearchStr = "Search Movies, People, TV Shows, etc.";
 		
@@ -237,7 +240,7 @@ public class Tmdb_App {
 		gbc_txtSearchMoviesPeople.gridwidth = 2;
 		gbc_txtSearchMoviesPeople.gridx = 0;
 		gbc_txtSearchMoviesPeople.gridy = 0;
-		panel.add(txtSearchMoviesPeople, gbc_txtSearchMoviesPeople);
+		searchPanel.add(txtSearchMoviesPeople, gbc_txtSearchMoviesPeople);
 		txtSearchMoviesPeople.setColumns(10);
 		
 		searchButton = new JButton("Search");
@@ -247,9 +250,9 @@ public class Tmdb_App {
 		gbc_btnNewButton_1.fill = GridBagConstraints.HORIZONTAL;
 		gbc_btnNewButton_1.gridx = 2;
 		gbc_btnNewButton_1.gridy = 0;
-		panel.add(searchButton, gbc_btnNewButton_1);
+		searchPanel.add(searchButton, gbc_btnNewButton_1);
 		
-		JTabbedPane tabbedPane_1 = new JTabbedPane(JTabbedPane.TOP);
+		JTabbedPane searchResultTabPane = new JTabbedPane(JTabbedPane.TOP);
 		GridBagConstraints gbc_tabbedPane_1 = new GridBagConstraints();
 		gbc_tabbedPane_1.ipady = 99;
 		gbc_tabbedPane_1.insets = new Insets(0, 0, 5, 0);
@@ -257,16 +260,16 @@ public class Tmdb_App {
 		gbc_tabbedPane_1.fill = GridBagConstraints.BOTH;
 		gbc_tabbedPane_1.gridx = 0;
 		gbc_tabbedPane_1.gridy = 1;
-		panel.add(tabbedPane_1, gbc_tabbedPane_1);
+		searchPanel.add(searchResultTabPane, gbc_tabbedPane_1);
 		
-		JPanel panel_3 = new JPanel();
-		tabbedPane_1.addTab("Movies", null, panel_3, null);
+		JPanel moviePanel = new JPanel();
+		searchResultTabPane.addTab("Movies", null, moviePanel, null);
 		GridBagLayout gbl_panel_3 = new GridBagLayout();
 		gbl_panel_3.columnWidths = new int[]{0, 0};
 		gbl_panel_3.rowHeights = new int[]{0, 0};
 		gbl_panel_3.columnWeights = new double[]{1.0, Double.MIN_VALUE};
 		gbl_panel_3.rowWeights = new double[]{1.0, Double.MIN_VALUE};
-		panel_3.setLayout(gbl_panel_3);
+		moviePanel.setLayout(gbl_panel_3);
 		
 		tableMovie = new JTable();
 		tableMovie.setToolTipText("");
@@ -274,7 +277,7 @@ public class Tmdb_App {
 		tableMovie.getTableHeader().setReorderingAllowed(false);
 		tableMovie.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-
+            	movieClicked();
             }
         });
 		GridBagConstraints gbc_table = new GridBagConstraints();
@@ -282,16 +285,16 @@ public class Tmdb_App {
 		gbc_table.fill = GridBagConstraints.BOTH;
 		gbc_table.gridx = 0;
 		gbc_table.gridy = 0;
-		panel_3.add(tableMovie, gbc_table);
+		moviePanel.add(new JScrollPane(tableMovie), gbc_table);
 		
-		JPanel panel_4 = new JPanel();
-		tabbedPane_1.addTab("People", null, panel_4, null);
+		JPanel peoplePanel = new JPanel();
+		searchResultTabPane.addTab("People", null, peoplePanel, null);
 		GridBagLayout gbl_panel_4 = new GridBagLayout();
 		gbl_panel_4.columnWidths = new int[]{0, 0};
 		gbl_panel_4.rowHeights = new int[]{0, 0};
 		gbl_panel_4.columnWeights = new double[]{1.0, Double.MIN_VALUE};
 		gbl_panel_4.rowWeights = new double[]{1.0, Double.MIN_VALUE};
-		panel_4.setLayout(gbl_panel_4);
+		peoplePanel.setLayout(gbl_panel_4);
 		
 		tablePeople = new JTable();
 		tablePeople.setToolTipText("");
@@ -306,16 +309,16 @@ public class Tmdb_App {
 		gbc_table_1.fill = GridBagConstraints.BOTH;
 		gbc_table_1.gridx = 0;
 		gbc_table_1.gridy = 0;
-		panel_4.add(tablePeople, gbc_table_1);
+		peoplePanel.add(new JScrollPane(tablePeople), gbc_table_1);
 		
-		JPanel panel_5 = new JPanel();
-		tabbedPane_1.addTab("TV Shows", null, panel_5, null);
+		JPanel tvPanel = new JPanel();
+		searchResultTabPane.addTab("TV Shows", null, tvPanel, null);
 		GridBagLayout gbl_panel_5 = new GridBagLayout();
 		gbl_panel_5.columnWidths = new int[]{0, 0};
 		gbl_panel_5.rowHeights = new int[]{0, 0};
 		gbl_panel_5.columnWeights = new double[]{1.0, Double.MIN_VALUE};
 		gbl_panel_5.rowWeights = new double[]{1.0, Double.MIN_VALUE};
-		panel_5.setLayout(gbl_panel_5);
+		tvPanel.setLayout(gbl_panel_5);
 		
 		tableTv = new JTable();
 		tableTv.setToolTipText("");
@@ -330,10 +333,10 @@ public class Tmdb_App {
 		gbc_table_2.fill = GridBagConstraints.BOTH;
 		gbc_table_2.gridx = 0;
 		gbc_table_2.gridy = 0;
-		panel_5.add(tableTv, gbc_table_2);
+		tvPanel.add(new JScrollPane(tableTv), gbc_table_2);
 		
-		JPanel panel_6 = new JPanel();
-		panel_6.setBorder(new EmptyBorder(2, 2, 2, 2));
+		JPanel resultClickedPanel = new JPanel();
+		resultClickedPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
 		GridBagConstraints gbc_panel_6 = new GridBagConstraints();
 		gbc_panel_6.gridheight = 0;
 		gbc_panel_6.fill = GridBagConstraints.BOTH;
@@ -341,13 +344,13 @@ public class Tmdb_App {
 		gbc_panel_6.insets = new Insets(0, 0, 5, 5);
 		gbc_panel_6.gridx = 0;
 		gbc_panel_6.gridy = 2;
-		panel.add(panel_6, gbc_panel_6);
+		searchPanel.add(resultClickedPanel, gbc_panel_6);
 		GridBagLayout gbl_panel_6 = new GridBagLayout();
 		gbl_panel_6.columnWidths = new int[]{0, 0, 0};
 		gbl_panel_6.rowHeights = new int[]{0, 0, 0, 0, 0};
 		gbl_panel_6.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
 		gbl_panel_6.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-		panel_6.setLayout(gbl_panel_6);
+		resultClickedPanel.setLayout(gbl_panel_6);
 		
 		JLabel lblTitle = new JLabel("Title");
 		GridBagConstraints gbc_lblTitle = new GridBagConstraints();
@@ -355,16 +358,16 @@ public class Tmdb_App {
 		gbc_lblTitle.insets = new Insets(0, 0, 5, 5);
 		gbc_lblTitle.gridx = 0;
 		gbc_lblTitle.gridy = 0;
-		panel_6.add(lblTitle, gbc_lblTitle);
+		resultClickedPanel.add(lblTitle, gbc_lblTitle);
 		
-		textField = new JTextField();
+		resultTitleField = new JTextField();
 		GridBagConstraints gbc_textField = new GridBagConstraints();
 		gbc_textField.insets = new Insets(0, 0, 5, 0);
 		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textField.gridx = 1;
 		gbc_textField.gridy = 0;
-		panel_6.add(textField, gbc_textField);
-		textField.setColumns(10);
+		resultClickedPanel.add(resultTitleField, gbc_textField);
+		resultTitleField.setColumns(10);
 		
 		JLabel lblDirector = new JLabel("Director");
 		GridBagConstraints gbc_lblDirector = new GridBagConstraints();
@@ -372,16 +375,16 @@ public class Tmdb_App {
 		gbc_lblDirector.insets = new Insets(0, 0, 5, 5);
 		gbc_lblDirector.gridx = 0;
 		gbc_lblDirector.gridy = 1;
-		panel_6.add(lblDirector, gbc_lblDirector);
+		resultClickedPanel.add(lblDirector, gbc_lblDirector);
 		
-		textField_1 = new JTextField();
+		resultDirectorField = new JTextField();
 		GridBagConstraints gbc_textField_1 = new GridBagConstraints();
 		gbc_textField_1.insets = new Insets(0, 0, 5, 0);
 		gbc_textField_1.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textField_1.gridx = 1;
 		gbc_textField_1.gridy = 1;
-		panel_6.add(textField_1, gbc_textField_1);
-		textField_1.setColumns(10);
+		resultClickedPanel.add(resultDirectorField, gbc_textField_1);
+		resultDirectorField.setColumns(10);
 		
 		JLabel lblNewLabel = new JLabel("Release Date");
 		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
@@ -389,27 +392,27 @@ public class Tmdb_App {
 		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 5);
 		gbc_lblNewLabel.gridx = 0;
 		gbc_lblNewLabel.gridy = 2;
-		panel_6.add(lblNewLabel, gbc_lblNewLabel);
+		resultClickedPanel.add(lblNewLabel, gbc_lblNewLabel);
 		
-		textField_2 = new JTextField();
+		resultDateField = new JTextField();
 		GridBagConstraints gbc_textField_2 = new GridBagConstraints();
 		gbc_textField_2.insets = new Insets(0, 0, 5, 0);
 		gbc_textField_2.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textField_2.gridx = 1;
 		gbc_textField_2.gridy = 2;
-		panel_6.add(textField_2, gbc_textField_2);
-		textField_2.setColumns(10);
+		resultClickedPanel.add(resultDateField, gbc_textField_2);
+		resultDateField.setColumns(10);
 		
-		JPanel panel_2 = new JPanel();
-		panel_2.setForeground(Color.LIGHT_GRAY);
-		panel_2.setBorder(new EmptyBorder(2, 4, 2, 4));
-		tabbedPane.addTab("Log in", null, panel_2, null);
+		JPanel loginPanel = new JPanel();
+		loginPanel.setForeground(Color.LIGHT_GRAY);
+		loginPanel.setBorder(new EmptyBorder(2, 4, 2, 4));
+		tabbedPane.addTab("Log in", null, loginPanel, null);
 		GridBagLayout gbl_panel_2 = new GridBagLayout();
 		gbl_panel_2.columnWidths = new int[]{48, 86, 0};
 		gbl_panel_2.rowHeights = new int[]{20, 20, 23, 0, 0};
 		gbl_panel_2.columnWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
 		gbl_panel_2.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-		panel_2.setLayout(gbl_panel_2);
+		loginPanel.setLayout(gbl_panel_2);
 		
 		JLabel lblUsername = new JLabel("Username");
 		GridBagConstraints gbc_lblUsername = new GridBagConstraints();
@@ -417,16 +420,16 @@ public class Tmdb_App {
 		gbc_lblUsername.insets = new Insets(0, 0, 5, 5);
 		gbc_lblUsername.gridx = 0;
 		gbc_lblUsername.gridy = 0;
-		panel_2.add(lblUsername, gbc_lblUsername);
+		loginPanel.add(lblUsername, gbc_lblUsername);
 		
-		textField_3 = new JTextField();
+		userNameTextField = new JTextField();
 		GridBagConstraints gbc_textField_3 = new GridBagConstraints();
 		gbc_textField_3.anchor = GridBagConstraints.NORTHWEST;
 		gbc_textField_3.insets = new Insets(0, 0, 5, 0);
 		gbc_textField_3.gridx = 1;
 		gbc_textField_3.gridy = 0;
-		panel_2.add(textField_3, gbc_textField_3);
-		textField_3.setColumns(10);
+		loginPanel.add(userNameTextField, gbc_textField_3);
+		userNameTextField.setColumns(10);
 		
 		JLabel lblPassword = new JLabel("Password");
 		GridBagConstraints gbc_lblPassword = new GridBagConstraints();
@@ -434,18 +437,18 @@ public class Tmdb_App {
 		gbc_lblPassword.insets = new Insets(0, 0, 5, 5);
 		gbc_lblPassword.gridx = 0;
 		gbc_lblPassword.gridy = 1;
-		panel_2.add(lblPassword, gbc_lblPassword);
+		loginPanel.add(lblPassword, gbc_lblPassword);
 		
-		textField_4 = new JTextField();
+		passwordTextField = new JTextField();
 		GridBagConstraints gbc_textField_4 = new GridBagConstraints();
 		gbc_textField_4.anchor = GridBagConstraints.NORTHWEST;
 		gbc_textField_4.insets = new Insets(0, 0, 5, 0);
 		gbc_textField_4.gridx = 1;
 		gbc_textField_4.gridy = 1;
-		panel_2.add(textField_4, gbc_textField_4);
-		textField_4.setColumns(10);
+		loginPanel.add(passwordTextField, gbc_textField_4);
+		passwordTextField.setColumns(10);
 		
-		JButton btnNewButton = new JButton("Log in");
+		JButton loginButton = new JButton("Log in");
 		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
 		gbc_btnNewButton.insets = new Insets(0, 0, 5, 0);
 		gbc_btnNewButton.ipadx = 78;
@@ -453,15 +456,15 @@ public class Tmdb_App {
 		gbc_btnNewButton.gridwidth = 2;
 		gbc_btnNewButton.gridx = 0;
 		gbc_btnNewButton.gridy = 2;
-		panel_2.add(btnNewButton, gbc_btnNewButton);
+		loginPanel.add(loginButton, gbc_btnNewButton);
 		
-		JButton btnNewButton_1 = new JButton("Guest Session");
-		GridBagConstraints gbc_btnNewButton_1 = new GridBagConstraints();
-		gbc_btnNewButton_1.gridwidth = 2;
-		gbc_btnNewButton_1.insets = new Insets(0, 0, 0, 5);
-		gbc_btnNewButton_1.gridx = 0;
-		gbc_btnNewButton_1.gridy = 3;
-		panel_2.add(btnNewButton_1, gbc_btnNewButton_1);
+		JButton guestButton = new JButton("Guest Session");
+		GridBagConstraints gbc_btnNewButton_2 = new GridBagConstraints();
+		gbc_btnNewButton_2.gridwidth = 2;
+		gbc_btnNewButton_2.insets = new Insets(0, 0, 0, 5);
+		gbc_btnNewButton_2.gridx = 0;
+		gbc_btnNewButton_2.gridy = 3;
+		loginPanel.add(guestButton, gbc_btnNewButton_2);
 	}
 
 	private ActionListener actionHandler = new ActionListener() {
@@ -474,16 +477,11 @@ public class Tmdb_App {
 		}
 		
 	};
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
 	
-	private class SwingAction extends AbstractAction {
-		public SwingAction() {
-			putValue(NAME, "SwingAction");
-			putValue(SHORT_DESCRIPTION, "Some short description");
-		}
-		public void actionPerformed(ActionEvent e) {
-		}
+	private void movieClicked(){
+		MovieDb movie = movieModel.get(tableMovie.getSelectedRow());
+		resultTitleField.setText(movie.getTitle());
+		resultDateField.setText(movie.getReleaseDate());
 	}
+	
 }
