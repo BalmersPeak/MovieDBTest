@@ -1,8 +1,5 @@
 /**
- * 
- */
-/**
- * @author JohnnyBoyV2
+ * @author Nicholas Pahl
  *
  */
 package moviepack;

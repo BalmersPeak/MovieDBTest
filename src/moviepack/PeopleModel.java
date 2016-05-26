@@ -7,7 +7,7 @@ import javax.swing.table.AbstractTableModel;
 import info.movito.themoviedbapi.model.people.Person;
 
 /**
- * Model to Show the search results of movies in a table.
+ * Model to Show the search results of people in a table.
  *
  * @author Nicholas Pahl
  *
@@ -17,7 +17,7 @@ public class PeopleModel extends AbstractTableModel {
     private static final long serialVersionUID = 1L;
 
     /**
-     * List of movies in the table.
+     * List of people in the table.
      */
     private ArrayList<Person> people;
 
@@ -104,7 +104,7 @@ public class PeopleModel extends AbstractTableModel {
 
     /**
      * Adds a person to the table at the specified index.
-     * @param index where to add the movie.
+     * @param index where to add the person.
      * @param p the person to be added.
      */
     public final void add(final int index, final Person p) {
