@@ -18,6 +18,8 @@ import java.awt.event.MouseAdapter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
+import java.util.ListIterator;
 import java.awt.event.ActionEvent;
 import javax.swing.JPasswordField;
 import javax.swing.JFormattedTextField;
@@ -87,9 +89,9 @@ public class Tmdb_App {
 	private JTable tableMovie;
 	private JTable tablePeople;
 	private JTable tableTv;
-	private JTextField resultTitleField;
-	private JTextField resultDirectorField;
-	private JTextField resultDateField;
+	
+	private JLabel resultLabel;
+
 
 	/**
 	 * Launch the application.
@@ -302,7 +304,7 @@ public class Tmdb_App {
 		tablePeople.getTableHeader().setReorderingAllowed(false);
 		tablePeople.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
- 
+            	personClicked();
             }
         });
 		GridBagConstraints gbc_table_1 = new GridBagConstraints();
@@ -326,7 +328,7 @@ public class Tmdb_App {
 		tableTv.getTableHeader().setReorderingAllowed(false);
 		tableTv.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-
+            	tvClicked();
             }
         });
 		GridBagConstraints gbc_table_2 = new GridBagConstraints();
@@ -352,57 +354,15 @@ public class Tmdb_App {
 		gbl_panel_6.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		resultClickedPanel.setLayout(gbl_panel_6);
 		
-		JLabel lblTitle = new JLabel("Title");
+		resultLabel = new JLabel();
 		GridBagConstraints gbc_lblTitle = new GridBagConstraints();
-		gbc_lblTitle.anchor = GridBagConstraints.EAST;
+		gbc_lblTitle.anchor = GridBagConstraints.WEST;
 		gbc_lblTitle.insets = new Insets(0, 0, 5, 5);
 		gbc_lblTitle.gridx = 0;
 		gbc_lblTitle.gridy = 0;
-		resultClickedPanel.add(lblTitle, gbc_lblTitle);
-		
-		resultTitleField = new JTextField();
-		GridBagConstraints gbc_textField = new GridBagConstraints();
-		gbc_textField.insets = new Insets(0, 0, 5, 0);
-		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField.gridx = 1;
-		gbc_textField.gridy = 0;
-		resultClickedPanel.add(resultTitleField, gbc_textField);
-		resultTitleField.setColumns(10);
-		
-		JLabel lblDirector = new JLabel("Director");
-		GridBagConstraints gbc_lblDirector = new GridBagConstraints();
-		gbc_lblDirector.anchor = GridBagConstraints.EAST;
-		gbc_lblDirector.insets = new Insets(0, 0, 5, 5);
-		gbc_lblDirector.gridx = 0;
-		gbc_lblDirector.gridy = 1;
-		resultClickedPanel.add(lblDirector, gbc_lblDirector);
-		
-		resultDirectorField = new JTextField();
-		GridBagConstraints gbc_textField_1 = new GridBagConstraints();
-		gbc_textField_1.insets = new Insets(0, 0, 5, 0);
-		gbc_textField_1.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_1.gridx = 1;
-		gbc_textField_1.gridy = 1;
-		resultClickedPanel.add(resultDirectorField, gbc_textField_1);
-		resultDirectorField.setColumns(10);
-		
-		JLabel lblNewLabel = new JLabel("Release Date");
-		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
-		gbc_lblNewLabel.anchor = GridBagConstraints.EAST;
-		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 5);
-		gbc_lblNewLabel.gridx = 0;
-		gbc_lblNewLabel.gridy = 2;
-		resultClickedPanel.add(lblNewLabel, gbc_lblNewLabel);
-		
-		resultDateField = new JTextField();
-		GridBagConstraints gbc_textField_2 = new GridBagConstraints();
-		gbc_textField_2.insets = new Insets(0, 0, 5, 0);
-		gbc_textField_2.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_2.gridx = 1;
-		gbc_textField_2.gridy = 2;
-		resultClickedPanel.add(resultDateField, gbc_textField_2);
-		resultDateField.setColumns(10);
-		
+		resultClickedPanel.add(resultLabel, gbc_lblTitle);
+			
+
 		JPanel loginPanel = new JPanel();
 		loginPanel.setForeground(Color.LIGHT_GRAY);
 		loginPanel.setBorder(new EmptyBorder(2, 4, 2, 4));
@@ -472,16 +432,26 @@ public class Tmdb_App {
 		public void actionPerformed(ActionEvent e){
 			Object which = e.getSource();
 			if(which == searchButton || which == txtSearchMoviesPeople){
-				search.Multi(txtSearchMoviesPeople.getText());
+				search.stringSearch(txtSearchMoviesPeople.getText());
 			}
 		}
 		
 	};
 	
 	private void movieClicked(){
-		MovieDb movie = movieModel.get(tableMovie.getSelectedRow());
-		resultTitleField.setText(movie.getTitle());
-		resultDateField.setText(movie.getReleaseDate());
+		
+		String resultStr = search.getMovieResults(movieModel.get(tableMovie.getSelectedRow()).getId());
+		resultLabel.setText(resultStr);
+		
 	}
 	
+	private void personClicked(){
+		String resultStr = search.getPersonResults(peopleModel.get(tablePeople.getSelectedRow()).getId());
+		resultLabel.setText(resultStr);
+	}
+	
+	private void tvClicked(){
+		String resultStr = search.getTvResults(tvModel.get(tableTv.getSelectedRow()).getId());
+		resultLabel.setText(resultStr);
+	}
 }

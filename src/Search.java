@@ -1,6 +1,12 @@
+import java.awt.Window.Type;
 import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 import info.movito.themoviedbapi.*;
+import info.movito.themoviedbapi.TmdbAccount.MovieListResultsPage;
+import info.movito.themoviedbapi.TmdbMovies.MovieMethod;
+import info.movito.themoviedbapi.TmdbPeople.PersonResultsPage;
 import info.movito.themoviedbapi.model.Multi.MediaType;
 import info.movito.themoviedbapi.TmdbSearch.*;
 import info.movito.themoviedbapi.model.*;
@@ -23,7 +29,10 @@ public class Search {
 	TmdbTV tvSeries;
 	TmdbSearch search;
 	
-	MultiListResultsPage resultPage;
+	MovieResultsPage moviePage;
+	PersonResultsPage personPage;
+	TvResultsPage tvPage;
+	
 	String prevStr;
 	
 	int i = 1;
@@ -39,13 +48,16 @@ public class Search {
 		search = tmdbApi.getSearch();
 	}
 	
-	public void Multi(String searchStr){
+	public void stringSearch(String searchStr){
 		
 		
 		
 		if(!searchStr.equals(prevStr)){
 			i = 1;
-			resultPage = new MultiListResultsPage();
+			
+			moviePage = new MovieResultsPage();
+			personPage = new PersonResultsPage();
+			tvPage = new TvResultsPage();
 			
 			movieModel.clear();
 			peopleModel.clear();
@@ -54,39 +66,174 @@ public class Search {
 		
 		prevStr = searchStr;
 		
-		resultPage = search.searchMulti(searchStr, "en", i);
+		moviePage = search.searchMovie(searchStr, null, "en", true, i);
+		personPage = search.searchPerson(searchStr, true, i);
+		tvPage = search.searchTv(searchStr, "en", i);
+		
 		i++;
 		
-		Iterator<Multi> iterator = resultPage.iterator();
+		Iterator<MovieDb> movieIt = moviePage.iterator();
+		Iterator<Person> personIt = personPage.iterator();
+		Iterator<TvSeries> tvIt = tvPage.iterator();
 		
-		while(iterator.hasNext())
-		{
-			Multi multi = iterator.next();
-			if(multi.getMediaType() == MediaType.PERSON)
-			{
-				Person person = (Person) multi;
+		
+		
+		while(movieIt.hasNext()){
+			MovieDb movie = movieIt.next();
+			
+//			MovieDb movieInfo = movies.getMovie(movie.getId(), "en", MovieMethod.credits);
+			
+			movieModel.add(movie);
+
+		}
+		
+		while(personIt.hasNext()){
+			Person person = personIt.next();
+			
+//			PersonPeople personInfo = people.getPersonInfo(person.getId());
+			
+			peopleModel.add(person);
 				
-				Person personInfo = people.getPersonInfo(person.getId());
+		}
+		
+		while(tvIt.hasNext()){
+			TvSeries tv = tvIt.next();
+			
+//			TvSeries tvInfo = tvSeries.getSeries(tv.getId(), "en");
+			
+			tvModel.add(tv);
 				
-				peopleModel.add(personInfo);
+		}
+			
+
+	}
+	
+	public String getMovieResults(int movieId){
+		
+		MovieDb movie = movies.getMovie(movieId, "en", MovieMethod.credits);
+		
+		String resultStr = "<html>";
+		
+		//Gets movie Title
+		if(movie.getTitle() != ""){
+			resultStr += "Title: " + movie.getTitle();
+		}
+		
+		//Gets movie date
+		if (movie.getReleaseDate() != ""){
+			resultStr += "<br>Release Date: " + movie.getReleaseDate();
+		} 
+		
+		//Gets movie director
+		List<PersonCrew> crewList = movie.getCrew();
+		
+		Iterator<PersonCrew> crewIt = crewList.iterator();
+		
+		while(crewIt.hasNext()){
+			PersonCrew person = crewIt.next();
+			
+			if (person.getJob().equals("Director")){
 				
-			}
-			else if(multi.getMediaType() == MediaType.MOVIE)
-			{
-				MovieDb movie = (MovieDb) multi;
-				
-				MovieDb movieInfo = movies.getMovie(movie.getId(), "en");
-				
-				movieModel.add(movieInfo);
-			}
-			else if(multi.getMediaType() == MediaType.TV_SERIES)
-			{
-				TvSeries tv = (TvSeries) multi;
-				
-				TvSeries tvInfo = tvSeries.getSeries(tv.getId(), "en");
-				
-				tvModel.add(tvInfo);
+				resultStr += "<br>Director: "+ person.getName();
 			}
 		}
+		
+		//Gets Movie genre
+		Iterator<Genre> genre = movie.getGenres().iterator();
+    	
+		if(genre.hasNext()){
+			resultStr += "<br>Genre: ";
+		}
+		
+    	while(genre.hasNext()){
+    		resultStr += genre.next().getName() + " ";
+    	}
+    	
+    	//Gets movie rating
+    	if(movie.getVoteAverage() != 0){
+    		resultStr += "<br>Rating: " + movie.getVoteAverage() + "/10 (" + movie.getVoteCount() + " Votes)";
+    	}
+		
+		resultStr += "</html>";
+		
+		return resultStr;
+	}
+	
+	public String getPersonResults(int personId){
+		
+		PersonPeople person = people.getPersonInfo(personId);
+		
+		String resultStr = "<html>";
+		
+		//get person name
+		if(person.getName() != ""){
+			resultStr += "Name: " + person.getName();
+		}
+		
+		//get person birthday
+		if(person.getBirthday() != ""){
+			resultStr += "<br>Birthday: " + person.getBirthday();
+		}
+		
+		//get person deathday
+		if(person.getDeathday() != ""){
+			resultStr += "<br>Deathday: " + person.getDeathday();
+		}
+		
+		//get person birthplace
+		if(person.getBirthplace() != ""){
+			resultStr += "<br>Birthplace: " + person.getBirthplace();
+		}
+		
+		resultStr += "</html>";
+		
+		return resultStr;
+	}
+	
+	public String getTvResults(int tvIndex){
+		
+		TvSeries tv = tvSeries.getSeries(tvIndex, "en");
+		
+		String resultStr = "<html>";
+		
+		//get tv name
+		if(tv.getOriginalName() != ""){
+			resultStr += "Title: " + tv.getOriginalName();
+		}
+		
+		//get tv first date
+		if(tv.getFirstAirDate() != null){
+			resultStr += "<br>First Air Date: " + tv.getFirstAirDate();
+		}
+		
+		if(tv.getLastAirDate() != null){
+			resultStr += "<br>Last Air Date: " + tv.getLastAirDate();
+		}
+		
+		//get tv number of seasons
+		if(tv.getNumberOfSeasons() != 0){
+			resultStr += "<br>Number of seasons: " + tv.getNumberOfSeasons();
+		}
+		
+		//get tv network
+		Iterator<Network> network = tv.getNetworks().iterator();
+		
+		if(network.hasNext()){
+			resultStr += "<br>Network: ";
+		}
+		
+		while(network.hasNext()){
+			resultStr += network.next().getName() + " ";
+		}
+		
+		//Gets movie rating
+    	if(tv.getVoteAverage() != 0){
+    		resultStr += "<br>Rating: " + tv.getVoteAverage() + "/10 (" + tv.getVoteCount() + " Votes)";
+    	}
+		
+		
+		resultStr += "</html>";
+		
+		return resultStr;
 	}
 }

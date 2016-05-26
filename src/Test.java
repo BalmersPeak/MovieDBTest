@@ -14,19 +14,24 @@ import info.movito.themoviedbapi.tools.*;
 
 public class Test {
 	public static void main(String[] args){
-		TmdbApi tmdbApi = new TmdbApi("811ffa781385ed56e1ec64c193eb93f4");
 		
-		TmdbPeople people = tmdbApi.getPeople();
+		TmdbApi tmdbApi;
+		MovieModel movieModel;
+		PeopleModel peopleModel;
+		TvModel tvModel;
+		Search search;
 		
-		TmdbMovies movies = tmdbApi.getMovies();
+		tmdbApi = new TmdbApi("811ffa781385ed56e1ec64c193eb93f4");
 		
-		TmdbTV tvSeries = tmdbApi.getTvSeries();
+		movieModel = new MovieModel();
+		peopleModel = new PeopleModel();
+		tvModel = new TvModel();
 		
-		TmdbSearch search = tmdbApi.getSearch();
+		search = new Search(tmdbApi, movieModel, peopleModel, tvModel);
 		
 //		System.out.println(resultsPage.getResults());
 //		System.out.println(keyword.toString());
-		
+		/*
 		MultiListResultsPage resultPage = search.searchMulti("Ryan", "en", 0);
 		
 		System.out.println(resultPage.getResults());
@@ -83,5 +88,7 @@ public class Test {
 //		
 //		System.out.println(person.getName());
 //		System.out.println(person.getBirthday());
+ 
+ */
 	}
 }

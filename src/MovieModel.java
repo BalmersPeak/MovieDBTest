@@ -22,7 +22,7 @@ public class MovieModel extends AbstractTableModel {
 	
 	private ArrayList<MovieDb> movies;
 	
-	private String[] columnNames = {"Title", "Date", "Genre", "Rating"};
+	private String[] columnNames = {"Title", "Date"};
 	 
 	public MovieModel(){
 		movies = new ArrayList<MovieDb>();
@@ -41,7 +41,7 @@ public class MovieModel extends AbstractTableModel {
 	}
 	
 	public Object getValueAt(int row, int col) {
-        Object val = null;
+        Object val = new String();
         switch (col) {
             case 0:
                 val = movies.get(row).getTitle();
@@ -49,14 +49,6 @@ public class MovieModel extends AbstractTableModel {
 
             case 1:
                 val = movies.get(row).getReleaseDate();
-                break;
-
-            case 2:
-                val = movies.get(row).getGenres().toString();
-                break;
-
-            case 3:
-                val = movies.get(row).getUserRating();
                 break;
         }
         return val;

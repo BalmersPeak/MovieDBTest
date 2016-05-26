@@ -19,7 +19,7 @@ public class PeopleModel extends AbstractTableModel {
 	
 	private ArrayList<Person> people;
 	
-	private String[] columnNames = {"Name", "BirthDay", "Known Credits"};
+	private String[] columnNames = {"Name"};
 	 
 	public PeopleModel(){
 		people = new ArrayList<Person>();
@@ -42,14 +42,6 @@ public class PeopleModel extends AbstractTableModel {
         switch (col) {
             case 0:
                 val = people.get(row).getName();
-                break;
-
-            case 1:
-                val = "0";
-                break;
-
-            case 2:
-                val = "0";
                 break;
         }
         return val;

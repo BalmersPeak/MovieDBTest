@@ -19,7 +19,7 @@ public class TvModel extends AbstractTableModel {
 	
 	private ArrayList<TvSeries> tvseries;
 	
-	private String[] columnNames = {"Title", "First Air Date", "Genre", "Rating"};
+	private String[] columnNames = {"Title", "First Air Date"};
 	 
 	public TvModel(){
 		tvseries = new ArrayList<TvSeries>();
@@ -38,7 +38,7 @@ public class TvModel extends AbstractTableModel {
 	}
 	
 	public Object getValueAt(int row, int col) {
-        Object val = null;
+        Object val = new String();
         switch (col) {
             case 0:
                 val = tvseries.get(row).getOriginalName();
@@ -46,14 +46,6 @@ public class TvModel extends AbstractTableModel {
 
             case 1:
                 val = tvseries.get(row).getFirstAirDate();
-                break;
-
-            case 2:
-                val = tvseries.get(row).getGenres().toString();
-                break;
-
-            case 3:
-                val = tvseries.get(row).getUserRating();
                 break;
         }
         return val;
