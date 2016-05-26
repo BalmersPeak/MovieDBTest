@@ -1,3 +1,4 @@
+package moviepack;
 import java.awt.Window.Type;
 import java.util.Iterator;
 import java.util.List;
@@ -81,8 +82,6 @@ public class Search {
 		while(movieIt.hasNext()){
 			MovieDb movie = movieIt.next();
 			
-//			MovieDb movieInfo = movies.getMovie(movie.getId(), "en", MovieMethod.credits);
-			
 			movieModel.add(movie);
 
 		}
@@ -90,16 +89,12 @@ public class Search {
 		while(personIt.hasNext()){
 			Person person = personIt.next();
 			
-//			PersonPeople personInfo = people.getPersonInfo(person.getId());
-			
 			peopleModel.add(person);
 				
 		}
 		
 		while(tvIt.hasNext()){
 			TvSeries tv = tvIt.next();
-			
-//			TvSeries tvInfo = tvSeries.getSeries(tv.getId(), "en");
 			
 			tvModel.add(tv);
 				

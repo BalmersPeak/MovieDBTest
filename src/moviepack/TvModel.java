@@ -1,3 +1,4 @@
+package moviepack;
 import javax.swing.table.*;
 import java.util.*;
 import java.io.*;
@@ -14,19 +15,19 @@ import info.movito.themoviedbapi.model.people.*;
 import info.movito.themoviedbapi.model.tv.*;
 import info.movito.themoviedbapi.tools.*;
 
-public class PeopleModel extends AbstractTableModel {
+public class TvModel extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
 	
-	private ArrayList<Person> people;
+	private ArrayList<TvSeries> tvseries;
 	
-	private String[] columnNames = {"Name"};
+	private String[] columnNames = {"Title", "First Air Date"};
 	 
-	public PeopleModel(){
-		people = new ArrayList<Person>();
+	public TvModel(){
+		tvseries = new ArrayList<TvSeries>();
 	}
 	
 	public int getRowCount(){
-		return people.size();
+		return tvseries.size();
 	}
 	
 	public int getColumnCount(){
@@ -38,52 +39,56 @@ public class PeopleModel extends AbstractTableModel {
 	}
 	
 	public Object getValueAt(int row, int col) {
-        Object val = null;
+        Object val = new String();
         switch (col) {
             case 0:
-                val = people.get(row).getName();
+                val = tvseries.get(row).getOriginalName();
+                break;
+
+            case 1:
+                val = tvseries.get(row).getFirstAirDate();
                 break;
         }
         return val;
     }
 	
 	
-	public Person get(int index) {
-        return people.get(index);
+	public TvSeries get(int index) {
+        return tvseries.get(index);
     }
 
-    public int indexOf(Person b) {
-        return people.indexOf(b);
+    public int indexOf(TvSeries b) {
+        return tvseries.indexOf(b);
     }
     
-    public void add(Person b) {
+    public void add(TvSeries b) {
         if (b != null) {
-        	people.add(b);
-            fireTableRowsInserted(people.size() - 1, people.size() - 1);
+        	tvseries.add(b);
+            fireTableRowsInserted(tvseries.size() - 1, tvseries.size() - 1);
         }
     }
 
-    public void add(int index, Person b) {
+    public void add(int index, TvSeries b) {
         if (b != null) {
-        	people.add(index, b);
+        	tvseries.add(index, b);
             fireTableRowsInserted(index, index);
         }
     }
 
     public void remove(int index) {
-    	people.remove(index);
+    	tvseries.remove(index);
         fireTableRowsDeleted(index, index);
         return;
     }
 
-    public void remove(PersonPeople b) {
+    public void remove(TvSeries b) {
         remove(indexOf(b));
     }
 
     public void clear() {
-        if (people.size() > 0) {
-            int size = people.size();
-            people.clear();
+        if (tvseries.size() > 0) {
+            int size = tvseries.size();
+            tvseries.clear();
             this.fireTableRowsDeleted(0, size - 1);
         }
     }

@@ -1,3 +1,4 @@
+package moviepack;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -143,27 +144,7 @@ public class Tmdb_App {
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		frmL.getContentPane().add(tabbedPane, BorderLayout.CENTER);
 		
-		JPanel homePanel = new JPanel(){
-//			public void paintComponent(Graphics g) {  
-//				Image img = null;
-//				URL url = null;
-//				try {
-//					url = new URL("https://unsplash.it/640/825/?random");
-//				} catch (MalformedURLException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				try {
-//					img = ImageIO.read(url);
-//				} catch (IOException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}  
-//				
-//				g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(), this);
-//		
-//			}
-		};
+		JPanel homePanel = new JPanel();
 		tabbedPane.addTab("Home", null, homePanel, null);
 		GridBagLayout gbl_panel_1 = new GridBagLayout();
 		gbl_panel_1.columnWidths = new int[]{0, 0, 0};
@@ -191,28 +172,7 @@ public class Tmdb_App {
 		gbc_lblHighestRated.gridy = 1;
 		homePanel.add(lblHighestRated, gbc_lblHighestRated);
 		
-		JPanel searchPanel = new JPanel(){
-//			public void paintComponent(Graphics g) {  
-//				Image img = null;
-//				URL url = null;
-//				try {
-//					url = new URL("https://unsplash.it/640/825/?random");
-//				} catch (MalformedURLException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				try {
-//					img = ImageIO.read(url);
-//				} catch (IOException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}  
-//				
-//				g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(), this);
-//		
-//			}
-		};
-		
+		JPanel searchPanel = new JPanel();		
 		searchPanel.setBorder(new EmptyBorder(2, 3, 2, 3));
 		tabbedPane.addTab("Search", null, searchPanel, null);
 		GridBagLayout gbl_panel = new GridBagLayout();
