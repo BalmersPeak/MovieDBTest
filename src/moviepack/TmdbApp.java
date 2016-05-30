@@ -53,11 +53,18 @@ public class TmdbApp {
      */
 
     private TvModel tvModel;
+    
+    /**
+     * Movie model to enter keyword data into the table.
+     */
+    private MovieModel keywordModel;
 
     /**
      * Search class for searching strings.
      */
     private Search search;
+    
+    private KeywordMatch keyword;
 
     /**
      * Frame of Gui.
@@ -98,6 +105,11 @@ public class TmdbApp {
      * table for tv series.
      */
     private JTable tableTv;
+    
+    /**
+     * table for movies.
+     */
+    private JTable tableKeyword;
 
     /**
      * Label for clicked on search results.
@@ -138,12 +150,15 @@ public class TmdbApp {
         movieModel = new MovieModel();
         peopleModel = new PeopleModel();
         tvModel = new TvModel();
+        keywordModel = new MovieModel();
 
         search = new Search(tmdbApi, movieModel, peopleModel, tvModel);
+        keyword = new KeywordMatch(tmdbApi, keywordModel);
 
         tableMovie.setModel(movieModel);
         tablePeople.setModel(peopleModel);
         tableTv.setModel(tvModel);
+        tableKeyword.setModel(keywordModel);
     }
 
     /**
@@ -218,7 +233,7 @@ public class TmdbApp {
                 Double.MIN_VALUE};
         searchPanel.setLayout(gblPanel);
 
-        String defaultSearchStr = "Search Movies, People, TV Shows, etc.";
+        String defaultSearchStr = "Search Movies, People, TV Shows, and Keyword(separated by commas)";
         txtSearchMoviesPeople = new JTextField();
         txtSearchMoviesPeople.setText(defaultSearchStr);
         txtSearchMoviesPeople.addActionListener(actionHandler);
@@ -262,6 +277,7 @@ public class TmdbApp {
         setupSearchMovieTab(searchResultTabPane);
         setupSearchPeopleTab(searchResultTabPane);
         setupSearchTvTab(searchResultTabPane);
+        setupSearchKeywordsTab(searchResultTabPane);
 
         JPanel resultClickedPanel = new JPanel();
         resultClickedPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
@@ -388,6 +404,42 @@ public class TmdbApp {
         tvPanel.add(new JScrollPane(tableTv), gbcTable2);
     }
 
+    
+    /**
+     * Sets up the keywords tab in the search tab.
+     * @param searchResultTabPane
+     *            tab to but the keywords search results.
+     */
+    private void setupSearchKeywordsTab(final JTabbedPane searchResultTabPane) {
+        JPanel keywordsPanel = new JPanel();
+        searchResultTabPane.addTab("Keywords", null, keywordsPanel, null);
+        GridBagLayout gblPanel3 = new GridBagLayout();
+        gblPanel3.columnWidths = new int[] {0, 0};
+        gblPanel3.rowHeights = new int[] {0, 0};
+        gblPanel3.columnWeights = new double[] {1.0, Double.MIN_VALUE};
+        gblPanel3.rowWeights = new double[] {1.0, Double.MIN_VALUE};
+        keywordsPanel.setLayout(gblPanel3);
+
+        tableKeyword = new JTable();
+        tableKeyword.setToolTipText("");
+        tableKeyword.setSelectionMode(
+                javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tableKeyword.getTableHeader().setReorderingAllowed(false);
+        tableKeyword.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(final MouseEvent e) {
+                keywordClicked();
+            }
+        });
+        GridBagConstraints gbcTable = new GridBagConstraints();
+        gbcTable.ipady = 90;
+        gbcTable.fill = GridBagConstraints.BOTH;
+        gbcTable.gridx = 0;
+        gbcTable.gridy = 0;
+        keywordsPanel.add(new JScrollPane(tableKeyword), gbcTable);
+
+    }
+    
+    
     /**
      * Sets up the Login tab.
      * @param tabbedPane
@@ -470,6 +522,7 @@ public class TmdbApp {
             Object which = e.getSource();
             if (which == searchButton || which == txtSearchMoviesPeople) {
                 search.stringSearch(txtSearchMoviesPeople.getText());
+                keyword.searchKeyword(txtSearchMoviesPeople.getText());
             }
         }
 
@@ -502,5 +555,12 @@ public class TmdbApp {
         String resultStr = search
                 .getTvResults(tvModel.get(tableTv.getSelectedRow()).getId());
         resultLabel.setText(resultStr);
+    }
+    
+    private void keywordClicked() {
+        String resultStr = search.getMovieResults(
+                keywordModel.get(tableKeyword.getSelectedRow()).getId());
+        resultLabel.setText(resultStr);
+        
     }
 }

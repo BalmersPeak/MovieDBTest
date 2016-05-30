@@ -1,10 +1,11 @@
 package moviepack;
 
+import java.lang.IndexOutOfBoundsException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Scanner;
 import java.util.Set;
 
 import info.movito.themoviedbapi.TmdbApi;
@@ -19,23 +20,25 @@ public class KeywordMatch {
 
     TmdbSearch search;
     TmdbKeywords TmdbKeyword;
-    
+
     MovieModel keywordModel;
 
-    public KeywordMatch(final TmdbApi tmdbApi, final MovieModel theKeywordModel) {
+    public KeywordMatch(final TmdbApi tmdbApi,
+            final MovieModel theKeywordModel) {
 
         search = tmdbApi.getSearch();
         TmdbKeyword = tmdbApi.getKeywords();
-        
+
         this.keywordModel = theKeywordModel;
 
     }
 
     public void searchKeyword(String keywords) {
-        // Set up System functions
-        Scanner userInput = new Scanner(System.in);
+
         int i = 0;
         String str = "";
+
+        keywordModel.clear();
 
         // Initialize Variables
         List<MovieDb> movielist = null;
@@ -62,15 +65,10 @@ public class KeywordMatch {
         List<MovieDb> thirdbest6 = null;
         List<MovieDb> thirdbestall = null;
 
-        // Asks for user input and prints all keywords in system that contain
-        // given string
-        System.out.println(
-                "Enter up to four keywords or \"x\" to complete search: ");
-        
         List<String> keywordList = Arrays.asList(keywords.split(","));
 
         // loops up to four times (4 keywords) unless ended by entering "x"
-        for (i = 0; i < keywordList.size(); i++) {
+        for (i = 0; i < keywordList.size() && i < 4; i++) {
 
             str = keywordList.get(i);
 
@@ -79,26 +77,39 @@ public class KeywordMatch {
             // Gets list of keywords that match user given keyword
             List<Keyword> keywordlist = keywordresult.getResults();
 
-            System.out.println(keywordresult.getResults());
+            MovieResultsPage results = new MovieResultsPage();
+            int j = 0;
+            String IDstring = "";
+            boolean badKeyword = false;
 
-            // Grabs first keyword match .. best match
-            Keyword mainkeyword = keywordlist.get(0);
+            while (true) {
+                try {
+                    // Grabs first keyword match .. best match
+                    Keyword mainkeyword = keywordlist.get(j);
 
-            System.out.println(mainkeyword);
+                    // Gets keyword ID and searches for movies that are
+                    // associated with
+                    // that keyword ID
+                    int IDint = mainkeyword.getId();
 
-            // Gets keyword ID and searches for movies that are associated with
-            // that keyword ID
-            int IDint = mainkeyword.getId();
+                    IDstring = Integer.toString(IDint);
 
-            System.out.println(IDint);
-
-            String IDstring = Integer.toString(IDint);
-
-            System.out.println(IDstring);
-
-            MovieResultsPage results = TmdbKeyword.getKeywordMovies(IDstring,
-                    "en", 0); // 0 and 1 are both first page
-
+                    results = TmdbKeyword.getKeywordMovies(IDstring, "en", 0);
+                    // 0 and 1 are both first page
+                } catch (IndexOutOfBoundsException e) {
+                    badKeyword = true;
+                    break;
+                } catch (Exception e) {
+                    j++;
+                    continue;
+                }
+                break;
+            }
+            
+            if(badKeyword){
+                break;
+            }
+            
             // Gets list of movies that return a match for specified keyword
             // Creates different lists
             if (i == 0) {
@@ -158,17 +169,12 @@ public class KeywordMatch {
         }
         // Runs if the user exits the search by entering four search keywords
         // instead of entering "x"
-        int compare = str.compareTo("x");
-        if (compare != 0) {
-            System.out.println(
-                    "Max entered. END of search... Computing matches...");
-        }
 
         // Matching Algorithm
 
         // For One keyword search
         if (i == 1) {
-            for(MovieDb movie : movielist){
+            for (MovieDb movie : movielist) {
                 keywordModel.add(movie);
             }
         }
@@ -182,7 +188,7 @@ public class KeywordMatch {
 
             // keeps all movies in list one that are also in list two
             movielist.retainAll(movielist2);
-            for(MovieDb movie : movielist){
+            for (MovieDb movie : movielist) {
                 keywordModel.add(movie);
             }
 
@@ -220,12 +226,12 @@ public class KeywordMatch {
             secondbestall.addAll(hs);
 
             // Prints out matches
-            
-            for(MovieDb movie : bestmatch){
+
+            for (MovieDb movie : bestmatch) {
                 keywordModel.add(movie);
             }
-            
-            for(MovieDb movie : secondbestall){
+
+            for (MovieDb movie : secondbestall) {
                 keywordModel.add(movie);
             }
         }
@@ -307,16 +313,16 @@ public class KeywordMatch {
             thirdbestall.addAll(hs2);
 
             // Prints out matches
-            
-            for(MovieDb movie : bestmatch){
+
+            for (MovieDb movie : bestmatch) {
                 keywordModel.add(movie);
             }
-            
-            for(MovieDb movie : secondbestall){
+
+            for (MovieDb movie : secondbestall) {
                 keywordModel.add(movie);
             }
-            
-            for(MovieDb movie : thirdbestall){
+
+            for (MovieDb movie : thirdbestall) {
                 keywordModel.add(movie);
             }
         }
