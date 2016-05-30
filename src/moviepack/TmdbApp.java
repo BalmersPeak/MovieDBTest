@@ -30,7 +30,6 @@ import info.movito.themoviedbapi.TmdbApi;
  * GUI for the tmdbApi.
  *
  * @author Nicholas Pahl
- *
  */
 public class TmdbApp {
 
@@ -124,6 +123,8 @@ public class TmdbApp {
         });
     }
 
+//Check:OFF: MagicNumber
+ 
     /**
      * Create the application.
      */
@@ -158,6 +159,19 @@ public class TmdbApp {
         JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
         frmL.getContentPane().add(tabbedPane, BorderLayout.CENTER);
 
+        setupHomeTab(tabbedPane);
+
+        setupSearchTab(tabbedPane);
+
+        setupLoginTab(tabbedPane);
+    }
+
+    /**
+     * Sets up the Home tab.
+     * @param tabbedPane
+     *            the tabbedPane to add the home tab to.
+     */
+    private void setupHomeTab(final JTabbedPane tabbedPane) {
         JPanel homePanel = new JPanel();
         tabbedPane.addTab("Home", null, homePanel, null);
         GridBagLayout gblPanel1 = new GridBagLayout();
@@ -185,21 +199,26 @@ public class TmdbApp {
         gbcLblHighestRated.gridx = 1;
         gbcLblHighestRated.gridy = 1;
         homePanel.add(lblHighestRated, gbcLblHighestRated);
+    }
 
+    /**
+     * Sets up the Search tab.
+     * @param tabbedPane
+     *            the tabbedPane to add the search tab to.
+     */
+    private void setupSearchTab(final JTabbedPane tabbedPane) {
         JPanel searchPanel = new JPanel();
         searchPanel.setBorder(new EmptyBorder(2, 3, 2, 3));
         tabbedPane.addTab("Search", null, searchPanel, null);
         GridBagLayout gblPanel = new GridBagLayout();
         gblPanel.columnWidths = new int[] {0, 0, 0, 0};
         gblPanel.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0};
-        gblPanel.columnWeights = new double[] {1.0, 0.0, 1.0,
-                Double.MIN_VALUE};
+        gblPanel.columnWeights = new double[] {1.0, 0.0, 1.0, Double.MIN_VALUE};
         gblPanel.rowWeights = new double[] {0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
                 Double.MIN_VALUE};
         searchPanel.setLayout(gblPanel);
 
         String defaultSearchStr = "Search Movies, People, TV Shows, etc.";
-
         txtSearchMoviesPeople = new JTextField();
         txtSearchMoviesPeople.setText(defaultSearchStr);
         txtSearchMoviesPeople.addActionListener(actionHandler);
@@ -240,81 +259,9 @@ public class TmdbApp {
         gbcTabbedPane1.gridy = 1;
         searchPanel.add(searchResultTabPane, gbcTabbedPane1);
 
-        JPanel moviePanel = new JPanel();
-        searchResultTabPane.addTab("Movies", null, moviePanel, null);
-        GridBagLayout gblPanel3 = new GridBagLayout();
-        gblPanel3.columnWidths = new int[] {0, 0};
-        gblPanel3.rowHeights = new int[] {0, 0};
-        gblPanel3.columnWeights = new double[] {1.0, Double.MIN_VALUE};
-        gblPanel3.rowWeights = new double[] {1.0, Double.MIN_VALUE};
-        moviePanel.setLayout(gblPanel3);
-
-        tableMovie = new JTable();
-        tableMovie.setToolTipText("");
-        tableMovie.setSelectionMode(
-                javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        tableMovie.getTableHeader().setReorderingAllowed(false);
-        tableMovie.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(final MouseEvent e) {
-                movieClicked();
-            }
-        });
-        GridBagConstraints gbcTable = new GridBagConstraints();
-        gbcTable.ipady = 90;
-        gbcTable.fill = GridBagConstraints.BOTH;
-        gbcTable.gridx = 0;
-        gbcTable.gridy = 0;
-        moviePanel.add(new JScrollPane(tableMovie), gbcTable);
-
-        JPanel peoplePanel = new JPanel();
-        searchResultTabPane.addTab("People", null, peoplePanel, null);
-        GridBagLayout gblPanel4 = new GridBagLayout();
-        gblPanel4.columnWidths = new int[] {0, 0};
-        gblPanel4.rowHeights = new int[] {0, 0};
-        gblPanel4.columnWeights = new double[] {1.0, Double.MIN_VALUE};
-        gblPanel4.rowWeights = new double[] {1.0, Double.MIN_VALUE};
-        peoplePanel.setLayout(gblPanel4);
-
-        tablePeople = new JTable();
-        tablePeople.setToolTipText("");
-        tablePeople.setSelectionMode(
-                javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        tablePeople.getTableHeader().setReorderingAllowed(false);
-        tablePeople.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(final MouseEvent e) {
-                personClicked();
-            }
-        });
-        GridBagConstraints gbcTable1 = new GridBagConstraints();
-        gbcTable1.fill = GridBagConstraints.BOTH;
-        gbcTable1.gridx = 0;
-        gbcTable1.gridy = 0;
-        peoplePanel.add(new JScrollPane(tablePeople), gbcTable1);
-
-        JPanel tvPanel = new JPanel();
-        searchResultTabPane.addTab("TV Shows", null, tvPanel, null);
-        GridBagLayout gblPanel5 = new GridBagLayout();
-        gblPanel5.columnWidths = new int[] {0, 0};
-        gblPanel5.rowHeights = new int[] {0, 0};
-        gblPanel5.columnWeights = new double[] {1.0, Double.MIN_VALUE};
-        gblPanel5.rowWeights = new double[] {1.0, Double.MIN_VALUE};
-        tvPanel.setLayout(gblPanel5);
-
-        tableTv = new JTable();
-        tableTv.setToolTipText("");
-        tableTv.setSelectionMode(
-                javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        tableTv.getTableHeader().setReorderingAllowed(false);
-        tableTv.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(final MouseEvent e) {
-                tvClicked();
-            }
-        });
-        GridBagConstraints gbcTable2 = new GridBagConstraints();
-        gbcTable2.fill = GridBagConstraints.BOTH;
-        gbcTable2.gridx = 0;
-        gbcTable2.gridy = 0;
-        tvPanel.add(new JScrollPane(tableTv), gbcTable2);
+        setupSearchMovieTab(searchResultTabPane);
+        setupSearchPeopleTab(searchResultTabPane);
+        setupSearchTvTab(searchResultTabPane);
 
         JPanel resultClickedPanel = new JPanel();
         resultClickedPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
@@ -341,7 +288,112 @@ public class TmdbApp {
         gbcLblTitle.gridx = 0;
         gbcLblTitle.gridy = 0;
         resultClickedPanel.add(resultLabel, gbcLblTitle);
+    }
 
+    /**
+     * Sets up the movie tab in the search tab.
+     * @param searchResultTabPane
+     *            tab to but the movie search results.
+     */
+    private void setupSearchMovieTab(final JTabbedPane searchResultTabPane) {
+        JPanel moviePanel = new JPanel();
+        searchResultTabPane.addTab("Movies", null, moviePanel, null);
+        GridBagLayout gblPanel3 = new GridBagLayout();
+        gblPanel3.columnWidths = new int[] {0, 0};
+        gblPanel3.rowHeights = new int[] {0, 0};
+        gblPanel3.columnWeights = new double[] {1.0, Double.MIN_VALUE};
+        gblPanel3.rowWeights = new double[] {1.0, Double.MIN_VALUE};
+        moviePanel.setLayout(gblPanel3);
+
+        tableMovie = new JTable();
+        tableMovie.setToolTipText("");
+        tableMovie.setSelectionMode(
+                javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tableMovie.getTableHeader().setReorderingAllowed(false);
+        tableMovie.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(final MouseEvent e) {
+                movieClicked();
+            }
+        });
+        GridBagConstraints gbcTable = new GridBagConstraints();
+        gbcTable.ipady = 90;
+        gbcTable.fill = GridBagConstraints.BOTH;
+        gbcTable.gridx = 0;
+        gbcTable.gridy = 0;
+        moviePanel.add(new JScrollPane(tableMovie), gbcTable);
+
+    }
+
+    /**
+     * Sets up the people tab in the search tab.
+     * @param searchResultTabPane
+     *            tab to but the people search results.
+     */
+    private void setupSearchPeopleTab(final JTabbedPane searchResultTabPane) {
+        JPanel peoplePanel = new JPanel();
+        searchResultTabPane.addTab("People", null, peoplePanel, null);
+        GridBagLayout gblPanel4 = new GridBagLayout();
+        gblPanel4.columnWidths = new int[] {0, 0};
+        gblPanel4.rowHeights = new int[] {0, 0};
+        gblPanel4.columnWeights = new double[] {1.0, Double.MIN_VALUE};
+        gblPanel4.rowWeights = new double[] {1.0, Double.MIN_VALUE};
+        peoplePanel.setLayout(gblPanel4);
+
+        tablePeople = new JTable();
+        tablePeople.setToolTipText("");
+        tablePeople.setSelectionMode(
+                javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tablePeople.getTableHeader().setReorderingAllowed(false);
+        tablePeople.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(final MouseEvent e) {
+                personClicked();
+            }
+        });
+        GridBagConstraints gbcTable1 = new GridBagConstraints();
+        gbcTable1.fill = GridBagConstraints.BOTH;
+        gbcTable1.gridx = 0;
+        gbcTable1.gridy = 0;
+        peoplePanel.add(new JScrollPane(tablePeople), gbcTable1);
+    }
+
+    /**
+     * Sets up the tv tab in the search tab.
+     * @param searchResultTabPane
+     *            tab to but the tv search results.
+     */
+    private void setupSearchTvTab(final JTabbedPane searchResultTabPane) {
+        JPanel tvPanel = new JPanel();
+        searchResultTabPane.addTab("TV Shows", null, tvPanel, null);
+        GridBagLayout gblPanel5 = new GridBagLayout();
+        gblPanel5.columnWidths = new int[] {0, 0};
+        gblPanel5.rowHeights = new int[] {0, 0};
+        gblPanel5.columnWeights = new double[] {1.0, Double.MIN_VALUE};
+        gblPanel5.rowWeights = new double[] {1.0, Double.MIN_VALUE};
+        tvPanel.setLayout(gblPanel5);
+
+        tableTv = new JTable();
+        tableTv.setToolTipText("");
+        tableTv.setSelectionMode(
+                javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tableTv.getTableHeader().setReorderingAllowed(false);
+        tableTv.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(final MouseEvent e) {
+                tvClicked();
+            }
+        });
+        GridBagConstraints gbcTable2 = new GridBagConstraints();
+        gbcTable2.fill = GridBagConstraints.BOTH;
+        gbcTable2.gridx = 0;
+        gbcTable2.gridy = 0;
+        tvPanel.add(new JScrollPane(tableTv), gbcTable2);
+    }
+
+    /**
+     * Sets up the Login tab.
+     * @param tabbedPane
+     *            the tabbedPane to add the Login tab to.
+     */
+    private void setupLoginTab(final JTabbedPane tabbedPane) {
         JPanel loginPanel = new JPanel();
         loginPanel.setForeground(Color.LIGHT_GRAY);
         loginPanel.setBorder(new EmptyBorder(2, 4, 2, 4));
@@ -399,13 +451,15 @@ public class TmdbApp {
         loginPanel.add(loginButton, gbcBtnNewButton);
 
         JButton guestButton = new JButton("Guest Session");
-        GridBagConstraints gbcBtnNewButton_2 = new GridBagConstraints();
-        gbcBtnNewButton_2.gridwidth = 2;
-        gbcBtnNewButton_2.insets = new Insets(0, 0, 0, 5);
-        gbcBtnNewButton_2.gridx = 0;
-        gbcBtnNewButton_2.gridy = 3;
-        loginPanel.add(guestButton, gbcBtnNewButton_2);
+        GridBagConstraints gbcBtnNewButton2 = new GridBagConstraints();
+        gbcBtnNewButton2.gridwidth = 2;
+        gbcBtnNewButton2.insets = new Insets(0, 0, 0, 5);
+        gbcBtnNewButton2.gridx = 0;
+        gbcBtnNewButton2.gridy = 3;
+        loginPanel.add(guestButton, gbcBtnNewButton2);
     }
+
+//Check:ON: MagicNumber
 
     /**
      * Reacts to actions from searching.
