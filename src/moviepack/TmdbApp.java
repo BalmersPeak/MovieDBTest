@@ -11,7 +11,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -26,6 +30,8 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import info.movito.themoviedbapi.TmdbApi;
+import info.movito.themoviedbapi.model.MovieDb;
+import info.movito.themoviedbapi.model.people.PersonPeople;
 
 /**
  * GUI for the tmdbApi.
@@ -121,6 +127,16 @@ public class TmdbApp {
     private JLabel resultLabel;
 
     /**
+     * Label for clicked on searched results picture.
+     */
+    private JLabel resultsPicLabel;
+
+    /**
+     * Url for pictures of results.
+     */
+    private URL resultsUrl = null;
+
+    /**
      * Launch the application.
      *
      * @param args
@@ -145,7 +161,7 @@ public class TmdbApp {
      * Create the application.
      */
     public TmdbApp() {
-        initialize();
+        
 
         // User Defined
 
@@ -158,6 +174,8 @@ public class TmdbApp {
 
         search = new Search(tmdbApi, movieModel, peopleModel, tvModel);
         keyword = new KeywordMatch(tmdbApi, keywordModel);
+        
+        initialize();
 
         tableMovie.setModel(movieModel);
         tablePeople.setModel(peopleModel);
@@ -197,64 +215,113 @@ public class TmdbApp {
         gblPanel1.columnWidths = new int[] {0, 0, 0};
         gblPanel1.rowHeights = new int[] {0, 0, 0, 0, 0};
         gblPanel1.columnWeights = new double[] {1.0, 1.0, Double.MIN_VALUE};
-        gblPanel1.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+        gblPanel1.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0,
+                Double.MIN_VALUE};
         homePanel.setLayout(gblPanel1);
-        
-                JLabel lblNewReleases = new JLabel("New Releases");
-                lblNewReleases.setFont(new Font("Tahoma", Font.PLAIN, 18));
-                lblNewReleases.setHorizontalAlignment(SwingConstants.CENTER);
-                GridBagConstraints gbcLblNewReleases = new GridBagConstraints();
-                gbcLblNewReleases.gridwidth = 2;
-                gbcLblNewReleases.insets = new Insets(0, 0, 5, 0);
-                gbcLblNewReleases.gridx = 0;
-                gbcLblNewReleases.gridy = 0;
-                homePanel.add(lblNewReleases, gbcLblNewReleases);
-                
-                
-                ImageIcon icon = new ImageIcon(movieURL1); 
-                JLabel thumb = new JLabel();
-                thumb.setIcon(icon);
-                
-                JLabel lblPic = new JLabel("pic1");
-                GridBagConstraints gbc_lblPic = new GridBagConstraints();
-                gbc_lblPic.insets = new Insets(0, 0, 5, 5);
-                gbc_lblPic.gridx = 0;
-                gbc_lblPic.gridy = 1;
-                homePanel.add(lblPic, gbc_lblPic);
-                
-                JLabel lblPic_1 = new JLabel("pic2");
-                GridBagConstraints gbc_lblPic_1 = new GridBagConstraints();
-                gbc_lblPic_1.insets = new Insets(0, 0, 5, 0);
-                gbc_lblPic_1.gridx = 1;
-                gbc_lblPic_1.gridy = 1;
-                homePanel.add(lblPic_1, gbc_lblPic_1);
-                
-                JLabel lblPic_2 = new JLabel("pic3");
-                GridBagConstraints gbc_lblPic_2 = new GridBagConstraints();
-                gbc_lblPic_2.insets = new Insets(0, 0, 5, 5);
-                gbc_lblPic_2.gridx = 0;
-                gbc_lblPic_2.gridy = 2;
-                homePanel.add(lblPic_2, gbc_lblPic_2);
-                
-                JLabel lblPic_3 = new JLabel("pic4");
-                GridBagConstraints gbc_lblPic_3 = new GridBagConstraints();
-                gbc_lblPic_3.insets = new Insets(0, 0, 5, 0);
-                gbc_lblPic_3.gridx = 1;
-                gbc_lblPic_3.gridy = 2;
-                homePanel.add(lblPic_3, gbc_lblPic_3);
-                
-                JLabel lblPic_4 = new JLabel("pic5");
-                GridBagConstraints gbc_lblPic_4 = new GridBagConstraints();
-                gbc_lblPic_4.insets = new Insets(0, 0, 0, 5);
-                gbc_lblPic_4.gridx = 0;
-                gbc_lblPic_4.gridy = 3;
-                homePanel.add(lblPic_4, gbc_lblPic_4);
-                
-                JLabel lblPic_5 = new JLabel("pic6");
-                GridBagConstraints gbc_lblPic_5 = new GridBagConstraints();
-                gbc_lblPic_5.gridx = 1;
-                gbc_lblPic_5.gridy = 3;
-                homePanel.add(lblPic_5, gbc_lblPic_5);
+
+        JLabel lblNewReleases = new JLabel("New Releases");
+        lblNewReleases.setFont(new Font("Tahoma", Font.PLAIN, 18));
+        lblNewReleases.setHorizontalAlignment(SwingConstants.CENTER);
+        GridBagConstraints gbcLblNewReleases = new GridBagConstraints();
+        gbcLblNewReleases.gridwidth = 3;
+        gbcLblNewReleases.insets = new Insets(0, 0, 5, 0);
+        gbcLblNewReleases.gridx = 0;
+        gbcLblNewReleases.gridy = 0;
+        homePanel.add(lblNewReleases, gbcLblNewReleases);
+
+        search.getPopularMovies();
+
+        ArrayList<MovieDb> movieList = new ArrayList<MovieDb>(
+                search.getPopularMovies());
+
+        JLabel lblPic = new JLabel();
+        try {
+            URL url = new URL(search.getMultiImageUrl(movieList.get(0)));
+            ImageIcon icon = new ImageIcon(url);
+            lblPic.setIcon(icon);
+        } catch (IOException e) {
+
+        }
+
+        GridBagConstraints gbc_lblPic = new GridBagConstraints();
+        gbc_lblPic.fill = SwingConstants.CENTER;
+        gbc_lblPic.insets = new Insets(0, 0, 5, 5);
+        gbc_lblPic.gridx = 0;
+        gbc_lblPic.gridy = 1;
+        homePanel.add(lblPic, gbc_lblPic);
+
+        JLabel lblPic_1 = new JLabel();
+        try {
+            URL url = new URL(search.getMultiImageUrl(movieList.get(1)));
+            ImageIcon icon = new ImageIcon(url);
+            lblPic_1.setIcon(icon);
+        } catch (IOException e) {
+
+        }
+
+        GridBagConstraints gbc_lblPic_1 = new GridBagConstraints();
+        gbc_lblPic_1.fill = SwingConstants.CENTER;
+        gbc_lblPic_1.insets = new Insets(0, 0, 5, 5);
+        gbc_lblPic_1.gridx = 1;
+        gbc_lblPic_1.gridy = 1;
+        homePanel.add(lblPic_1, gbc_lblPic_1);
+
+        JLabel lblPic_2 = new JLabel();
+        try {
+            URL url = new URL(search.getMultiImageUrl(movieList.get(2)));
+            ImageIcon icon = new ImageIcon(url);
+            lblPic_2.setIcon(icon);
+        } catch (IOException e) {
+
+        }
+
+        GridBagConstraints gbc_lblPic_2 = new GridBagConstraints();
+        gbc_lblPic_2.insets = new Insets(0, 0, 5, 5);
+        gbc_lblPic_2.gridx = 2;
+        gbc_lblPic_2.gridy = 1;
+        homePanel.add(lblPic_2, gbc_lblPic_2);
+
+        JLabel lblPic_3 = new JLabel();
+        try {
+            URL url = new URL(search.getMultiImageUrl(movieList.get(3)));
+            ImageIcon icon = new ImageIcon(url);
+            lblPic_3.setIcon(icon);
+        } catch (IOException e) {
+
+        }
+        GridBagConstraints gbc_lblPic_3 = new GridBagConstraints();
+        gbc_lblPic_3.insets = new Insets(0, 0, 5, 5);
+        gbc_lblPic_3.gridx = 0;
+        gbc_lblPic_3.gridy = 2;
+        homePanel.add(lblPic_3, gbc_lblPic_3);
+
+        JLabel lblPic_4 = new JLabel();
+        try {
+            URL url = new URL(search.getMultiImageUrl(movieList.get(4)));
+            ImageIcon icon = new ImageIcon(url);
+            lblPic_4.setIcon(icon);
+        } catch (IOException e) {
+
+        }
+        GridBagConstraints gbc_lblPic_4 = new GridBagConstraints();
+        gbc_lblPic_4.insets = new Insets(0, 0, 5, 5);
+        gbc_lblPic_4.gridx = 1;
+        gbc_lblPic_4.gridy = 2;
+        homePanel.add(lblPic_4, gbc_lblPic_4);
+
+        JLabel lblPic_5 = new JLabel();
+        try {
+            URL url = new URL(search.getMultiImageUrl(movieList.get(5)));
+            ImageIcon icon = new ImageIcon(url);
+            lblPic_5.setIcon(icon);
+        } catch (IOException e) {
+
+        }
+        GridBagConstraints gbc_lblPic_5 = new GridBagConstraints();
+        gbc_lblPic_5.insets = new Insets(0, 0, 5, 5);
+        gbc_lblPic_5.gridx = 2;
+        gbc_lblPic_5.gridy = 2;
+        homePanel.add(lblPic_5, gbc_lblPic_5);
     }
 
     /**
@@ -339,13 +406,24 @@ public class TmdbApp {
                 Double.MIN_VALUE};
         resultClickedPanel.setLayout(gblPanel6);
 
+        resultsPicLabel = new JLabel();
+        resultsPicLabel.setVisible(false);
+
         resultLabel = new JLabel();
         GridBagConstraints gbcLblTitle = new GridBagConstraints();
+
+        gbcLblTitle.anchor = GridBagConstraints.EAST;
+        gbcLblTitle.insets = new Insets(0, 0, 5, 5);
+        gbcLblTitle.gridx = 1;
+        gbcLblTitle.gridy = 0;
+        resultClickedPanel.add(resultsPicLabel, gbcLblTitle);
+
         gbcLblTitle.anchor = GridBagConstraints.WEST;
         gbcLblTitle.insets = new Insets(0, 0, 5, 5);
         gbcLblTitle.gridx = 0;
         gbcLblTitle.gridy = 0;
         resultClickedPanel.add(resultLabel, gbcLblTitle);
+
     }
 
     /**
@@ -577,6 +655,15 @@ public class TmdbApp {
                 movieModel.get(tableMovie.getSelectedRow()).getId());
         resultLabel.setText(resultStr);
 
+        try {
+            resultsUrl = new URL(search.getMultiImageUrl(
+                    movieModel.get(tableMovie.getSelectedRow())));
+        } catch (IOException e) {
+
+        }
+        ImageIcon icon = new ImageIcon(resultsUrl);
+        resultsPicLabel.setVisible(true);
+        resultsPicLabel.setIcon(icon);
     }
 
     /**
@@ -586,6 +673,17 @@ public class TmdbApp {
         String resultStr = search.getPersonResults(
                 peopleModel.get(tablePeople.getSelectedRow()).getId());
         resultLabel.setText(resultStr);
+
+        PersonPeople p = search
+                .getPersonPeople(peopleModel.get(tablePeople.getSelectedRow()));
+        try {
+            resultsUrl = new URL(search.getMultiImageUrl(p));
+        } catch (IOException e) {
+
+        }
+        ImageIcon icon = new ImageIcon(resultsUrl);
+        resultsPicLabel.setVisible(true);
+        resultsPicLabel.setIcon(icon);
     }
 
     /**
@@ -595,6 +693,16 @@ public class TmdbApp {
         String resultStr = search
                 .getTvResults(tvModel.get(tableTv.getSelectedRow()).getId());
         resultLabel.setText(resultStr);
+
+        try {
+            resultsUrl = new URL(search
+                    .getMultiImageUrl(tvModel.get(tableTv.getSelectedRow())));
+        } catch (IOException e) {
+
+        }
+        ImageIcon icon = new ImageIcon(resultsUrl);
+        resultsPicLabel.setVisible(true);
+        resultsPicLabel.setIcon(icon);
     }
 
     /**
@@ -604,5 +712,15 @@ public class TmdbApp {
         String resultStr = search.getMovieResults(
                 keywordModel.get(tableKeyword.getSelectedRow()).getId());
         resultLabel.setText(resultStr);
+
+        try {
+            resultsUrl = new URL(search.getMultiImageUrl(
+                    keywordModel.get(tableKeyword.getSelectedRow())));
+        } catch (IOException e) {
+
+        }
+        ImageIcon icon = new ImageIcon(resultsUrl);
+        resultsPicLabel.setVisible(true);
+        resultsPicLabel.setIcon(icon);
     }
 }

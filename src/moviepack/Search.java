@@ -1,5 +1,6 @@
 package moviepack;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -162,37 +163,57 @@ public class Search {
 
     /**
      * Returns the url of the image given database object.
-     * @param dbObject the movie, person, or tv show in question.
+     * @param dbObject
+     *            the movie, person, or tv show in question.
      * @return the url of the image of the object.
      */
     public final String getMultiImageUrl(final Multi dbObject) {
         String urlString = "https://image.tmdb.org/t/p/w185";
         switch (dbObject.getMediaType()) {
-            case MOVIE:
-                MovieDb movie = (MovieDb) dbObject;
-                urlString += movie.getPosterPath();
-                break;
-            case PERSON:
-                Person person = (Person) dbObject;
-                urlString += person.getProfilePath();
-                break;
-            case TV_SERIES:
-                TvSeries tv = (TvSeries) dbObject;
-                urlString += tv.getPosterPath();
-                break;
-            default:
-                return "";
+        case MOVIE:
+            MovieDb movie = (MovieDb) dbObject;
+            urlString += movie.getPosterPath();
+            break;
+        case PERSON:
+            Person person = (Person) dbObject;
+            urlString += person.getProfilePath();
+            break;
+        case TV_SERIES:
+            TvSeries tv = (TvSeries) dbObject;
+            urlString += tv.getPosterPath();
+            break;
+        default:
+            return "";
         }
         return urlString;
+    }
+
+    public final ArrayList<MovieDb> getPopularMovies() {
+
+        ArrayList<MovieDb> moviesList = new ArrayList<MovieDb>();
+
+        MovieResultsPage moviesPage = movies.getPopularMovies("en", 1);
+
+        Iterator<MovieDb> moviesIt = moviesPage.iterator();
+
+        while (moviesIt.hasNext()) {
+            moviesList.add(moviesIt.next());
+        }
+        return moviesList;
+    }
+
+    public final PersonPeople getPersonPeople(final Person p) {
+        return people.getPersonInfo(p.getId());
     }
 
     /**
      * Returns a string to be used in a JLabel that contains useful movie
      * information.
      *
-     * @param movieId The movieId to get info of.
+     * @param movieId
+     *            The movieId to get info of.
      * @return string to be used in a JLabel that contains useful movie
-     * information.
+     *         information.
      */
     public final String getMovieResults(final int movieId) {
 
@@ -250,9 +271,10 @@ public class Search {
      * Returns a string to be used in a JLabel that contains useful person
      * information.
      *
-     * @param personId The personId to get info of.
+     * @param personId
+     *            The personId to get info of.
      * @return string to be used in a JLabel that contains useful person
-     * information.
+     *         information.
      */
     public final String getPersonResults(final int personId) {
 
@@ -289,9 +311,10 @@ public class Search {
      * Returns a string to be used in a JLabel that contains useful tv
      * information.
      *
-     * @param tvId The tvId to get info of.
+     * @param tvId
+     *            The tvId to get info of.
      * @return string to be used in a JLabel that contains useful tv
-     * information.
+     *         information.
      */
     public final String getTvResults(final int tvId) {
 
