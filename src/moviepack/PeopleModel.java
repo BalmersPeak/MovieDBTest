@@ -102,17 +102,6 @@ public class PeopleModel extends AbstractTableModel {
         }
     }
 
-    /**
-     * Adds a person to the table at the specified index.
-     * @param index where to add the person.
-     * @param p the person to be added.
-     */
-    public final void add(final int index, final Person p) {
-        if (p != null) {
-            people.add(index, p);
-            fireTableRowsInserted(index, index);
-        }
-    }
 
     /**
      * Clears the table.

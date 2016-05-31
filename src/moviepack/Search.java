@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.google.common.net.MediaType;
-
 import info.movito.themoviedbapi.TmdbApi;
 import info.movito.themoviedbapi.TmdbMovies;
 import info.movito.themoviedbapi.TmdbMovies.MovieMethod;
@@ -187,7 +185,10 @@ public class Search {
         }
         return urlString;
     }
-
+    /**
+     * Returns a list of the popular movies.
+     * @return a list of popular movies.
+     */
     public final ArrayList<MovieDb> getPopularMovies() {
 
         ArrayList<MovieDb> moviesList = new ArrayList<MovieDb>();
@@ -202,6 +203,11 @@ public class Search {
         return moviesList;
     }
 
+    /**
+     * Turns person into personPeople.
+     * @param p Person in question.
+     * @return personPeople from person.
+     */
     public final PersonPeople getPersonPeople(final Person p) {
         return people.getPersonInfo(p.getId());
     }
@@ -222,10 +228,8 @@ public class Search {
         String resultStr = "<html>";
 
         // Gets movie Title
-        if (movie.getTitle() != "") {
-            resultStr += "Title: " + movie.getTitle();
-        }
-
+        resultStr += "Title: " + movie.getTitle();
+        
         // Gets movie date
         if (movie.getReleaseDate() != "") {
             resultStr += "<br>Release Date: " + movie.getReleaseDate();
@@ -283,9 +287,7 @@ public class Search {
         String resultStr = "<html>";
 
         // get person name
-        if (person.getName() != "") {
-            resultStr += "Name: " + person.getName();
-        }
+        resultStr += "Name: " + person.getName();
 
         // get person birthday
         if (person.getBirthday() != "") {
@@ -323,9 +325,7 @@ public class Search {
         String resultStr = "<html>";
 
         // get tv name
-        if (tv.getOriginalName() != "") {
-            resultStr += "Title: " + tv.getOriginalName();
-        }
+        resultStr += "Title: " + tv.getOriginalName();
 
         // get tv first date
         if (tv.getFirstAirDate() != null) {

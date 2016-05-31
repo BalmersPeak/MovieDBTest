@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry excluding="moviepack/Test.java" kind="src" path="src"/>
+	<classpathentry kind="src" path="tests"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="jars/commons-codec-1.10.jar"/>
 	<classpathentry kind="lib" path="jars/commons-lang3-3.4.jar"/>
@@ -11,5 +12,6 @@
 	<classpathentry kind="lib" path="jars/slf4j-api-1.7.21.jar"/>
 	<classpathentry kind="lib" path="jars/slf4j-simple-1.7.21.jar"/>
 	<classpathentry kind="lib" path="jars/themoviedbapi-1.3.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

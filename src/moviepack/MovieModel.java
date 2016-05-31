@@ -108,17 +108,6 @@ public class MovieModel extends AbstractTableModel {
         }
     }
 
-    /**
-     * Adds a movie to the table at the specified index.
-     * @param index where to add the movie.
-     * @param m the movie to be added.
-     */
-    public final void add(final int index, final MovieDb m) {
-        if (m != null) {
-            movies.add(index, m);
-            fireTableRowsInserted(index, index);
-        }
-    }
 
     /**
      * Clears the table.

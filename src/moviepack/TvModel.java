@@ -105,18 +105,6 @@ public class TvModel extends AbstractTableModel {
     }
 
     /**
-     * Adds a tv series to the table at the specified index.
-     * @param index where to add the tv series.
-     * @param t the tv series to be added.
-     */
-    public final void add(final int index, final TvSeries t) {
-        if (t != null) {
-            tvseries.add(index, t);
-            fireTableRowsInserted(index, index);
-        }
-    }
-
-    /**
      * Clears the table.
      */
     public final void clear() {

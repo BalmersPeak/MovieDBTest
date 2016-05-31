@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -155,13 +154,13 @@ public class TmdbApp {
         });
     }
 
-    // Check:OFF: MagicNumber
+// Check:OFF: MagicNumber
 
     /**
      * Create the application.
      */
     public TmdbApp() {
-        
+
 
         // User Defined
 
@@ -174,7 +173,7 @@ public class TmdbApp {
 
         search = new Search(tmdbApi, movieModel, peopleModel, tvModel);
         keyword = new KeywordMatch(tmdbApi, keywordModel);
-        
+
         initialize();
 
         tableMovie.setModel(movieModel);
@@ -630,7 +629,7 @@ public class TmdbApp {
         loginPanel.add(guestButton, gbcBtnNewButton2);
     }
 
-    // Check:ON: MagicNumber
+//Check:ON: MagicNumber
 
     /**
      * Reacts to actions from searching.
