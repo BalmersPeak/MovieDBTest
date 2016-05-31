@@ -189,7 +189,7 @@ public class TmdbApp {
     private void initialize() {
         frmL = new JFrame();
         frmL.setTitle("GUI");
-        frmL.setBounds(100, 100, 825, 640);
+        frmL.setBounds(100, 100, 827, 645);
         frmL.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frmL.getContentPane().setLayout(new BorderLayout(0, 0));
 
@@ -213,9 +213,9 @@ public class TmdbApp {
         tabbedPane.addTab("Home", null, homePanel, null);
         GridBagLayout gblPanel1 = new GridBagLayout();
         gblPanel1.columnWidths = new int[] {0, 0, 0};
-        gblPanel1.rowHeights = new int[] {0, 0, 0, 0, 0};
-        gblPanel1.columnWeights = new double[] {1.0, 1.0, Double.MIN_VALUE};
-        gblPanel1.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0,
+        gblPanel1.rowHeights = new int[] {0, 0, 0, 0};
+        gblPanel1.columnWeights = new double[] {0.0, 0.0, 0.0};
+        gblPanel1.rowWeights = new double[] {0.0, 0.0, 0.0,
                 Double.MIN_VALUE};
         homePanel.setLayout(gblPanel1);
 
@@ -223,8 +223,8 @@ public class TmdbApp {
         lblNewReleases.setFont(new Font("Tahoma", Font.PLAIN, 18));
         lblNewReleases.setHorizontalAlignment(SwingConstants.CENTER);
         GridBagConstraints gbcLblNewReleases = new GridBagConstraints();
-        gbcLblNewReleases.gridwidth = 3;
         gbcLblNewReleases.insets = new Insets(0, 0, 5, 0);
+        gbcLblNewReleases.gridwidth = 3;
         gbcLblNewReleases.gridx = 0;
         gbcLblNewReleases.gridy = 0;
         homePanel.add(lblNewReleases, gbcLblNewReleases);
@@ -276,7 +276,7 @@ public class TmdbApp {
         }
 
         GridBagConstraints gbc_lblPic_2 = new GridBagConstraints();
-        gbc_lblPic_2.insets = new Insets(0, 0, 5, 5);
+        gbc_lblPic_2.insets = new Insets(0, 0, 5, 0);
         gbc_lblPic_2.gridx = 2;
         gbc_lblPic_2.gridy = 1;
         homePanel.add(lblPic_2, gbc_lblPic_2);
@@ -290,7 +290,7 @@ public class TmdbApp {
 
         }
         GridBagConstraints gbc_lblPic_3 = new GridBagConstraints();
-        gbc_lblPic_3.insets = new Insets(0, 0, 5, 5);
+        gbc_lblPic_3.insets = new Insets(0, 0, 0, 5);
         gbc_lblPic_3.gridx = 0;
         gbc_lblPic_3.gridy = 2;
         homePanel.add(lblPic_3, gbc_lblPic_3);
@@ -304,7 +304,7 @@ public class TmdbApp {
 
         }
         GridBagConstraints gbc_lblPic_4 = new GridBagConstraints();
-        gbc_lblPic_4.insets = new Insets(0, 0, 5, 5);
+        gbc_lblPic_4.insets = new Insets(0, 0, 0, 5);
         gbc_lblPic_4.gridx = 1;
         gbc_lblPic_4.gridy = 2;
         homePanel.add(lblPic_4, gbc_lblPic_4);
@@ -318,7 +318,6 @@ public class TmdbApp {
 
         }
         GridBagConstraints gbc_lblPic_5 = new GridBagConstraints();
-        gbc_lblPic_5.insets = new Insets(0, 0, 5, 5);
         gbc_lblPic_5.gridx = 2;
         gbc_lblPic_5.gridy = 2;
         homePanel.add(lblPic_5, gbc_lblPic_5);
@@ -417,12 +416,14 @@ public class TmdbApp {
         gbcLblTitle.gridx = 1;
         gbcLblTitle.gridy = 0;
         resultClickedPanel.add(resultsPicLabel, gbcLblTitle);
+        
+        GridBagConstraints gbcLblTitle2 = new GridBagConstraints();
 
-        gbcLblTitle.anchor = GridBagConstraints.WEST;
-        gbcLblTitle.insets = new Insets(0, 0, 5, 5);
-        gbcLblTitle.gridx = 0;
-        gbcLblTitle.gridy = 0;
-        resultClickedPanel.add(resultLabel, gbcLblTitle);
+        gbcLblTitle2.anchor = GridBagConstraints.WEST;
+        gbcLblTitle2.insets = new Insets(0, 0, 5, 5);
+        gbcLblTitle2.gridx = 0;
+        gbcLblTitle2.gridy = 0;
+        resultClickedPanel.add(resultLabel, gbcLblTitle2);
 
     }
 
