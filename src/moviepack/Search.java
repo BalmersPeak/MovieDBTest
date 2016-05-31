@@ -3,6 +3,8 @@ package moviepack;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.common.net.MediaType;
+
 import info.movito.themoviedbapi.TmdbApi;
 import info.movito.themoviedbapi.TmdbMovies;
 import info.movito.themoviedbapi.TmdbMovies.MovieMethod;
@@ -13,6 +15,7 @@ import info.movito.themoviedbapi.TmdbTV;
 import info.movito.themoviedbapi.TvResultsPage;
 import info.movito.themoviedbapi.model.Genre;
 import info.movito.themoviedbapi.model.MovieDb;
+import info.movito.themoviedbapi.model.Multi;
 import info.movito.themoviedbapi.model.core.MovieResultsPage;
 import info.movito.themoviedbapi.model.people.Person;
 import info.movito.themoviedbapi.model.people.PersonCrew;
@@ -155,6 +158,32 @@ public class Search {
 
         }
 
+    }
+
+    /**
+     * Returns the url of the image given database object.
+     * @param dbObject the movie, person, or tv show in question.
+     * @return the url of the image of the object.
+     */
+    public final String getMultiImageUrl(final Multi dbObject) {
+        String urlString = "https://image.tmdb.org/t/p/w185";
+        switch (dbObject.getMediaType()) {
+            case MOVIE:
+                MovieDb movie = (MovieDb) dbObject;
+                urlString += movie.getPosterPath();
+                break;
+            case PERSON:
+                Person person = (Person) dbObject;
+                urlString += person.getProfilePath();
+                break;
+            case TV_SERIES:
+                TvSeries tv = (TvSeries) dbObject;
+                urlString += tv.getPosterPath();
+                break;
+            default:
+                return "";
+        }
+        return urlString;
     }
 
     /**
