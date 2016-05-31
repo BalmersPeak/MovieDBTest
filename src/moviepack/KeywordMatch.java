@@ -16,13 +16,35 @@ import info.movito.themoviedbapi.model.MovieDb;
 import info.movito.themoviedbapi.model.core.MovieResultsPage;
 import info.movito.themoviedbapi.model.keywords.Keyword;
 
+/** Keyword Match and GUI results.
+ * This is the algorithm for the keyword matching
+ * Displays best matches for up to four keywords
+ *
+ * @author Janelle Zuccaro
+ */
+
 public class KeywordMatch {
 
-    TmdbSearch search;
-    TmdbKeywords TmdbKeyword;
+     /** Access to the search function of the API.
+     *
+     */
+    private TmdbSearch search;
 
-    MovieModel keywordModel;
+    /** Access to the keyword list and relationships of API.
+     *
+     */
+    private TmdbKeywords TmdbKeyword;
 
+    /**Creates a display model for the GUI.
+     *
+     */
+    private MovieModel keywordModel;
+
+    /**
+     * Initializes keywords from database.
+     * @param tmdbApi Grants access to API information
+     * @param theKeywordModel Creates a model for keywords in GUI.
+     */
     public KeywordMatch(final TmdbApi tmdbApi,
             final MovieModel theKeywordModel) {
 
@@ -33,7 +55,11 @@ public class KeywordMatch {
 
     }
 
-    public void searchKeyword(String keywords) {
+    /**
+     * Searches movies that contain the given keyword.
+     * @param keywords User entry of searched keyword.
+     */
+    public final void searchKeyword(final String keywords) {
 
         int i = 0;
         String str = "";
@@ -99,19 +125,19 @@ public class KeywordMatch {
                 } catch (IndexOutOfBoundsException e) {
                     badKeyword = true;
                     break;
-                } catch (Exception e) {
+                } catch (Exception e)     {
                     j++;
                     continue;
                 }
                 break;
             }
-            
-            if(badKeyword){
+
+            if (badKeyword) {
                 break;
             }
-            
+
             // Gets list of movies that return a match for specified keyword
-            // Creates different lists
+            // Creates different lists for each keyword
             if (i == 0) {
                 movielist = results.getResults();
             }
@@ -133,9 +159,6 @@ public class KeywordMatch {
                 ++numofpages;
             }
 
-            // Prints first results
-            // System.out.println(mainkeyword.getName() + ": " +
-            // results.getResults());
 
             // creates a new, complete list, one for each keyword
             // ONE LIST INCLUDING ALL RESULTS so can be searched within each
@@ -144,8 +167,6 @@ public class KeywordMatch {
             if (numofpages >= 2) {
                 for (int k = 2; k <= numofpages; k++) {
                     results = TmdbKeyword.getKeywordMovies(IDstring, "en", k);
-                    // System.out.println("Next:" +results.getResults());
-                    // //should be 7 pages for summer
 
                     if (i == 0) {
                         movielist.addAll(results.getResults());
