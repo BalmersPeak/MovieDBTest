@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -194,29 +195,66 @@ public class TmdbApp {
         tabbedPane.addTab("Home", null, homePanel, null);
         GridBagLayout gblPanel1 = new GridBagLayout();
         gblPanel1.columnWidths = new int[] {0, 0, 0};
-        gblPanel1.rowHeights = new int[] {0, 0, 0};
+        gblPanel1.rowHeights = new int[] {0, 0, 0, 0, 0};
         gblPanel1.columnWeights = new double[] {1.0, 1.0, Double.MIN_VALUE};
-        gblPanel1.rowWeights = new double[] {0.0, 0.0, Double.MIN_VALUE};
+        gblPanel1.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
         homePanel.setLayout(gblPanel1);
-
-        JLabel lblNewReleases = new JLabel("New Releases");
-        lblNewReleases.setFont(new Font("Tahoma", Font.PLAIN, 18));
-        lblNewReleases.setHorizontalAlignment(SwingConstants.CENTER);
-        GridBagConstraints gbcLblNewReleases = new GridBagConstraints();
-        gbcLblNewReleases.fill = GridBagConstraints.HORIZONTAL;
-        gbcLblNewReleases.insets = new Insets(0, 0, 0, 5);
-        gbcLblNewReleases.gridx = 0;
-        gbcLblNewReleases.gridy = 1;
-        homePanel.add(lblNewReleases, gbcLblNewReleases);
-
-        JLabel lblHighestRated = new JLabel("Highest rated");
-        lblHighestRated.setFont(new Font("Tahoma", Font.PLAIN, 18));
-        lblHighestRated.setHorizontalAlignment(SwingConstants.CENTER);
-        GridBagConstraints gbcLblHighestRated = new GridBagConstraints();
-        gbcLblHighestRated.fill = GridBagConstraints.HORIZONTAL;
-        gbcLblHighestRated.gridx = 1;
-        gbcLblHighestRated.gridy = 1;
-        homePanel.add(lblHighestRated, gbcLblHighestRated);
+        
+                JLabel lblNewReleases = new JLabel("New Releases");
+                lblNewReleases.setFont(new Font("Tahoma", Font.PLAIN, 18));
+                lblNewReleases.setHorizontalAlignment(SwingConstants.CENTER);
+                GridBagConstraints gbcLblNewReleases = new GridBagConstraints();
+                gbcLblNewReleases.gridwidth = 2;
+                gbcLblNewReleases.insets = new Insets(0, 0, 5, 0);
+                gbcLblNewReleases.gridx = 0;
+                gbcLblNewReleases.gridy = 0;
+                homePanel.add(lblNewReleases, gbcLblNewReleases);
+                
+                
+                ImageIcon icon = new ImageIcon(movieURL1); 
+                JLabel thumb = new JLabel();
+                thumb.setIcon(icon);
+                
+                JLabel lblPic = new JLabel("pic1");
+                GridBagConstraints gbc_lblPic = new GridBagConstraints();
+                gbc_lblPic.insets = new Insets(0, 0, 5, 5);
+                gbc_lblPic.gridx = 0;
+                gbc_lblPic.gridy = 1;
+                homePanel.add(lblPic, gbc_lblPic);
+                
+                JLabel lblPic_1 = new JLabel("pic2");
+                GridBagConstraints gbc_lblPic_1 = new GridBagConstraints();
+                gbc_lblPic_1.insets = new Insets(0, 0, 5, 0);
+                gbc_lblPic_1.gridx = 1;
+                gbc_lblPic_1.gridy = 1;
+                homePanel.add(lblPic_1, gbc_lblPic_1);
+                
+                JLabel lblPic_2 = new JLabel("pic3");
+                GridBagConstraints gbc_lblPic_2 = new GridBagConstraints();
+                gbc_lblPic_2.insets = new Insets(0, 0, 5, 5);
+                gbc_lblPic_2.gridx = 0;
+                gbc_lblPic_2.gridy = 2;
+                homePanel.add(lblPic_2, gbc_lblPic_2);
+                
+                JLabel lblPic_3 = new JLabel("pic4");
+                GridBagConstraints gbc_lblPic_3 = new GridBagConstraints();
+                gbc_lblPic_3.insets = new Insets(0, 0, 5, 0);
+                gbc_lblPic_3.gridx = 1;
+                gbc_lblPic_3.gridy = 2;
+                homePanel.add(lblPic_3, gbc_lblPic_3);
+                
+                JLabel lblPic_4 = new JLabel("pic5");
+                GridBagConstraints gbc_lblPic_4 = new GridBagConstraints();
+                gbc_lblPic_4.insets = new Insets(0, 0, 0, 5);
+                gbc_lblPic_4.gridx = 0;
+                gbc_lblPic_4.gridy = 3;
+                homePanel.add(lblPic_4, gbc_lblPic_4);
+                
+                JLabel lblPic_5 = new JLabel("pic6");
+                GridBagConstraints gbc_lblPic_5 = new GridBagConstraints();
+                gbc_lblPic_5.gridx = 1;
+                gbc_lblPic_5.gridy = 3;
+                homePanel.add(lblPic_5, gbc_lblPic_5);
     }
 
     /**
