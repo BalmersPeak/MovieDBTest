@@ -187,7 +187,7 @@ public class TmdbApp {
      */
     private void initialize() {
         frmL = new JFrame();
-        frmL.setTitle("GUI");
+        frmL.setTitle("ReelMatch");
         frmL.setBounds(100, 100, 827, 645);
         frmL.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frmL.getContentPane().setLayout(new BorderLayout(0, 0));
