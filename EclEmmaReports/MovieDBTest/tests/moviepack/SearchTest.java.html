@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>SearchTest.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">tests (May 31, 2016 9:50:09 PM)</a> &gt; <a href="../../index.html" class="el_group">MovieDBTest</a> &gt; <a href="../index.html" class="el_bundle">tests</a> &gt; <a href="index.source.html" class="el_package">moviepack</a> &gt; <span class="el_source">SearchTest.java</span></div><h1>SearchTest.java</h1><pre class="source lang-java linenums">package moviepack;
+
+import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import info.movito.themoviedbapi.TmdbApi;
+import info.movito.themoviedbapi.TmdbMovies;
+import info.movito.themoviedbapi.TmdbPeople;
+import info.movito.themoviedbapi.TmdbTV;
+import info.movito.themoviedbapi.model.MovieDb;
+import info.movito.themoviedbapi.model.people.Person;
+import info.movito.themoviedbapi.model.people.PersonPeople;
+import info.movito.themoviedbapi.model.tv.TvSeries;
+
+<span class="fc" id="L19">public class SearchTest {</span>
+
+
+    
+    
+<span class="fc" id="L24">    TmdbApi tmdbApi = new TmdbApi(&quot;811ffa781385ed56e1ec64c193eb93f4&quot;);</span>
+
+<span class="fc" id="L26">    TmdbMovies movie = tmdbApi.getMovies();</span>
+<span class="fc" id="L27">    TmdbPeople people = tmdbApi.getPeople();</span>
+<span class="fc" id="L28">    TmdbTV tv = tmdbApi.getTvSeries();</span>
+    
+<span class="fc" id="L30">    MovieModel movieModel = new MovieModel();</span>
+<span class="fc" id="L31">    PeopleModel peopleModel = new PeopleModel();</span>
+<span class="fc" id="L32">    TvModel tvModel = new TvModel();</span>
+    Search search;
+
+    
+    @Before
+    public void setup() {
+<span class="fc" id="L38">        search = new Search(tmdbApi, movieModel, peopleModel, tvModel);</span>
+<span class="fc" id="L39">    }</span>
+    
+    @Test
+    public void stringSearch() {
+<span class="fc" id="L43">        search.stringSearch(&quot;ryan&quot;);</span>
+<span class="fc" id="L44">        assertEquals(20, movieModel.getRowCount());</span>
+<span class="fc" id="L45">        assertEquals(20, peopleModel.getRowCount());</span>
+<span class="fc" id="L46">        assertEquals(20, tvModel.getRowCount());</span>
+        
+<span class="fc" id="L48">        search.stringSearch(&quot;ryan&quot;);</span>
+<span class="fc" id="L49">        assertEquals(40, movieModel.getRowCount());</span>
+<span class="fc" id="L50">        assertEquals(40, peopleModel.getRowCount());</span>
+<span class="fc" id="L51">        assertEquals(22, tvModel.getRowCount());</span>
+        
+<span class="fc" id="L53">    }</span>
+
+    @Test
+    public void getMultiImageUrl() {
+<span class="fc" id="L57">        MovieDb forbiddenGames = movie.getMovie(5000, &quot;en&quot;);</span>
+<span class="fc" id="L58">        assertEquals(&quot;https://image.tmdb.org/t/p/w185/nhzupVCf3DcqTLdaRSEIaY5KZWc.jpg&quot;, search.getMultiImageUrl(forbiddenGames));</span>
+<span class="fc" id="L59">        PersonPeople norihiroIsoda = people.getPersonInfo(5000);</span>
+<span class="fc" id="L60">        assertEquals(&quot;https://image.tmdb.org/t/p/w185&quot;, search.getMultiImageUrl(norihiroIsoda));</span>
+<span class="fc" id="L61">        TvSeries gameOfThrones = tv.getSeries(1399, &quot;en&quot;);</span>
+<span class="fc" id="L62">        assertEquals(&quot;https://image.tmdb.org/t/p/w185/jIhL6mlT7AblhbHJgEoiBIOUVl1.jpg&quot;, search.getMultiImageUrl(gameOfThrones));</span>
+        
+<span class="fc" id="L64">    }</span>
+    
+    @Test
+    public void getPopularMovies() {
+<span class="fc" id="L68">        ArrayList&lt;MovieDb&gt; movieList = search.getPopularMovies();</span>
+<span class="fc" id="L69">        assertEquals(20, movieList.size());</span>
+<span class="fc" id="L70">    }</span>
+    
+    @Test
+    public void getPersonPeople() {
+<span class="fc" id="L74">        PersonPeople norihiroIsoda = people.getPersonInfo(5000);</span>
+<span class="fc" id="L75">        assertEquals(norihiroIsoda, search.getPersonPeople((Person) norihiroIsoda));</span>
+<span class="fc" id="L76">    }</span>
+    
+    @Test
+    public void getMovieResults() {
+
+<span class="fc" id="L81">        assertTrue(search.getMovieResults(271110).contains(&quot;&lt;html&gt;&quot;));</span>
+<span class="fc" id="L82">        assertTrue(search.getMovieResults(105290).contains(&quot;&lt;html&gt;&quot;));</span>
+<span class="fc" id="L83">    }</span>
+    
+    @Test
+    public void getPersonResults() {
+
+<span class="fc" id="L88">        assertTrue(search.getPersonResults(13848).contains(&quot;&lt;html&gt;&quot;));</span>
+<span class="fc" id="L89">        assertTrue(search.getPersonResults(101616).contains(&quot;&lt;html&gt;&quot;));</span>
+<span class="fc" id="L90">    }</span>
+    
+    @Test
+    public void getTvResults() {
+
+<span class="fc" id="L95">        assertTrue(search.getTvResults(57243).contains(&quot;&lt;html&gt;&quot;));</span>
+<span class="fc" id="L96">        assertTrue(search.getTvResults(44285).contains(&quot;&lt;html&gt;&quot;));</span>
+<span class="fc" id="L97">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>tests (May 31, 2016 9:50:09 PM)</div></body></html>

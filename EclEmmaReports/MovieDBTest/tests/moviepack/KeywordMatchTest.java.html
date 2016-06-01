@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>KeywordMatchTest.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">tests (May 31, 2016 9:50:09 PM)</a> &gt; <a href="../../index.html" class="el_group">MovieDBTest</a> &gt; <a href="../index.html" class="el_bundle">tests</a> &gt; <a href="index.source.html" class="el_package">moviepack</a> &gt; <span class="el_source">KeywordMatchTest.java</span></div><h1>KeywordMatchTest.java</h1><pre class="source lang-java linenums">package moviepack;
+
+import static org.junit.Assert.*;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import info.movito.themoviedbapi.TmdbApi;
+
+<span class="fc" id="L10">public class KeywordMatchTest {</span>
+
+
+<span class="fc" id="L13">    TmdbApi tmdbApi = new TmdbApi(&quot;811ffa781385ed56e1ec64c193eb93f4&quot;);</span>
+<span class="fc" id="L14">    MovieModel keywordModel = new MovieModel();</span>
+    KeywordMatch keyword;
+
+    @Before
+    public void setup() {
+<span class="fc" id="L19">        keyword = new KeywordMatch(tmdbApi, keywordModel);</span>
+<span class="fc" id="L20">    }</span>
+    
+    @Test
+    public void searchKeyword() {
+<span class="fc" id="L24">        keyword.searchKeyword(&quot;action&quot;);</span>
+<span class="pc bpc" id="L25" title="1 of 2 branches missed.">        assertEquals(true, 0 &lt; keywordModel.getRowCount());</span>
+<span class="fc" id="L26">        keyword.searchKeyword(&quot;marvel, comic&quot;);</span>
+<span class="pc bpc" id="L27" title="1 of 2 branches missed.">        assertEquals(true, 0 &lt; keywordModel.getRowCount());</span>
+<span class="fc" id="L28">        keyword.searchKeyword(&quot;marvel, comic, war&quot;);</span>
+<span class="pc bpc" id="L29" title="1 of 2 branches missed.">        assertEquals(true, 0 &lt; keywordModel.getRowCount());</span>
+<span class="fc" id="L30">        keyword.searchKeyword(&quot;marvel, comic, war, civil war&quot;);</span>
+<span class="pc bpc" id="L31" title="1 of 2 branches missed.">        assertEquals(true, 0 &lt; keywordModel.getRowCount());</span>
+<span class="fc" id="L32">        keyword.searchKeyword(&quot;marvel, comic, war, civil war, extra&quot;);</span>
+<span class="pc bpc" id="L33" title="1 of 2 branches missed.">        assertEquals(true, 0 &lt; keywordModel.getRowCount());</span>
+<span class="fc" id="L34">        keyword.searchKeyword(&quot;this is a really bad keyword&quot;);</span>
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">        assertEquals(true, 0 == keywordModel.getRowCount());</span>
+<span class="fc" id="L36">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>tests (May 31, 2016 9:50:09 PM)</div></body></html>

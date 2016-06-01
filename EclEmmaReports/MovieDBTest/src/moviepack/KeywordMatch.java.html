@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>KeywordMatch.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">tests (May 31, 2016 9:50:09 PM)</a> &gt; <a href="../../index.html" class="el_group">MovieDBTest</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">moviepack</a> &gt; <span class="el_source">KeywordMatch.java</span></div><h1>KeywordMatch.java</h1><pre class="source lang-java linenums">package moviepack;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import info.movito.themoviedbapi.TmdbApi;
+import info.movito.themoviedbapi.TmdbKeywords;
+import info.movito.themoviedbapi.TmdbSearch;
+import info.movito.themoviedbapi.TmdbSearch.KeywordResultsPage;
+import info.movito.themoviedbapi.model.MovieDb;
+import info.movito.themoviedbapi.model.core.MovieResultsPage;
+import info.movito.themoviedbapi.model.keywords.Keyword;
+
+/**
+ * Keyword Match and GUI results. This is the algorithm for the keyword matching
+ * Displays best matches for up to four keywords
+ *
+ * @author Janelle Zuccaro
+ */
+
+public class KeywordMatch {
+
+    /**
+     * Access to the search function of the API.
+     *
+     */
+    private TmdbSearch search;
+
+    /**
+     * Access to the keyword list and relationships of API.
+     *
+     */
+    private TmdbKeywords tmdbKeyword;
+
+    /**
+     * Creates a display model for the GUI.
+     *
+     */
+    private MovieModel keywordModel;
+
+    /**
+     * The maximum number of keywords.
+     */
+    private static final int MAX_KEYWORDS = 4;
+
+    /**
+     * Number of movies per page.
+     */
+    private static final int MOVIES_PER_PAGE = 20;
+
+    /**
+     * Initializes keywords from database.
+     *
+     * @param tmdbApi
+     *            Grants access to API information
+     * @param theKeywordModel
+     *            Creates a model for keywords in GUI.
+     */
+<span class="fc" id="L62">    public KeywordMatch(final TmdbApi tmdbApi,</span>
+            final MovieModel theKeywordModel) {
+
+<span class="fc" id="L65">        search = tmdbApi.getSearch();</span>
+<span class="fc" id="L66">        tmdbKeyword = tmdbApi.getKeywords();</span>
+
+<span class="fc" id="L68">        this.keywordModel = theKeywordModel;</span>
+
+<span class="fc" id="L70">    }</span>
+
+    /**
+     * Searches movies that contain the given keyword.
+     *
+     * @param keywords
+     *            User entry of searched keyword.
+     */
+    public final void searchKeyword(final String keywords) {
+
+<span class="fc" id="L80">        int i = 0;</span>
+<span class="fc" id="L81">        String str = &quot;&quot;;</span>
+
+<span class="fc" id="L83">        keywordModel.clear();</span>
+
+        // Initialize Variables
+<span class="fc" id="L86">        List&lt;MovieDb&gt; movielist = null;</span>
+<span class="fc" id="L87">        List&lt;MovieDb&gt; movielist2 = null;</span>
+<span class="fc" id="L88">        List&lt;MovieDb&gt; movielist3 = null;</span>
+<span class="fc" id="L89">        List&lt;MovieDb&gt; movielist4 = null;</span>
+
+<span class="fc" id="L91">        List&lt;String&gt; keywordList = Arrays.asList(keywords.split(&quot;,&quot;));</span>
+
+        // loops up to four times (4 keywords) unless ended by entering &quot;x&quot;
+<span class="fc bfc" id="L94" title="All 4 branches covered.">        for (i = 0; i &lt; keywordList.size() &amp;&amp; i &lt; MAX_KEYWORDS; i++) {</span>
+
+<span class="fc" id="L96">            str = keywordList.get(i);</span>
+
+<span class="fc" id="L98">            KeywordResultsPage keywordresult = search.searchKeyword(str, null);</span>
+
+            // Gets list of keywords that match user given keyword
+<span class="fc" id="L101">            List&lt;Keyword&gt; keywordlist = keywordresult.getResults();</span>
+
+<span class="fc" id="L103">            MovieResultsPage results = new MovieResultsPage();</span>
+<span class="fc" id="L104">            int j = 0;</span>
+<span class="fc" id="L105">            String idString = &quot;&quot;;</span>
+<span class="fc" id="L106">            boolean badKeyword = false;</span>
+
+<span class="fc" id="L108">            while (true) {</span>
+                try {
+                    // Grabs first keyword match .. best match
+<span class="fc" id="L111">                    Keyword mainkeyword = keywordlist.get(j);</span>
+
+                    // Gets keyword ID and searches for movies that are
+                    // associated with
+                    // that keyword ID
+<span class="fc" id="L116">                    int idInt = mainkeyword.getId();</span>
+
+<span class="fc" id="L118">                    idString = Integer.toString(idInt);</span>
+
+<span class="fc" id="L120">                    results = tmdbKeyword.getKeywordMovies(idString, &quot;en&quot;, 0);</span>
+                    // 0 and 1 are both first page
+<span class="fc" id="L122">                } catch (IndexOutOfBoundsException e) {</span>
+<span class="fc" id="L123">                    badKeyword = true;</span>
+<span class="fc" id="L124">                    break;</span>
+<span class="fc" id="L125">                } catch (Exception e) {</span>
+<span class="fc" id="L126">                    j++;</span>
+                    continue;
+                }
+                break;
+            }
+
+<span class="fc bfc" id="L132" title="All 2 branches covered.">            if (badKeyword) {</span>
+<span class="fc" id="L133">                break;</span>
+            }
+
+            // Gets list of movies that return a match for specified keyword
+            // Creates different lists for each keyword
+<span class="fc bfc" id="L138" title="All 2 branches covered.">            if (i == 0) {</span>
+<span class="fc" id="L139">                movielist = results.getResults();</span>
+            }
+<span class="fc bfc" id="L141" title="All 2 branches covered.">            if (i == 1) {</span>
+<span class="fc" id="L142">                movielist2 = results.getResults();</span>
+            }
+<span class="fc bfc" id="L144" title="All 2 branches covered.">            if (i == 2) {</span>
+<span class="fc" id="L145">                movielist3 = results.getResults();</span>
+            }
+<span class="fc bfc" id="L147" title="All 2 branches covered.">            if (i == MAX_KEYWORDS - 1) {</span>
+<span class="fc" id="L148">                movielist4 = results.getResults();</span>
+            }
+
+            // Determines the number of pages needed
+
+<span class="fc" id="L153">            int numofresults = results.getTotalResults();</span>
+<span class="fc" id="L154">            int numofpages = (numofresults / MOVIES_PER_PAGE);</span>
+<span class="pc bpc" id="L155" title="1 of 2 branches missed.">            if (numofresults % MOVIES_PER_PAGE &gt;= 1) {</span>
+<span class="fc" id="L156">                ++numofpages;</span>
+            }
+
+            // creates a new, complete list, one for each keyword
+            // ONE LIST INCLUDING ALL RESULTS so can be searched within each
+            // list
+
+<span class="fc bfc" id="L163" title="All 2 branches covered.">            if (numofpages &gt;= 2) {</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">                for (int k = 2; k &lt;= numofpages; k++) {</span>
+<span class="fc" id="L165">                    results = tmdbKeyword.getKeywordMovies(idString, &quot;en&quot;, k);</span>
+
+<span class="fc bfc" id="L167" title="All 2 branches covered.">                    if (i == 0) {</span>
+<span class="fc" id="L168">                        movielist.addAll(results.getResults());</span>
+                    }
+<span class="fc bfc" id="L170" title="All 2 branches covered.">                    if (i == 1) {</span>
+<span class="fc" id="L171">                        movielist2.addAll(results.getResults());</span>
+
+                    }
+<span class="fc bfc" id="L174" title="All 2 branches covered.">                    if (i == 2) {</span>
+<span class="fc" id="L175">                        movielist3.addAll(results.getResults());</span>
+                    }
+
+<span class="fc bfc" id="L178" title="All 2 branches covered.">                    if (i == MAX_KEYWORDS - 1) {</span>
+<span class="fc" id="L179">                        movielist4.addAll(results.getResults());</span>
+
+                    }
+
+                }
+            }
+        }
+<span class="fc" id="L186">        matchingAlgorihm(i, movielist, movielist2, movielist3, movielist4);</span>
+<span class="fc" id="L187">    }</span>
+
+    /**
+     * Puts the movie results into the movie model.
+     * @param i number of keywords.
+     * @param movielist
+     *            list from first keyword.
+     * @param movielist2
+     *            list from second keyword.
+     * @param movielist3
+     *            list from third keyword.
+     * @param movielist4
+     *            list from fourth keyword.
+     */
+    private void matchingAlgorihm(final int i, final List&lt;MovieDb&gt; movielist,
+            final List&lt;MovieDb&gt; movielist2, final List&lt;MovieDb&gt; movielist3,
+            final List&lt;MovieDb&gt; movielist4) {
+
+        // Runs if the user exits the search by entering four search keywords
+        // instead of entering &quot;x&quot;
+
+        // Matching Algorithm
+
+        // For One keyword search
+<span class="fc bfc" id="L211" title="All 2 branches covered.">        if (i == 1) {</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">            for (MovieDb movie : movielist) {</span>
+<span class="fc" id="L213">                keywordModel.add(movie);</span>
+            }
+        }
+
+        //////////////////////////////////////////////////////////////
+        // Matching Algorithm
+        //////////////////////////////////////////////////////////////
+
+        // For two keywords
+<span class="fc bfc" id="L222" title="All 2 branches covered.">        if (i == 2) {</span>
+
+            // keeps all movies in list one that are also in list two
+<span class="fc" id="L225">            movielist.retainAll(movielist2);</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">            for (MovieDb movie : movielist) {</span>
+<span class="fc" id="L227">                keywordModel.add(movie);</span>
+            }
+
+        }
+
+        // For Three keywords
+<span class="fc bfc" id="L233" title="All 2 branches covered.">        if (i == MAX_KEYWORDS - 1) {</span>
+<span class="fc" id="L234">            threeKeywordMatch(movielist, movielist2, movielist3);</span>
+        }
+
+        // For Four keywords
+<span class="fc bfc" id="L238" title="All 2 branches covered.">        if (i == MAX_KEYWORDS) {</span>
+<span class="fc" id="L239">            fourKeywordMatch(movielist, movielist2, movielist3, movielist4);</span>
+        }
+<span class="fc" id="L241">    }</span>
+
+    /**
+     * Matches movies for three keywords.
+     * @param movielist
+     *            list from first keyword.
+     * @param movielist2
+     *            list from second keyword.
+     * @param movielist3
+     *            list from third keyword.
+     */
+    private void threeKeywordMatch(final List&lt;MovieDb&gt; movielist,
+            final List&lt;MovieDb&gt; movielist2, final List&lt;MovieDb&gt; movielist3) {
+
+<span class="fc" id="L255">        List&lt;MovieDb&gt; templist = null;</span>
+<span class="fc" id="L256">        List&lt;MovieDb&gt; bestmatch = null;</span>
+<span class="fc" id="L257">        List&lt;MovieDb&gt; secondbest = null;</span>
+<span class="fc" id="L258">        List&lt;MovieDb&gt; secondbest2 = null;</span>
+<span class="fc" id="L259">        List&lt;MovieDb&gt; secondbest3 = null;</span>
+<span class="fc" id="L260">        List&lt;MovieDb&gt; secondbestall = null;</span>
+
+        // Creates a copy of list one so it can be checked twice
+<span class="fc" id="L263">        templist = new ArrayList&lt;MovieDb&gt;(movielist);</span>
+
+        // Finds &quot;Second best&quot; matches in First list
+<span class="fc" id="L266">        movielist.retainAll(movielist2);</span>
+<span class="fc" id="L267">        secondbest = new ArrayList&lt;MovieDb&gt;(movielist);</span>
+
+<span class="fc" id="L269">        templist.retainAll(movielist3);</span>
+<span class="fc" id="L270">        secondbest2 = new ArrayList&lt;MovieDb&gt;(templist);</span>
+
+        // Finds &quot;Second best&quot; matches in Second list
+<span class="fc" id="L273">        movielist2.retainAll(movielist3);</span>
+<span class="fc" id="L274">        secondbest3 = new ArrayList&lt;MovieDb&gt;(movielist2);</span>
+
+        // Finds &quot;Best match&quot;
+<span class="fc" id="L277">        bestmatch = new ArrayList&lt;MovieDb&gt;(secondbest);</span>
+<span class="fc" id="L278">        bestmatch.retainAll(movielist3);</span>
+
+        // Gets rid of repeats
+<span class="fc" id="L281">        secondbestall = new ArrayList&lt;MovieDb&gt;(secondbest);</span>
+<span class="fc" id="L282">        secondbestall.addAll(secondbest2);</span>
+<span class="fc" id="L283">        secondbestall.addAll(secondbest3);</span>
+
+<span class="fc" id="L285">        Set&lt;MovieDb&gt; hs = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L286">        hs.addAll(secondbestall);</span>
+<span class="fc" id="L287">        secondbestall.clear();</span>
+<span class="fc" id="L288">        secondbestall.addAll(hs);</span>
+
+        // Prints out matches
+
+<span class="fc bfc" id="L292" title="All 2 branches covered.">        for (MovieDb movie : bestmatch) {</span>
+<span class="fc" id="L293">            keywordModel.add(movie);</span>
+        }
+
+<span class="fc bfc" id="L296" title="All 2 branches covered.">        for (MovieDb movie : secondbestall) {</span>
+<span class="fc" id="L297">            keywordModel.add(movie);</span>
+        }
+<span class="fc" id="L299">    }</span>
+
+    /**
+     * Matches movies for four keywords.
+     * @param movielist
+     *            list from first keyword.
+     * @param movielist2
+     *            list from second keyword.
+     * @param movielist3
+     *            list from third keyword.
+     * @param movielist4
+     *            list from fourth keyword.
+     */
+    private void fourKeywordMatch(final List&lt;MovieDb&gt; movielist,
+            final List&lt;MovieDb&gt; movielist2, final List&lt;MovieDb&gt; movielist3,
+            final List&lt;MovieDb&gt; movielist4) {
+
+<span class="fc" id="L316">        List&lt;MovieDb&gt; templist = null;</span>
+<span class="fc" id="L317">        List&lt;MovieDb&gt; templist2 = null;</span>
+<span class="fc" id="L318">        List&lt;MovieDb&gt; l2templist = null;</span>
+<span class="fc" id="L319">        List&lt;MovieDb&gt; l3templist = null;</span>
+<span class="fc" id="L320">        List&lt;MovieDb&gt; bestmatch = null;</span>
+<span class="fc" id="L321">        List&lt;MovieDb&gt; secondbest = null;</span>
+<span class="fc" id="L322">        List&lt;MovieDb&gt; secondbest2 = null;</span>
+<span class="fc" id="L323">        List&lt;MovieDb&gt; secondbest3 = null;</span>
+<span class="fc" id="L324">        List&lt;MovieDb&gt; secondbest4 = null;</span>
+<span class="fc" id="L325">        List&lt;MovieDb&gt; secondbest5 = null;</span>
+<span class="fc" id="L326">        List&lt;MovieDb&gt; secondbestall = null;</span>
+<span class="fc" id="L327">        List&lt;MovieDb&gt; thirdbest = null;</span>
+<span class="fc" id="L328">        List&lt;MovieDb&gt; l1thirdbest = null;</span>
+<span class="fc" id="L329">        List&lt;MovieDb&gt; thirdbest2 = null;</span>
+<span class="fc" id="L330">        List&lt;MovieDb&gt; thirdbest3 = null;</span>
+<span class="fc" id="L331">        List&lt;MovieDb&gt; thirdbest4 = null;</span>
+<span class="fc" id="L332">        List&lt;MovieDb&gt; thirdbest5 = null;</span>
+<span class="fc" id="L333">        List&lt;MovieDb&gt; thirdbest6 = null;</span>
+<span class="fc" id="L334">        List&lt;MovieDb&gt; thirdbestall = null;</span>
+
+<span class="fc" id="L336">        templist = new ArrayList&lt;MovieDb&gt;(movielist);</span>
+<span class="fc" id="L337">        templist2 = new ArrayList&lt;MovieDb&gt;(movielist);</span>
+
+<span class="fc" id="L339">        l2templist = new ArrayList&lt;MovieDb&gt;(movielist2);</span>
+
+        // Finds 3rd Best Matches from List 1
+<span class="fc" id="L342">        movielist.retainAll(movielist2);</span>
+<span class="fc" id="L343">        thirdbest = new ArrayList&lt;MovieDb&gt;(movielist);</span>
+<span class="fc" id="L344">        l1thirdbest = new ArrayList&lt;MovieDb&gt;(movielist);</span>
+
+<span class="fc" id="L346">        templist.retainAll(movielist3);</span>
+<span class="fc" id="L347">        thirdbest2 = new ArrayList&lt;MovieDb&gt;(templist);</span>
+
+<span class="fc" id="L349">        templist2.retainAll(movielist4);</span>
+<span class="fc" id="L350">        thirdbest3 = new ArrayList&lt;MovieDb&gt;(templist2);</span>
+
+        // Finds 3rd Best Matches from List 2
+<span class="fc" id="L353">        movielist2.retainAll(movielist3);</span>
+<span class="fc" id="L354">        thirdbest4 = new ArrayList&lt;MovieDb&gt;(movielist2);</span>
+
+<span class="fc" id="L356">        l2templist.retainAll(movielist4);</span>
+<span class="fc" id="L357">        thirdbest5 = new ArrayList&lt;MovieDb&gt;(l2templist);</span>
+
+        // Finds 3rd Best from List 3
+<span class="fc" id="L360">        l3templist = new ArrayList&lt;MovieDb&gt;(movielist3);</span>
+<span class="fc" id="L361">        movielist3.retainAll(movielist4);</span>
+<span class="fc" id="L362">        thirdbest6 = new ArrayList&lt;MovieDb&gt;(movielist3);</span>
+
+        // Finds 2nd Best from List 1
+<span class="fc" id="L365">        secondbest = new ArrayList&lt;MovieDb&gt;(thirdbest);</span>
+<span class="fc" id="L366">        secondbest.retainAll(l3templist);</span>
+
+<span class="fc" id="L368">        secondbest2 = new ArrayList&lt;MovieDb&gt;(l1thirdbest);</span>
+<span class="fc" id="L369">        secondbest2.retainAll(movielist4);</span>
+
+<span class="fc" id="L371">        secondbest3 = new ArrayList&lt;MovieDb&gt;(thirdbest2);</span>
+<span class="fc" id="L372">        secondbest3.retainAll(movielist4);</span>
+
+        // Finds 2nd Best from List 2
+<span class="fc" id="L375">        secondbest4 = new ArrayList&lt;MovieDb&gt;(thirdbest4);</span>
+<span class="fc" id="L376">        secondbest4.retainAll(movielist4);</span>
+
+<span class="fc" id="L378">        secondbest5 = new ArrayList&lt;MovieDb&gt;(thirdbest5);</span>
+<span class="fc" id="L379">        secondbest5.retainAll(l3templist);</span>
+
+        // Finds Best Match
+<span class="fc" id="L382">        bestmatch = new ArrayList&lt;MovieDb&gt;(secondbest);</span>
+<span class="fc" id="L383">        bestmatch.retainAll(movielist4);</span>
+
+        // Gets rid of repeats
+<span class="fc" id="L386">        secondbestall = new ArrayList&lt;MovieDb&gt;(secondbest);</span>
+<span class="fc" id="L387">        secondbestall.addAll(secondbest2);</span>
+<span class="fc" id="L388">        secondbestall.addAll(secondbest3);</span>
+<span class="fc" id="L389">        secondbestall.addAll(secondbest4);</span>
+<span class="fc" id="L390">        secondbestall.addAll(secondbest5);</span>
+
+<span class="fc" id="L392">        thirdbestall = new ArrayList&lt;MovieDb&gt;(thirdbest);</span>
+<span class="fc" id="L393">        thirdbestall.addAll(thirdbest2);</span>
+<span class="fc" id="L394">        thirdbestall.addAll(thirdbest3);</span>
+<span class="fc" id="L395">        thirdbestall.addAll(thirdbest4);</span>
+<span class="fc" id="L396">        thirdbestall.addAll(thirdbest5);</span>
+<span class="fc" id="L397">        thirdbestall.addAll(thirdbest6);</span>
+
+<span class="fc" id="L399">        Set&lt;MovieDb&gt; hs = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L400">        hs.addAll(secondbestall);</span>
+<span class="fc" id="L401">        secondbestall.clear();</span>
+<span class="fc" id="L402">        secondbestall.addAll(hs);</span>
+
+<span class="fc" id="L404">        Set&lt;MovieDb&gt; hs2 = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L405">        hs2.addAll(thirdbestall);</span>
+<span class="fc" id="L406">        thirdbestall.clear();</span>
+<span class="fc" id="L407">        thirdbestall.addAll(hs2);</span>
+
+        // Prints out matches
+
+<span class="fc bfc" id="L411" title="All 2 branches covered.">        for (MovieDb movie : bestmatch) {</span>
+<span class="fc" id="L412">            keywordModel.add(movie);</span>
+        }
+
+<span class="fc bfc" id="L415" title="All 2 branches covered.">        for (MovieDb movie : secondbestall) {</span>
+<span class="fc" id="L416">            keywordModel.add(movie);</span>
+        }
+
+<span class="fc bfc" id="L419" title="All 2 branches covered.">        for (MovieDb movie : thirdbestall) {</span>
+<span class="fc" id="L420">            keywordModel.add(movie);</span>
+        }
+<span class="fc" id="L422">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>tests (May 31, 2016 9:50:09 PM)</div></body></html>

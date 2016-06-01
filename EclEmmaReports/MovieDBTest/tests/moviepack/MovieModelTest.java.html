@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>MovieModelTest.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">tests (May 31, 2016 9:50:09 PM)</a> &gt; <a href="../../index.html" class="el_group">MovieDBTest</a> &gt; <a href="../index.html" class="el_bundle">tests</a> &gt; <a href="index.source.html" class="el_package">moviepack</a> &gt; <span class="el_source">MovieModelTest.java</span></div><h1>MovieModelTest.java</h1><pre class="source lang-java linenums">package moviepack;
+
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import info.movito.themoviedbapi.TmdbApi;
+import info.movito.themoviedbapi.TmdbMovies;
+import info.movito.themoviedbapi.model.MovieDb;
+
+<span class="fc" id="L12">public class MovieModelTest {</span>
+
+    MovieModel movieModel;
+    MovieDb forbiddenGames;
+    MovieDb beforeNightFalls;
+    
+    @Before
+    public void setup() {
+<span class="fc" id="L20">        movieModel = new MovieModel();</span>
+<span class="fc" id="L21">        TmdbApi tmdbApi = new TmdbApi(&quot;811ffa781385ed56e1ec64c193eb93f4&quot;);</span>
+<span class="fc" id="L22">        TmdbMovies movie = tmdbApi.getMovies();</span>
+<span class="fc" id="L23">        movieModel.add(forbiddenGames = movie.getMovie(5000, &quot;en&quot;));</span>
+<span class="fc" id="L24">        movieModel.add(beforeNightFalls = movie.getMovie(5001, &quot;en&quot;));</span>
+<span class="fc" id="L25">    }</span>
+    
+    @Test
+    public void init() {
+<span class="fc" id="L29">        MovieModel movieMod = new MovieModel();</span>
+<span class="fc" id="L30">        assertEquals(0, movieMod.getRowCount());</span>
+<span class="fc" id="L31">    }</span>
+
+
+    @Test
+    public void getRowCount() {
+<span class="fc" id="L36">        assertEquals(2, movieModel.getRowCount());</span>
+<span class="fc" id="L37">    }</span>
+
+    @Test
+    public void getColumnCount() {
+<span class="fc" id="L41">        assertEquals(2, movieModel.getColumnCount());</span>
+<span class="fc" id="L42">    }</span>
+    
+    @Test
+    public void getColumnName() {
+<span class="fc" id="L46">        assertEquals(&quot;Title&quot;, movieModel.getColumnName(0));</span>
+<span class="fc" id="L47">        assertEquals(&quot;Date&quot;, movieModel.getColumnName(1));</span>
+<span class="fc" id="L48">    }</span>
+    
+    @Test
+    public void getValueAt() {
+<span class="fc" id="L52">        assertEquals(&quot;Forbidden Games&quot;, movieModel.getValueAt(0, 0));</span>
+<span class="fc" id="L53">        assertEquals(&quot;1952-05-09&quot;, movieModel.getValueAt(0, 1));</span>
+<span class="fc" id="L54">        assertEquals(&quot;Before Night Falls&quot;, movieModel.getValueAt(1, 0));</span>
+<span class="fc" id="L55">        assertEquals(&quot;2000-09-03&quot;, movieModel.getValueAt(1, 1));</span>
+<span class="fc" id="L56">        assertEquals(0, movieModel.getValueAt(0, 3));</span>
+<span class="fc" id="L57">    }</span>
+
+
+    @Test
+    public void get() {
+<span class="fc" id="L62">        assertEquals(forbiddenGames, movieModel.get(0));</span>
+<span class="fc" id="L63">        assertEquals(beforeNightFalls, movieModel.get(1));</span>
+<span class="fc" id="L64">    }</span>
+
+    @Test
+    public void add() {
+<span class="fc" id="L68">        assertEquals(forbiddenGames, movieModel.get(0));</span>
+<span class="fc" id="L69">        movieModel.add(null);</span>
+<span class="fc" id="L70">        assertEquals(2, movieModel.getRowCount());</span>
+<span class="fc" id="L71">    }</span>
+
+    @Test
+    public void clear() {
+<span class="fc" id="L75">        movieModel.clear();</span>
+<span class="fc" id="L76">        assertEquals(0, movieModel.getRowCount());</span>
+<span class="fc" id="L77">        movieModel.clear();</span>
+<span class="fc" id="L78">        assertEquals(0, movieModel.getRowCount());</span>
+<span class="fc" id="L79">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>tests (May 31, 2016 9:50:09 PM)</div></body></html>

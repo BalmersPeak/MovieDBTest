@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>TvModelTest.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">tests (May 31, 2016 9:50:09 PM)</a> &gt; <a href="../../index.html" class="el_group">MovieDBTest</a> &gt; <a href="../index.html" class="el_bundle">tests</a> &gt; <a href="index.source.html" class="el_package">moviepack</a> &gt; <span class="el_source">TvModelTest.java</span></div><h1>TvModelTest.java</h1><pre class="source lang-java linenums">package moviepack;
+
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import info.movito.themoviedbapi.TmdbApi;
+import info.movito.themoviedbapi.TmdbTV;
+import info.movito.themoviedbapi.model.tv.TvSeries;
+
+
+<span class="fc" id="L13">public class TvModelTest {</span>
+
+    TvModel tvModel;
+    TvSeries damesInDeDop;
+    TvSeries Ayuready;
+    
+    @Before
+    public void setup() {
+<span class="fc" id="L21">        tvModel = new TvModel();</span>
+<span class="fc" id="L22">        TmdbApi tmdbApi = new TmdbApi(&quot;811ffa781385ed56e1ec64c193eb93f4&quot;);</span>
+<span class="fc" id="L23">        TmdbTV tv = tmdbApi.getTvSeries();</span>
+<span class="fc" id="L24">        tvModel.add(damesInDeDop = tv.getSeries(5000, &quot;en&quot;));</span>
+<span class="fc" id="L25">        tvModel.add(Ayuready = tv.getSeries(5001, &quot;en&quot;));</span>
+<span class="fc" id="L26">    }</span>
+    
+    @Test
+    public void init() {
+<span class="fc" id="L30">        TvModel tvMod = new TvModel();</span>
+<span class="fc" id="L31">        assertEquals(0, tvMod.getRowCount());</span>
+<span class="fc" id="L32">    }</span>
+
+
+    @Test
+    public void getRowCount() {
+<span class="fc" id="L37">        assertEquals(2, tvModel.getRowCount());</span>
+<span class="fc" id="L38">    }</span>
+
+    @Test
+    public void getColumnCount() {
+<span class="fc" id="L42">        assertEquals(2, tvModel.getColumnCount());</span>
+<span class="fc" id="L43">    }</span>
+    
+    @Test
+    public void getColumnName() {
+<span class="fc" id="L47">        assertEquals(&quot;Title&quot;, tvModel.getColumnName(0));</span>
+<span class="fc" id="L48">        assertEquals(&quot;First Air Date&quot;, tvModel.getColumnName(1));</span>
+<span class="fc" id="L49">    }</span>
+    
+    @Test
+    public void getValueAt() {
+<span class="fc" id="L53">        assertEquals(&quot;Dames in de Dop&quot;, tvModel.getValueAt(0, 0));</span>
+<span class="fc" id="L54">        assertEquals(&quot;2007-05-28&quot;, tvModel.getValueAt(0, 1));</span>
+<span class="fc" id="L55">        assertEquals(&quot;Ayuready?&quot;, tvModel.getValueAt(1, 0));</span>
+<span class="fc" id="L56">        assertEquals(null, tvModel.getValueAt(1, 1));</span>
+<span class="fc" id="L57">        assertEquals(0, tvModel.getValueAt(0, 3));</span>
+<span class="fc" id="L58">    }</span>
+
+
+    @Test
+    public void get() {
+<span class="fc" id="L63">        assertEquals(damesInDeDop, tvModel.get(0));</span>
+<span class="fc" id="L64">        assertEquals(Ayuready, tvModel.get(1));</span>
+<span class="fc" id="L65">    }</span>
+
+    @Test
+    public void add() {
+<span class="fc" id="L69">        assertEquals(damesInDeDop, tvModel.get(0));</span>
+<span class="fc" id="L70">        tvModel.add(null);</span>
+<span class="fc" id="L71">        assertEquals(2, tvModel.getRowCount());</span>
+<span class="fc" id="L72">    }</span>
+
+    @Test
+    public void clear() {
+<span class="fc" id="L76">        tvModel.clear();</span>
+<span class="fc" id="L77">        assertEquals(0, tvModel.getRowCount());</span>
+<span class="fc" id="L78">        tvModel.clear();</span>
+<span class="fc" id="L79">        assertEquals(0, tvModel.getRowCount());</span>
+<span class="fc" id="L80">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>tests (May 31, 2016 9:50:09 PM)</div></body></html>

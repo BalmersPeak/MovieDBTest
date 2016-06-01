@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>MovieModel.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">tests (May 31, 2016 9:50:09 PM)</a> &gt; <a href="../../index.html" class="el_group">MovieDBTest</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">moviepack</a> &gt; <span class="el_source">MovieModel.java</span></div><h1>MovieModel.java</h1><pre class="source lang-java linenums">package moviepack;
+
+import java.util.ArrayList;
+
+import javax.swing.table.AbstractTableModel;
+
+import info.movito.themoviedbapi.model.MovieDb;
+
+
+/**
+ * Model to Show the search results of movies in a table.
+ *
+ * @author Nicholas Pahl
+ *
+ */
+public class MovieModel extends AbstractTableModel {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * List of movies in the table.
+     */
+    private ArrayList&lt;MovieDb&gt; movies;
+
+    /**
+     * String array of column names for the table.
+     */
+<span class="fc" id="L28">    private String[] columnNames = {&quot;Title&quot;, &quot;Date&quot;};</span>
+
+    /**
+     * Initializes Movie Model class.
+     */
+<span class="fc" id="L33">    public MovieModel() {</span>
+<span class="fc" id="L34">        movies = new ArrayList&lt;MovieDb&gt;();</span>
+<span class="fc" id="L35">    }</span>
+
+    /**
+     * Returns the number of rows in the table.
+     *
+     * @return number of rows in table.
+     */
+    public final int getRowCount() {
+<span class="fc" id="L43">        return movies.size();</span>
+    }
+
+    /**
+     * Returns the number of columns.
+     *
+     * @return number of columns.
+     */
+    public final int getColumnCount() {
+<span class="fc" id="L52">        return columnNames.length;</span>
+    }
+
+    /**
+     * Get column name of a column.
+     *
+     * @param col index of column.
+     * @return Name of column.
+     */
+    public final String getColumnName(final int col) {
+<span class="fc" id="L62">        return columnNames[col];</span>
+    }
+
+    /**
+     * Gets value at a cell in the table.
+     *
+     * @param row row in question.
+     * @param col column in question.
+     * @return Object of the cell in table.
+     */
+    public final Object getValueAt(final int row, final int col) {
+<span class="fc" id="L73">        Object val = new String();</span>
+<span class="fc bfc" id="L74" title="All 3 branches covered.">        switch (col) {</span>
+        case 0:
+<span class="fc" id="L76">            val = movies.get(row).getTitle();</span>
+<span class="fc" id="L77">            break;</span>
+
+        case 1:
+<span class="fc" id="L80">            val = movies.get(row).getReleaseDate();</span>
+<span class="fc" id="L81">            break;</span>
+
+        default:
+<span class="fc" id="L84">            val = 0;</span>
+        }
+<span class="fc" id="L86">        return val;</span>
+    }
+
+    /**
+     * Returns the movie of the specified row.
+     *
+     * @param index row in question.
+     * @return Movie of specified row.
+     */
+    public final MovieDb get(final int index) {
+<span class="fc" id="L96">        return movies.get(index);</span>
+    }
+
+    /**
+     * Adds a movie to the table.
+     *
+     * @param m movie to be added.
+     */
+    public final void add(final MovieDb m) {
+<span class="fc bfc" id="L105" title="All 2 branches covered.">        if (m != null) {</span>
+<span class="fc" id="L106">            movies.add(m);</span>
+<span class="fc" id="L107">            fireTableRowsInserted(movies.size() - 1, movies.size() - 1);</span>
+        }
+<span class="fc" id="L109">    }</span>
+
+
+    /**
+     * Clears the table.
+     */
+    public final void clear() {
+<span class="fc bfc" id="L116" title="All 2 branches covered.">        if (movies.size() &gt; 0) {</span>
+<span class="fc" id="L117">            int size = movies.size();</span>
+<span class="fc" id="L118">            movies.clear();</span>
+<span class="fc" id="L119">            this.fireTableRowsDeleted(0, size - 1);</span>
+        }
+<span class="fc" id="L121">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>tests (May 31, 2016 9:50:09 PM)</div></body></html>

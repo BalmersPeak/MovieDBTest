@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>PeopleModelTest.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">tests (May 31, 2016 9:50:09 PM)</a> &gt; <a href="../../index.html" class="el_group">MovieDBTest</a> &gt; <a href="../index.html" class="el_bundle">tests</a> &gt; <a href="index.source.html" class="el_package">moviepack</a> &gt; <span class="el_source">PeopleModelTest.java</span></div><h1>PeopleModelTest.java</h1><pre class="source lang-java linenums">package moviepack;
+
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import info.movito.themoviedbapi.TmdbApi;
+import info.movito.themoviedbapi.TmdbPeople;
+import info.movito.themoviedbapi.model.people.Person;
+
+
+
+<span class="fc" id="L14">public class PeopleModelTest {</span>
+
+    
+    PeopleModel peopleModel;
+    Person norihiroIsoda;
+    Person joopVanHulzen;
+
+    
+    @Before
+    public void setup() {
+<span class="fc" id="L24">        peopleModel = new PeopleModel();</span>
+<span class="fc" id="L25">        TmdbApi tmdbApi = new TmdbApi(&quot;811ffa781385ed56e1ec64c193eb93f4&quot;);</span>
+<span class="fc" id="L26">        TmdbPeople people = tmdbApi.getPeople();</span>
+<span class="fc" id="L27">        peopleModel.add(norihiroIsoda = people.getPersonInfo(5000));</span>
+<span class="fc" id="L28">        peopleModel.add(joopVanHulzen = people.getPersonInfo(5002));</span>
+<span class="fc" id="L29">    }</span>
+    
+    @Test
+    public void init() {
+<span class="fc" id="L33">        PeopleModel peopleMod = new PeopleModel();</span>
+<span class="fc" id="L34">        assertEquals(0, peopleMod.getRowCount());</span>
+<span class="fc" id="L35">    }</span>
+
+
+    @Test
+    public void getRowCount() {
+<span class="fc" id="L40">        assertEquals(2, peopleModel.getRowCount());</span>
+<span class="fc" id="L41">    }</span>
+
+    @Test
+    public void getColumnCount() {
+<span class="fc" id="L45">        assertEquals(1, peopleModel.getColumnCount());</span>
+<span class="fc" id="L46">    }</span>
+    
+    @Test
+    public void getColumnName() {
+<span class="fc" id="L50">        assertEquals(&quot;Name&quot;, peopleModel.getColumnName(0));</span>
+<span class="fc" id="L51">    }</span>
+    
+    @Test
+    public void getValueAt() {
+<span class="fc" id="L55">        assertEquals(&quot;Norihiro Isoda&quot;, peopleModel.getValueAt(0, 0));</span>
+<span class="fc" id="L56">        assertEquals(&quot;Joop van Hulzen&quot;, peopleModel.getValueAt(1, 0));</span>
+<span class="fc" id="L57">        assertEquals(0, peopleModel.getValueAt(0, 2));</span>
+<span class="fc" id="L58">    }</span>
+
+
+    @Test
+    public void get() {
+<span class="fc" id="L63">        assertEquals(norihiroIsoda, peopleModel.get(0));</span>
+<span class="fc" id="L64">        assertEquals(joopVanHulzen, peopleModel.get(1));</span>
+<span class="fc" id="L65">    }</span>
+
+    @Test
+    public void add() {
+<span class="fc" id="L69">        assertEquals(norihiroIsoda, peopleModel.get(0));</span>
+<span class="fc" id="L70">        peopleModel.add(null);</span>
+<span class="fc" id="L71">        assertEquals(2, peopleModel.getRowCount());</span>
+<span class="fc" id="L72">    }</span>
+
+    @Test
+    public void clear() {
+<span class="fc" id="L76">        peopleModel.clear();</span>
+<span class="fc" id="L77">        assertEquals(0, peopleModel.getRowCount());</span>
+<span class="fc" id="L78">        peopleModel.clear();</span>
+<span class="fc" id="L79">        assertEquals(0, peopleModel.getRowCount());</span>
+<span class="fc" id="L80">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>tests (May 31, 2016 9:50:09 PM)</div></body></html>

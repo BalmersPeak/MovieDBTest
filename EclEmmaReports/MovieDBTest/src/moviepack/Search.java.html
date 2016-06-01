@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Search.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">tests (May 31, 2016 9:50:09 PM)</a> &gt; <a href="../../index.html" class="el_group">MovieDBTest</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">moviepack</a> &gt; <span class="el_source">Search.java</span></div><h1>Search.java</h1><pre class="source lang-java linenums">package moviepack;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import info.movito.themoviedbapi.TmdbApi;
+import info.movito.themoviedbapi.TmdbMovies;
+import info.movito.themoviedbapi.TmdbMovies.MovieMethod;
+import info.movito.themoviedbapi.TmdbPeople;
+import info.movito.themoviedbapi.TmdbPeople.PersonResultsPage;
+import info.movito.themoviedbapi.TmdbSearch;
+import info.movito.themoviedbapi.TmdbTV;
+import info.movito.themoviedbapi.TvResultsPage;
+import info.movito.themoviedbapi.model.Genre;
+import info.movito.themoviedbapi.model.MovieDb;
+import info.movito.themoviedbapi.model.Multi;
+import info.movito.themoviedbapi.model.core.MovieResultsPage;
+import info.movito.themoviedbapi.model.people.Person;
+import info.movito.themoviedbapi.model.people.PersonCrew;
+import info.movito.themoviedbapi.model.people.PersonPeople;
+import info.movito.themoviedbapi.model.tv.Network;
+import info.movito.themoviedbapi.model.tv.TvSeries;
+
+/**
+ * Class that encompasses all search abilities from the TmdB API.
+ *
+ * @author Nicholas Pahl
+ */
+public class Search {
+
+    /**
+     * Movie model to enter data into the table.
+     */
+    private MovieModel movieModel;
+
+    /**
+     * People model to enter data into the table.
+     */
+    private PeopleModel peopleModel;
+
+    /**
+     * Tv model to enter data into the table.
+     */
+    private TvModel tvModel;
+
+    /**
+     * Allows the looking up of movies.
+     */
+    private TmdbMovies movies;
+
+    /**
+     * Allows the looking up of people.
+     */
+    private TmdbPeople people;
+
+    /**
+     * Allows the looking up of people.
+     */
+    private TmdbTV tvSeries;
+
+    /**
+     * Allows the search functionality .
+     */
+    private TmdbSearch search;
+
+    /**
+     * Previous String searched.
+     */
+    private String prevStr;
+
+    /**
+     * Index of how many searches have happened for the same string.
+     */
+<span class="fc" id="L75">    private int i = 1;</span>
+
+    /**
+     * Initialization of Search that sets the models sets the tmdbapi classes.
+     *
+     * @param tmdbApi
+     *            Api type for tmdbApi classes.
+     * @param theMovieModel
+     *            The movieModel to be updated.
+     * @param thePeopleModel
+     *            The peopleModel to be updated.
+     * @param theTvModel
+     *            The tvModel to be updated.
+     */
+<span class="fc" id="L89">    public Search(final TmdbApi tmdbApi, final MovieModel theMovieModel,</span>
+            final PeopleModel thePeopleModel, final TvModel theTvModel) {
+<span class="fc" id="L91">        this.movieModel = theMovieModel;</span>
+<span class="fc" id="L92">        this.peopleModel = thePeopleModel;</span>
+<span class="fc" id="L93">        this.tvModel = theTvModel;</span>
+
+<span class="fc" id="L95">        people = tmdbApi.getPeople();</span>
+<span class="fc" id="L96">        movies = tmdbApi.getMovies();</span>
+<span class="fc" id="L97">        tvSeries = tmdbApi.getTvSeries();</span>
+<span class="fc" id="L98">        search = tmdbApi.getSearch();</span>
+<span class="fc" id="L99">    }</span>
+
+    /**
+     * Searches for 20 movies, people, and tv series each from the given string
+     * and will add 20 more each time it is called in succession with the same
+     * string.
+     *
+     * @param searchStr
+     *            string to be searched.
+     */
+    public final void stringSearch(final String searchStr) {
+
+        MovieResultsPage moviePage;
+        PersonResultsPage personPage;
+        TvResultsPage tvPage;
+
+<span class="fc bfc" id="L115" title="All 2 branches covered.">        if (!searchStr.equals(prevStr)) {</span>
+<span class="fc" id="L116">            i = 1;</span>
+
+<span class="fc" id="L118">            moviePage = new MovieResultsPage();</span>
+<span class="fc" id="L119">            personPage = new PersonResultsPage();</span>
+<span class="fc" id="L120">            tvPage = new TvResultsPage();</span>
+
+<span class="fc" id="L122">            movieModel.clear();</span>
+<span class="fc" id="L123">            peopleModel.clear();</span>
+<span class="fc" id="L124">            tvModel.clear();</span>
+        }
+
+<span class="fc" id="L127">        prevStr = searchStr;</span>
+
+<span class="fc" id="L129">        moviePage = search.searchMovie(searchStr, null, &quot;en&quot;, true, i);</span>
+<span class="fc" id="L130">        personPage = search.searchPerson(searchStr, true, i);</span>
+<span class="fc" id="L131">        tvPage = search.searchTv(searchStr, &quot;en&quot;, i);</span>
+
+<span class="fc" id="L133">        i++;</span>
+
+<span class="fc" id="L135">        Iterator&lt;MovieDb&gt; movieIt = moviePage.iterator();</span>
+<span class="fc" id="L136">        Iterator&lt;Person&gt; personIt = personPage.iterator();</span>
+<span class="fc" id="L137">        Iterator&lt;TvSeries&gt; tvIt = tvPage.iterator();</span>
+
+<span class="fc bfc" id="L139" title="All 2 branches covered.">        while (movieIt.hasNext()) {</span>
+<span class="fc" id="L140">            MovieDb movie = movieIt.next();</span>
+
+<span class="fc" id="L142">            movieModel.add(movie);</span>
+
+        }
+
+<span class="fc bfc" id="L146" title="All 2 branches covered.">        while (personIt.hasNext()) {</span>
+<span class="fc" id="L147">            Person person = personIt.next();</span>
+
+<span class="fc" id="L149">            peopleModel.add(person);</span>
+
+        }
+
+<span class="fc bfc" id="L153" title="All 2 branches covered.">        while (tvIt.hasNext()) {</span>
+<span class="fc" id="L154">            TvSeries tv = tvIt.next();</span>
+
+<span class="fc" id="L156">            tvModel.add(tv);</span>
+
+        }
+
+<span class="fc" id="L160">    }</span>
+
+    /**
+     * Returns the url of the image given database object.
+     * @param dbObject
+     *            the movie, person, or tv show in question.
+     * @return the url of the image of the object.
+     */
+    public final String getMultiImageUrl(final Multi dbObject) {
+<span class="fc" id="L169">        String urlString = &quot;https://image.tmdb.org/t/p/w185&quot;;</span>
+<span class="pc bpc" id="L170" title="1 of 4 branches missed.">        switch (dbObject.getMediaType()) {</span>
+        case MOVIE:
+<span class="fc" id="L172">            MovieDb movie = (MovieDb) dbObject;</span>
+<span class="fc" id="L173">            urlString += movie.getPosterPath();</span>
+<span class="fc" id="L174">            break;</span>
+        case PERSON:
+<span class="fc" id="L176">            Person person = (Person) dbObject;</span>
+<span class="fc" id="L177">            urlString += person.getProfilePath();</span>
+<span class="fc" id="L178">            break;</span>
+        case TV_SERIES:
+<span class="fc" id="L180">            TvSeries tv = (TvSeries) dbObject;</span>
+<span class="fc" id="L181">            urlString += tv.getPosterPath();</span>
+<span class="fc" id="L182">            break;</span>
+        default:
+<span class="nc" id="L184">            return &quot;&quot;;</span>
+        }
+<span class="fc" id="L186">        return urlString;</span>
+    }
+    /**
+     * Returns a list of the popular movies.
+     * @return a list of popular movies.
+     */
+    public final ArrayList&lt;MovieDb&gt; getPopularMovies() {
+
+<span class="fc" id="L194">        ArrayList&lt;MovieDb&gt; moviesList = new ArrayList&lt;MovieDb&gt;();</span>
+
+<span class="fc" id="L196">        MovieResultsPage moviesPage = movies.getPopularMovies(&quot;en&quot;, 1);</span>
+
+<span class="fc" id="L198">        Iterator&lt;MovieDb&gt; moviesIt = moviesPage.iterator();</span>
+
+<span class="fc bfc" id="L200" title="All 2 branches covered.">        while (moviesIt.hasNext()) {</span>
+<span class="fc" id="L201">            moviesList.add(moviesIt.next());</span>
+        }
+<span class="fc" id="L203">        return moviesList;</span>
+    }
+
+    /**
+     * Turns person into personPeople.
+     * @param p Person in question.
+     * @return personPeople from person.
+     */
+    public final PersonPeople getPersonPeople(final Person p) {
+<span class="fc" id="L212">        return people.getPersonInfo(p.getId());</span>
+    }
+
+    /**
+     * Returns a string to be used in a JLabel that contains useful movie
+     * information.
+     *
+     * @param movieId
+     *            The movieId to get info of.
+     * @return string to be used in a JLabel that contains useful movie
+     *         information.
+     */
+    public final String getMovieResults(final int movieId) {
+
+<span class="fc" id="L226">        MovieDb movie = movies.getMovie(movieId, &quot;en&quot;, MovieMethod.credits);</span>
+
+<span class="fc" id="L228">        String resultStr = &quot;&lt;html&gt;&quot;;</span>
+
+        // Gets movie Title
+<span class="fc" id="L231">        resultStr += &quot;Title: &quot; + movie.getTitle();</span>
+
+        // Gets movie date
+<span class="fc bfc" id="L234" title="All 2 branches covered.">        if (movie.getReleaseDate() != &quot;&quot;) {</span>
+<span class="fc" id="L235">            resultStr += &quot;&lt;br&gt;Release Date: &quot; + movie.getReleaseDate();</span>
+        }
+
+        // Gets movie director
+<span class="fc" id="L239">        List&lt;PersonCrew&gt; crewList = movie.getCrew();</span>
+
+<span class="fc" id="L241">        Iterator&lt;PersonCrew&gt; crewIt = crewList.iterator();</span>
+
+<span class="fc bfc" id="L243" title="All 2 branches covered.">        while (crewIt.hasNext()) {</span>
+<span class="fc" id="L244">            PersonCrew person = crewIt.next();</span>
+
+<span class="fc bfc" id="L246" title="All 2 branches covered.">            if (person.getJob().equals(&quot;Director&quot;)) {</span>
+
+<span class="fc" id="L248">                resultStr += &quot;&lt;br&gt;Director: &quot; + person.getName();</span>
+            }
+        }
+
+        // Gets Movie genre
+<span class="fc" id="L253">        Iterator&lt;Genre&gt; genre = movie.getGenres().iterator();</span>
+
+<span class="fc bfc" id="L255" title="All 2 branches covered.">        if (genre.hasNext()) {</span>
+<span class="fc" id="L256">            resultStr += &quot;&lt;br&gt;Genre: &quot;;</span>
+        }
+
+<span class="fc bfc" id="L259" title="All 2 branches covered.">        while (genre.hasNext()) {</span>
+<span class="fc" id="L260">            resultStr += genre.next().getName() + &quot; &quot;;</span>
+        }
+
+        // Gets movie rating
+<span class="fc bfc" id="L264" title="All 2 branches covered.">        if (movie.getVoteAverage() != 0) {</span>
+<span class="fc" id="L265">            resultStr += &quot;&lt;br&gt;Rating: &quot; + movie.getVoteAverage() + &quot;/10 (&quot;</span>
+<span class="fc" id="L266">                    + movie.getVoteCount() + &quot; Votes)&quot;;</span>
+        }
+
+<span class="fc" id="L269">        resultStr += &quot;&lt;/html&gt;&quot;;</span>
+
+<span class="fc" id="L271">        return resultStr;</span>
+    }
+
+    /**
+     * Returns a string to be used in a JLabel that contains useful person
+     * information.
+     *
+     * @param personId
+     *            The personId to get info of.
+     * @return string to be used in a JLabel that contains useful person
+     *         information.
+     */
+    public final String getPersonResults(final int personId) {
+
+<span class="fc" id="L285">        PersonPeople person = people.getPersonInfo(personId);</span>
+
+<span class="fc" id="L287">        String resultStr = &quot;&lt;html&gt;&quot;;</span>
+
+        // get person name
+<span class="fc" id="L290">        resultStr += &quot;Name: &quot; + person.getName();</span>
+
+        // get person birthday
+<span class="fc bfc" id="L293" title="All 2 branches covered.">        if (person.getBirthday() != &quot;&quot;) {</span>
+<span class="fc" id="L294">            resultStr += &quot;&lt;br&gt;Birthday: &quot; + person.getBirthday();</span>
+        }
+
+        // get person deathday
+<span class="fc bfc" id="L298" title="All 2 branches covered.">        if (person.getDeathday() != &quot;&quot;) {</span>
+<span class="fc" id="L299">            resultStr += &quot;&lt;br&gt;Deathday: &quot; + person.getDeathday();</span>
+        }
+
+        // get person birthplace
+<span class="fc bfc" id="L303" title="All 2 branches covered.">        if (person.getBirthplace() != &quot;&quot;) {</span>
+<span class="fc" id="L304">            resultStr += &quot;&lt;br&gt;Birthplace: &quot; + person.getBirthplace();</span>
+        }
+
+<span class="fc" id="L307">        resultStr += &quot;&lt;/html&gt;&quot;;</span>
+
+<span class="fc" id="L309">        return resultStr;</span>
+    }
+
+    /**
+     * Returns a string to be used in a JLabel that contains useful tv
+     * information.
+     *
+     * @param tvId
+     *            The tvId to get info of.
+     * @return string to be used in a JLabel that contains useful tv
+     *         information.
+     */
+    public final String getTvResults(final int tvId) {
+
+<span class="fc" id="L323">        TvSeries tv = tvSeries.getSeries(tvId, &quot;en&quot;);</span>
+
+<span class="fc" id="L325">        String resultStr = &quot;&lt;html&gt;&quot;;</span>
+
+        // get tv name
+<span class="fc" id="L328">        resultStr += &quot;Title: &quot; + tv.getOriginalName();</span>
+
+        // get tv first date
+<span class="fc bfc" id="L331" title="All 2 branches covered.">        if (tv.getFirstAirDate() != null) {</span>
+<span class="fc" id="L332">            resultStr += &quot;&lt;br&gt;First Air Date: &quot; + tv.getFirstAirDate();</span>
+        }
+
+<span class="fc bfc" id="L335" title="All 2 branches covered.">        if (tv.getLastAirDate() != null) {</span>
+<span class="fc" id="L336">            resultStr += &quot;&lt;br&gt;Last Air Date: &quot; + tv.getLastAirDate();</span>
+        }
+
+        // get tv number of seasons
+<span class="fc bfc" id="L340" title="All 2 branches covered.">        if (tv.getNumberOfSeasons() != 0) {</span>
+<span class="fc" id="L341">            resultStr += &quot;&lt;br&gt;Number of seasons: &quot; + tv.getNumberOfSeasons();</span>
+        }
+
+        // get tv network
+<span class="fc" id="L345">        Iterator&lt;Network&gt; network = tv.getNetworks().iterator();</span>
+
+<span class="fc bfc" id="L347" title="All 2 branches covered.">        if (network.hasNext()) {</span>
+<span class="fc" id="L348">            resultStr += &quot;&lt;br&gt;Network: &quot;;</span>
+        }
+
+<span class="fc bfc" id="L351" title="All 2 branches covered.">        while (network.hasNext()) {</span>
+<span class="fc" id="L352">            resultStr += network.next().getName() + &quot; &quot;;</span>
+        }
+
+        // Gets movie rating
+<span class="fc bfc" id="L356" title="All 2 branches covered.">        if (tv.getVoteAverage() != 0) {</span>
+<span class="fc" id="L357">            resultStr += &quot;&lt;br&gt;Rating: &quot; + tv.getVoteAverage() + &quot;/10 (&quot;</span>
+<span class="fc" id="L358">                    + tv.getVoteCount() + &quot; Votes)&quot;;</span>
+        }
+
+<span class="fc" id="L361">        resultStr += &quot;&lt;/html&gt;&quot;;</span>
+
+<span class="fc" id="L363">        return resultStr;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>tests (May 31, 2016 9:50:09 PM)</div></body></html>
