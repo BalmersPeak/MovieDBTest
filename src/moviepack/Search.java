@@ -229,7 +229,7 @@ public class Search {
 
         // Gets movie Title
         resultStr += "Title: " + movie.getTitle();
-        
+
         // Gets movie date
         if (movie.getReleaseDate() != "") {
             resultStr += "<br>Release Date: " + movie.getReleaseDate();

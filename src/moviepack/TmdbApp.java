@@ -242,84 +242,84 @@ public class TmdbApp {
 
         }
 
-        GridBagConstraints gbc_lblPic = new GridBagConstraints();
-        gbc_lblPic.fill = SwingConstants.CENTER;
-        gbc_lblPic.insets = new Insets(0, 0, 5, 5);
-        gbc_lblPic.gridx = 0;
-        gbc_lblPic.gridy = 1;
-        homePanel.add(lblPic, gbc_lblPic);
+        GridBagConstraints gbcLblPic = new GridBagConstraints();
+        gbcLblPic.fill = SwingConstants.CENTER;
+        gbcLblPic.insets = new Insets(0, 0, 5, 5);
+        gbcLblPic.gridx = 0;
+        gbcLblPic.gridy = 1;
+        homePanel.add(lblPic, gbcLblPic);
 
-        JLabel lblPic_1 = new JLabel();
+        JLabel lblPic1 = new JLabel();
         try {
             URL url = new URL(search.getMultiImageUrl(movieList.get(1)));
             ImageIcon icon = new ImageIcon(url);
-            lblPic_1.setIcon(icon);
+            lblPic1.setIcon(icon);
         } catch (IOException e) {
 
         }
 
-        GridBagConstraints gbc_lblPic_1 = new GridBagConstraints();
-        gbc_lblPic_1.fill = SwingConstants.CENTER;
-        gbc_lblPic_1.insets = new Insets(0, 0, 5, 5);
-        gbc_lblPic_1.gridx = 1;
-        gbc_lblPic_1.gridy = 1;
-        homePanel.add(lblPic_1, gbc_lblPic_1);
+        GridBagConstraints gbcLblPic1 = new GridBagConstraints();
+        gbcLblPic1.fill = SwingConstants.CENTER;
+        gbcLblPic1.insets = new Insets(0, 0, 5, 5);
+        gbcLblPic1.gridx = 1;
+        gbcLblPic1.gridy = 1;
+        homePanel.add(lblPic1, gbcLblPic1);
 
-        JLabel lblPic_2 = new JLabel();
+        JLabel lblPic2 = new JLabel();
         try {
             URL url = new URL(search.getMultiImageUrl(movieList.get(2)));
             ImageIcon icon = new ImageIcon(url);
-            lblPic_2.setIcon(icon);
+            lblPic2.setIcon(icon);
         } catch (IOException e) {
 
         }
 
-        GridBagConstraints gbc_lblPic_2 = new GridBagConstraints();
-        gbc_lblPic_2.insets = new Insets(0, 0, 5, 0);
-        gbc_lblPic_2.gridx = 2;
-        gbc_lblPic_2.gridy = 1;
-        homePanel.add(lblPic_2, gbc_lblPic_2);
+        GridBagConstraints gbcLblPic2 = new GridBagConstraints();
+        gbcLblPic2.insets = new Insets(0, 0, 5, 0);
+        gbcLblPic2.gridx = 2;
+        gbcLblPic2.gridy = 1;
+        homePanel.add(lblPic2, gbcLblPic2);
 
-        JLabel lblPic_3 = new JLabel();
+        JLabel lblPic3 = new JLabel();
         try {
             URL url = new URL(search.getMultiImageUrl(movieList.get(3)));
             ImageIcon icon = new ImageIcon(url);
-            lblPic_3.setIcon(icon);
+            lblPic3.setIcon(icon);
         } catch (IOException e) {
 
         }
-        GridBagConstraints gbc_lblPic_3 = new GridBagConstraints();
-        gbc_lblPic_3.insets = new Insets(0, 0, 0, 5);
-        gbc_lblPic_3.gridx = 0;
-        gbc_lblPic_3.gridy = 2;
-        homePanel.add(lblPic_3, gbc_lblPic_3);
+        GridBagConstraints gbcLblPic3 = new GridBagConstraints();
+        gbcLblPic3.insets = new Insets(0, 0, 0, 5);
+        gbcLblPic3.gridx = 0;
+        gbcLblPic3.gridy = 2;
+        homePanel.add(lblPic3, gbcLblPic3);
 
-        JLabel lblPic_4 = new JLabel();
+        JLabel lblPic4 = new JLabel();
         try {
             URL url = new URL(search.getMultiImageUrl(movieList.get(4)));
             ImageIcon icon = new ImageIcon(url);
-            lblPic_4.setIcon(icon);
+            lblPic4.setIcon(icon);
         } catch (IOException e) {
 
         }
-        GridBagConstraints gbc_lblPic_4 = new GridBagConstraints();
-        gbc_lblPic_4.insets = new Insets(0, 0, 0, 5);
-        gbc_lblPic_4.gridx = 1;
-        gbc_lblPic_4.gridy = 2;
-        homePanel.add(lblPic_4, gbc_lblPic_4);
+        GridBagConstraints gbcLblPic4 = new GridBagConstraints();
+        gbcLblPic4.insets = new Insets(0, 0, 0, 5);
+        gbcLblPic4.gridx = 1;
+        gbcLblPic4.gridy = 2;
+        homePanel.add(lblPic4, gbcLblPic4);
 
-        JLabel lblPic_5 = new JLabel();
+        JLabel lblPic5 = new JLabel();
         try {
             URL url = new URL(search.getMultiImageUrl(movieList.get(5)));
             ImageIcon icon = new ImageIcon(url);
-            lblPic_5.setIcon(icon);
+            lblPic5.setIcon(icon);
         } catch (IOException e) {
 
         }
-        GridBagConstraints gbc_lblPic_5 = new GridBagConstraints();
-        gbc_lblPic_5.gridx = 2;
-        gbc_lblPic_5.gridy = 2;
-        homePanel.add(lblPic_5, gbc_lblPic_5);
+        GridBagConstraints gbcLblPic5 = new GridBagConstraints();
+        gbcLblPic5.gridx = 2;
+        gbcLblPic5.gridy = 2;
+        homePanel.add(lblPic5, gbcLblPic5);
     }
 
     /**
@@ -415,7 +415,7 @@ public class TmdbApp {
         gbcLblTitle.gridx = 1;
         gbcLblTitle.gridy = 0;
         resultClickedPanel.add(resultsPicLabel, gbcLblTitle);
-        
+
         GridBagConstraints gbcLblTitle2 = new GridBagConstraints();
 
         gbcLblTitle2.anchor = GridBagConstraints.WEST;
