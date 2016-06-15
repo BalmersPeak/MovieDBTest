@@ -2,6 +2,7 @@ package moviepack;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -188,18 +189,28 @@ public class TmdbApp {
     private void initialize() {
         frmL = new JFrame();
         frmL.setTitle("ReelMatch");
-        frmL.setBounds(100, 100, 827, 645);
+        frmL.setBounds(100, 100, 827, 1000);
         frmL.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frmL.getContentPane().setLayout(new BorderLayout(0, 0));
 
         JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-        frmL.getContentPane().add(tabbedPane, BorderLayout.CENTER);
+        frmL.getContentPane().add(tabbedPane, BorderLayout.NORTH);
 
         setupHomeTab(tabbedPane);
 
         setupSearchTab(tabbedPane);
 
         setupLoginTab(tabbedPane);
+
+        resultsPicLabel = new JLabel();
+        resultsPicLabel.setPreferredSize(new Dimension(185, 280));
+        resultsPicLabel.setVisible(true);
+        frmL.add(resultsPicLabel, BorderLayout.WEST);
+
+        resultLabel = new JLabel();
+        frmL.add(resultLabel, BorderLayout.CENTER);
+
+//        frmL.pack();
     }
 
     /**
@@ -241,6 +252,11 @@ public class TmdbApp {
         } catch (IOException e) {
 
         }
+        lblPic.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(final MouseEvent e) {
+                movieClicked(movieList.get(0));
+            }
+        });
 
         GridBagConstraints gbcLblPic = new GridBagConstraints();
         gbcLblPic.fill = SwingConstants.CENTER;
@@ -257,6 +273,11 @@ public class TmdbApp {
         } catch (IOException e) {
 
         }
+        lblPic1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(final MouseEvent e) {
+                movieClicked(movieList.get(1));
+            }
+        });
 
         GridBagConstraints gbcLblPic1 = new GridBagConstraints();
         gbcLblPic1.fill = SwingConstants.CENTER;
@@ -273,6 +294,11 @@ public class TmdbApp {
         } catch (IOException e) {
 
         }
+        lblPic2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(final MouseEvent e) {
+                movieClicked(movieList.get(2));
+            }
+        });
 
         GridBagConstraints gbcLblPic2 = new GridBagConstraints();
         gbcLblPic2.insets = new Insets(0, 0, 5, 0);
@@ -288,6 +314,12 @@ public class TmdbApp {
         } catch (IOException e) {
 
         }
+        lblPic3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(final MouseEvent e) {
+                movieClicked(movieList.get(3));
+            }
+        });
+
         GridBagConstraints gbcLblPic3 = new GridBagConstraints();
         gbcLblPic3.insets = new Insets(0, 0, 0, 5);
         gbcLblPic3.gridx = 0;
@@ -302,6 +334,12 @@ public class TmdbApp {
         } catch (IOException e) {
 
         }
+        lblPic4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(final MouseEvent e) {
+                movieClicked(movieList.get(4));
+            }
+        });
+
         GridBagConstraints gbcLblPic4 = new GridBagConstraints();
         gbcLblPic4.insets = new Insets(0, 0, 0, 5);
         gbcLblPic4.gridx = 1;
@@ -316,6 +354,12 @@ public class TmdbApp {
         } catch (IOException e) {
 
         }
+        lblPic5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(final MouseEvent e) {
+                movieClicked(movieList.get(5));
+            }
+        });
+
         GridBagConstraints gbcLblPic5 = new GridBagConstraints();
         gbcLblPic5.gridx = 2;
         gbcLblPic5.gridy = 2;
@@ -373,7 +417,7 @@ public class TmdbApp {
 
         JTabbedPane searchResultTabPane = new JTabbedPane(JTabbedPane.TOP);
         GridBagConstraints gbcTabbedPane1 = new GridBagConstraints();
-        gbcTabbedPane1.ipady = 99;
+        gbcTabbedPane1.ipady = 50;
         gbcTabbedPane1.insets = new Insets(0, 0, 5, 0);
         gbcTabbedPane1.gridwidth = 3;
         gbcTabbedPane1.fill = GridBagConstraints.BOTH;
@@ -386,43 +430,6 @@ public class TmdbApp {
         setupSearchTvTab(searchResultTabPane);
         setupSearchKeywordsTab(searchResultTabPane);
 
-        JPanel resultClickedPanel = new JPanel();
-        resultClickedPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
-        GridBagConstraints gbcPanel6 = new GridBagConstraints();
-        gbcPanel6.gridheight = 0;
-        gbcPanel6.fill = GridBagConstraints.BOTH;
-        gbcPanel6.gridwidth = 3;
-        gbcPanel6.insets = new Insets(0, 0, 5, 5);
-        gbcPanel6.gridx = 0;
-        gbcPanel6.gridy = 2;
-        searchPanel.add(resultClickedPanel, gbcPanel6);
-        GridBagLayout gblPanel6 = new GridBagLayout();
-        gblPanel6.columnWidths = new int[] {0, 0, 0};
-        gblPanel6.rowHeights = new int[] {0, 0, 0, 0, 0};
-        gblPanel6.columnWeights = new double[] {0.0, 1.0, Double.MIN_VALUE};
-        gblPanel6.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0,
-                Double.MIN_VALUE};
-        resultClickedPanel.setLayout(gblPanel6);
-
-        resultsPicLabel = new JLabel();
-        resultsPicLabel.setVisible(false);
-
-        resultLabel = new JLabel();
-        GridBagConstraints gbcLblTitle = new GridBagConstraints();
-
-        gbcLblTitle.anchor = GridBagConstraints.EAST;
-        gbcLblTitle.insets = new Insets(0, 0, 5, 5);
-        gbcLblTitle.gridx = 1;
-        gbcLblTitle.gridy = 0;
-        resultClickedPanel.add(resultsPicLabel, gbcLblTitle);
-
-        GridBagConstraints gbcLblTitle2 = new GridBagConstraints();
-
-        gbcLblTitle2.anchor = GridBagConstraints.WEST;
-        gbcLblTitle2.insets = new Insets(0, 0, 5, 5);
-        gbcLblTitle2.gridx = 0;
-        gbcLblTitle2.gridy = 0;
-        resultClickedPanel.add(resultLabel, gbcLblTitle2);
 
     }
 
@@ -448,7 +455,7 @@ public class TmdbApp {
         tableMovie.getTableHeader().setReorderingAllowed(false);
         tableMovie.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(final MouseEvent e) {
-                movieClicked();
+                movieClicked(movieModel.get(tableMovie.getSelectedRow()));
             }
         });
         GridBagConstraints gbcTable = new GridBagConstraints();
@@ -648,16 +655,15 @@ public class TmdbApp {
 
     /**
      * When movie is clicked the resultLabel is filled with movie info.
+     * @param movie Movie that is clicked.
      */
-    private void movieClicked() {
+    private void movieClicked(final MovieDb movie) {
 
-        String resultStr = search.getMovieResults(
-                movieModel.get(tableMovie.getSelectedRow()).getId());
+        String resultStr = search.getMovieResults(movie.getId());
         resultLabel.setText(resultStr);
 
         try {
-            resultsUrl = new URL(search.getMultiImageUrl(
-                    movieModel.get(tableMovie.getSelectedRow())));
+            resultsUrl = new URL(search.getMultiImageUrl(movie));
         } catch (IOException e) {
 
         }
