@@ -20,6 +20,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
@@ -69,6 +70,11 @@ public class TmdbApp {
      * Search class for searching strings.
      */
     private Search search;
+    
+    /**
+     * Login class for logging in.
+     */
+    private Login login;
 
     /**
      * Keyword class for searching keywords.
@@ -88,7 +94,7 @@ public class TmdbApp {
     /**
      * text field for password.
      */
-    private JTextField passwordTextField;
+    private JPasswordField passwordTextField;
 
     /**
      * text field for search.
@@ -96,9 +102,19 @@ public class TmdbApp {
     private JTextField txtSearchMoviesPeople;
 
     /**
-     * buttom for searching.
+     * button for searching.
      */
     private JButton searchButton;
+    
+    /**
+     * button for logging in.
+     */
+    private JButton loginButton;
+    
+    /**
+     * button for starting a guest session.
+     */
+    private JButton guestButton;
 
     /**
      * table for movies.
@@ -173,6 +189,8 @@ public class TmdbApp {
 
         search = new Search(tmdbApi, movieModel, peopleModel, tvModel);
         keyword = new KeywordMatch(tmdbApi, keywordModel);
+        
+        login = new Login(tmdbApi);
 
         initialize();
 
@@ -601,7 +619,9 @@ public class TmdbApp {
         gbcLblPassword.gridy = 1;
         loginPanel.add(lblPassword, gbcLblPassword);
 
-        passwordTextField = new JTextField();
+        passwordTextField = new JPasswordField();
+        passwordTextField.setFont(new Font("Dialog", Font.PLAIN, 12));
+        passwordTextField.setEchoChar('*');
         GridBagConstraints gbcTextField4 = new GridBagConstraints();
         gbcTextField4.anchor = GridBagConstraints.NORTHWEST;
         gbcTextField4.insets = new Insets(0, 0, 5, 0);
@@ -610,20 +630,24 @@ public class TmdbApp {
         loginPanel.add(passwordTextField, gbcTextField4);
         passwordTextField.setColumns(10);
 
-        JButton loginButton = new JButton("Log in");
+        loginButton = new JButton("  Log in  ");
         GridBagConstraints gbcBtnNewButton = new GridBagConstraints();
+        loginButton.addActionListener(actionHandler);
         gbcBtnNewButton.insets = new Insets(0, 0, 5, 0);
-        gbcBtnNewButton.ipadx = 78;
+        gbcBtnNewButton.ipadx = 95;
         gbcBtnNewButton.anchor = GridBagConstraints.NORTH;
         gbcBtnNewButton.gridwidth = 2;
         gbcBtnNewButton.gridx = 0;
         gbcBtnNewButton.gridy = 2;
         loginPanel.add(loginButton, gbcBtnNewButton);
 
-        JButton guestButton = new JButton("Guest Session");
+        guestButton = new JButton("Guest Session");
         GridBagConstraints gbcBtnNewButton2 = new GridBagConstraints();
+        guestButton.addActionListener(actionHandler);
+        gbcBtnNewButton2.anchor = GridBagConstraints.NORTH;
+        gbcBtnNewButton2.ipadx = 59;
         gbcBtnNewButton2.gridwidth = 2;
-        gbcBtnNewButton2.insets = new Insets(0, 0, 0, 5);
+        gbcBtnNewButton2.insets = new Insets(0, 0, 5, 0);
         gbcBtnNewButton2.gridx = 0;
         gbcBtnNewButton2.gridy = 3;
         loginPanel.add(guestButton, gbcBtnNewButton2);
@@ -642,7 +666,12 @@ public class TmdbApp {
                 search.stringSearch(txtSearchMoviesPeople.getText());
                 keyword.searchKeyword(txtSearchMoviesPeople.getText());
             }
-        }
+            if (which == loginButton){
+            	login.getSessionToken(userNameTextField.getText(),passwordTextField.getPassword());
+            	
+            }
+       }	
+        
 
     };
 
