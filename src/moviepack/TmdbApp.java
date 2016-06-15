@@ -622,6 +622,7 @@ public class TmdbApp {
         passwordTextField = new JPasswordField();
         passwordTextField.setFont(new Font("Dialog", Font.PLAIN, 12));
         passwordTextField.setEchoChar('*');
+        passwordTextField.addActionListener(actionHandler);
         GridBagConstraints gbcTextField4 = new GridBagConstraints();
         gbcTextField4.anchor = GridBagConstraints.NORTHWEST;
         gbcTextField4.insets = new Insets(0, 0, 5, 0);
@@ -666,8 +667,12 @@ public class TmdbApp {
                 search.stringSearch(txtSearchMoviesPeople.getText());
                 keyword.searchKeyword(txtSearchMoviesPeople.getText());
             }
-            if (which == loginButton){
-            	login.getSessionToken(userNameTextField.getText(),passwordTextField.getPassword());
+            if (which == loginButton || which == passwordTextField) {
+            	login.getSessionToken(userNameTextField.getText(), passwordTextField.getPassword());
+
+            }
+            if (which == guestButton) {
+            	login.getSessionToken();
             	
             }
        }	
