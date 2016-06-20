@@ -8,6 +8,7 @@ import java.util.Set;
 
 import info.movito.themoviedbapi.TmdbApi;
 import info.movito.themoviedbapi.TmdbKeywords;
+import info.movito.themoviedbapi.TmdbMovies;
 import info.movito.themoviedbapi.TmdbSearch;
 import info.movito.themoviedbapi.TmdbSearch.KeywordResultsPage;
 import info.movito.themoviedbapi.model.MovieDb;
@@ -40,7 +41,16 @@ public class KeywordMatch {
      *
      */
     private MovieModel keywordModel;
+    
+    /**
+     * Access to movie information. 
+     */
+    private TmdbMovies movies;
 
+    /**
+     * keeps track of suggested keywords
+     */
+   public  List<String> keyString = new ArrayList<String>();
     /**
      * The maximum number of keywords.
      */
@@ -50,6 +60,10 @@ public class KeywordMatch {
      * Number of movies per page.
      */
     private static final int MOVIES_PER_PAGE = 20;
+    
+   private List<Keyword> currentKeyList = new ArrayList<Keyword>();
+   private List<Keyword> suggestedKeywords = new ArrayList<Keyword>();
+   private Keyword mainkeyword = null;
 
     /**
      * Initializes keywords from database.
@@ -64,6 +78,7 @@ public class KeywordMatch {
 
         search = tmdbApi.getSearch();
         tmdbKeyword = tmdbApi.getKeywords();
+        movies = tmdbApi.getMovies();
 
         this.keywordModel = theKeywordModel;
 
@@ -108,7 +123,7 @@ public class KeywordMatch {
             while (true) {
                 try {
                     // Grabs first keyword match .. best match
-                    Keyword mainkeyword = keywordlist.get(j);
+                    mainkeyword = keywordlist.get(j);
 
                     // Gets keyword ID and searches for movies that are
                     // associated with
@@ -205,6 +220,7 @@ public class KeywordMatch {
         // Runs if the user exits the search by entering four search keywords
         // instead of entering "x"
 
+
         // Matching Algorithm
 
         // For One keyword search
@@ -217,17 +233,46 @@ public class KeywordMatch {
         //////////////////////////////////////////////////////////////
         // Matching Algorithm
         //////////////////////////////////////////////////////////////
-
+       
+        
+		
         // For two keywords
         if (i == 2) {
 
             // keeps all movies in list one that are also in list two
             movielist.retainAll(movielist2);
+
+            int size = movielist.size();
+            int count;
+
+			for(count=0; count<size; count++){
+
+				MovieDb currentmovie = movielist.get(count); /// this works
+				int movieId = currentmovie.getId();
+				currentKeyList = movies.getKeywords(movieId);
+				suggestedKeywords.addAll(currentKeyList);
+			}
+			
+				//gets rid of repeats
+				Set<Keyword> hs = new HashSet<>();
+				hs.addAll(suggestedKeywords);
+				suggestedKeywords.clear();
+				suggestedKeywords.addAll(hs);
+				suggestedKeywords.remove(mainkeyword);
+
+
+			for(Keyword keyword : suggestedKeywords){
+			
+				keyString.add(keyword.getName()+"\n");
+				
+				
+			}
+
             for (MovieDb movie : movielist) {
                 keywordModel.add(movie);
             }
-
         }
+
 
         // For Three keywords
         if (i == MAX_KEYWORDS - 1) {
@@ -287,6 +332,32 @@ public class KeywordMatch {
         secondbestall.clear();
         secondbestall.addAll(hs);
 
+        
+        int size = bestmatch.size();
+        int count;
+
+		for(count=0; count<size; count++){
+
+			MovieDb currentmovie = movielist.get(count); /// this works
+			int movieId = currentmovie.getId();
+			currentKeyList = movies.getKeywords(movieId);
+			suggestedKeywords.addAll(currentKeyList);
+		}
+		
+			//gets rid of repeats
+			Set<Keyword> hs3 = new HashSet<>();
+			hs3.addAll(suggestedKeywords);
+			suggestedKeywords.clear();
+			suggestedKeywords.addAll(hs3);
+			suggestedKeywords.remove(mainkeyword);
+
+
+		for(Keyword keyword : suggestedKeywords){
+		
+			keyString.add(keyword.getName()+"\n");
+			
+			
+		}
         // Prints out matches
 
         for (MovieDb movie : bestmatch) {
@@ -419,5 +490,8 @@ public class KeywordMatch {
         for (MovieDb movie : thirdbestall) {
             keywordModel.add(movie);
         }
+    }
+    public List<String> getSuggested(){
+    	return keyString;
     }
 }
