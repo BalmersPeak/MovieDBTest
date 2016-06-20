@@ -41,16 +41,16 @@ public class KeywordMatch {
      *
      */
     private MovieModel keywordModel;
-    
+
     /**
-     * Access to movie information. 
+     * Access to movie information.
      */
     private TmdbMovies movies;
 
     /**
-     * keeps track of suggested keywords
+     * Keeps track of suggested keywords.
      */
-   public  List<String> keyString = new ArrayList<String>();
+   private  List<String> keyString = new ArrayList<String>();
     /**
      * The maximum number of keywords.
      */
@@ -60,9 +60,20 @@ public class KeywordMatch {
      * Number of movies per page.
      */
     private static final int MOVIES_PER_PAGE = 20;
-    
+
+    /**
+     * List of keywords for current search.
+     */
    private List<Keyword> currentKeyList = new ArrayList<Keyword>();
+
+   /**
+    * List of keywords suggested for next search.
+    */
    private List<Keyword> suggestedKeywords = new ArrayList<Keyword>();
+
+   /**
+    * Original Keyword Searched.
+    */
    private Keyword mainkeyword = null;
 
     /**
@@ -223,9 +234,9 @@ public class KeywordMatch {
 
         // Matching Algorithm
 
-        // For One keyword search
-        if (i == 1) {
-        	keyString.clear();
+    // For One keyword search
+    if (i == 1) {
+    keyString.clear();
             for (MovieDb movie : movielist) {
                 keywordModel.add(movie);
             }
@@ -234,9 +245,8 @@ public class KeywordMatch {
         //////////////////////////////////////////////////////////////
         // Matching Algorithm
         //////////////////////////////////////////////////////////////
-       
-        
-		
+
+
         // For two keywords
         if (i == 2) {
 
@@ -246,29 +256,29 @@ public class KeywordMatch {
             int size = movielist.size();
             int count;
 
-			for(count=0; count<size; count++){
+for (count = 0; count < size; count++) {
 
-				MovieDb currentmovie = movielist.get(count); /// this works
-				int movieId = currentmovie.getId();
-				currentKeyList = movies.getKeywords(movieId);
-				suggestedKeywords.addAll(currentKeyList);
-			}
-			
-				//gets rid of repeats
-				Set<Keyword> hs = new HashSet<>();
-				hs.addAll(suggestedKeywords);
-				suggestedKeywords.clear();
-				suggestedKeywords.addAll(hs);
-				suggestedKeywords.remove(mainkeyword);
+                MovieDb currentmovie = movielist.get(count); /// this works
+int movieId = currentmovie.getId();
+currentKeyList = movies.getKeywords(movieId);
+suggestedKeywords.addAll(currentKeyList);
+}
 
-			keyString.clear();
-		
-			for(Keyword keyword : suggestedKeywords){
-			
-				keyString.add(keyword.getName()+"\n");
-				
-				
-			}
+//gets rid of repeats
+Set<Keyword> hs = new HashSet<>();
+hs.addAll(suggestedKeywords);
+suggestedKeywords.clear();
+suggestedKeywords.addAll(hs);
+suggestedKeywords.remove(mainkeyword);
+
+keyString.clear();
+
+for (Keyword keyword : suggestedKeywords) {
+
+keyString.add(keyword.getName() + "\n");
+
+
+}
 
             for (MovieDb movie : movielist) {
                 keywordModel.add(movie);
@@ -334,34 +344,34 @@ public class KeywordMatch {
         secondbestall.clear();
         secondbestall.addAll(hs);
 
-        
+
         int size = bestmatch.size();
         int count;
 
-		for(count=0; count<size; count++){
+for (count = 0; count < size; count++) {
 
-			MovieDb currentmovie = movielist.get(count); /// this works
-			int movieId = currentmovie.getId();
-			currentKeyList = movies.getKeywords(movieId);
-			suggestedKeywords.addAll(currentKeyList);
-		}
-		
-			//gets rid of repeats
-			Set<Keyword> hs3 = new HashSet<>();
-			hs3.addAll(suggestedKeywords);
-			suggestedKeywords.clear();
-			suggestedKeywords.addAll(hs3);
-			suggestedKeywords.remove(mainkeyword);
-			
-			 
-		keyString.clear();
+ MovieDb currentmovie = movielist.get(count); /// this works
+int movieId = currentmovie.getId();
+currentKeyList = movies.getKeywords(movieId);
+suggestedKeywords.addAll(currentKeyList);
+}
 
-		for(Keyword keyword : suggestedKeywords){
-		
-			keyString.add(keyword.getName()+"\n");
-			
-			
-		}
+//gets rid of repeats
+Set<Keyword> hs3 = new HashSet<>();
+hs3.addAll(suggestedKeywords);
+suggestedKeywords.clear();
+suggestedKeywords.addAll(hs3);
+suggestedKeywords.remove(mainkeyword);
+
+
+keyString.clear();
+
+for (Keyword keyword : suggestedKeywords) {
+
+keyString.add(keyword.getName() + "\n");
+
+
+}
         // Prints out matches
 
         for (MovieDb movie : bestmatch) {
@@ -483,7 +493,7 @@ public class KeywordMatch {
 
         // Prints out matches
         keyString.clear();
-        
+
         for (MovieDb movie : bestmatch) {
             keywordModel.add(movie);
         }
@@ -496,7 +506,12 @@ public class KeywordMatch {
             keywordModel.add(movie);
         }
     }
-    public List<String> getSuggested(){
-    	return keyString;
+    /**
+     * Returns the list of suggested searches to the GUI.
+     * @return keyString
+     * Returns the list of suggested keywords to produce perfect matches
+     */
+    public final List<String> getSuggested() {
+    return keyString;
     }
 }
