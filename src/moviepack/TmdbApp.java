@@ -651,7 +651,7 @@ public class TmdbApp {
 
         GridBagConstraints keywordTextSetup = new GridBagConstraints();
         keywordTextSetup.anchor = GridBagConstraints.EAST;
-        keywordTextArea = new JTextArea(40, 20);
+        keywordTextArea = new JTextArea(30, 20);
         keywordTextArea.setEditable(false);
         keywordTextArea.setLineWrap(true);
 
