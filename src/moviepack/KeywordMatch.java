@@ -225,6 +225,7 @@ public class KeywordMatch {
 
         // For One keyword search
         if (i == 1) {
+        	keyString.clear();
             for (MovieDb movie : movielist) {
                 keywordModel.add(movie);
             }
@@ -260,7 +261,8 @@ public class KeywordMatch {
 				suggestedKeywords.addAll(hs);
 				suggestedKeywords.remove(mainkeyword);
 
-
+			keyString.clear();
+		
 			for(Keyword keyword : suggestedKeywords){
 			
 				keyString.add(keyword.getName()+"\n");
@@ -350,7 +352,9 @@ public class KeywordMatch {
 			suggestedKeywords.clear();
 			suggestedKeywords.addAll(hs3);
 			suggestedKeywords.remove(mainkeyword);
-
+			
+			 
+		keyString.clear();
 
 		for(Keyword keyword : suggestedKeywords){
 		
@@ -478,7 +482,8 @@ public class KeywordMatch {
         thirdbestall.addAll(hs2);
 
         // Prints out matches
-
+        keyString.clear();
+        
         for (MovieDb movie : bestmatch) {
             keywordModel.add(movie);
         }
