@@ -774,12 +774,12 @@ public class TmdbApp {
             }
             if (which == loginButton || which == passwordTextField) {
                 if (!userNameTextField.getText().isEmpty() && passwordTextField.getPassword().length > 0) {
-            
-            	try {
+
+                try {
             	sessionToken = login.getSessionToken(
             			userNameTextField.getText(),
                         passwordTextField.getPassword());
-                } catch (MovieDbException ex){
+                } catch (MovieDbException ex) {
                 	ex.printStackTrace();
                 }
 
