@@ -38,6 +38,7 @@ import info.movito.themoviedbapi.model.core.AccountID;
 import info.movito.themoviedbapi.model.core.MovieResultsPage;
 import info.movito.themoviedbapi.model.core.SessionToken;
 import info.movito.themoviedbapi.model.people.PersonPeople;
+import info.movito.themoviedbapi.tools.MovieDbException;
 
 /**
  * GUI for the tmdbApi.
@@ -772,9 +773,15 @@ public class TmdbApp {
                 keyword.searchKeyword(txtSearchMoviesPeople.getText());
             }
             if (which == loginButton || which == passwordTextField) {
-                sessionToken = login.getSessionToken(
-                        userNameTextField.getText(),
+                if (!userNameTextField.getText().isEmpty() && passwordTextField.getPassword().length > 0) {
+            
+            	try {
+            	sessionToken = login.getSessionToken(
+            			userNameTextField.getText(),
                         passwordTextField.getPassword());
+                } catch (MovieDbException ex){
+                	ex.printStackTrace();
+                }
 
                 accountId = new AccountID(
                         account.getAccount(sessionToken).getId());
@@ -788,7 +795,7 @@ public class TmdbApp {
 
                     watchModel.add(movie);
                 }
-
+                }
             }
             // if (which == guestButton) {
             // sessionToken = login.getSessionToken();
