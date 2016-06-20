@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -26,8 +27,9 @@ import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -152,6 +154,11 @@ public class TmdbApp {
      * Label for clicked on searched results picture.
      */
     private JLabel resultsPicLabel;
+    
+    /**
+     * area for loading suggested keywords
+     */
+    JTextArea keywordTextArea;
 
     /**
      * Url for pictures of results.
@@ -197,6 +204,11 @@ public class TmdbApp {
      * removes watchlist movie.
      */
     private JButton removeWatchList;
+   
+    /**
+     * keyword suggestions
+     */
+    private List<String> suggestedList = new ArrayList<String>();
 
     /**
      * Launch the application.
@@ -638,11 +650,24 @@ public class TmdbApp {
         gbcTable.gridy = 0;
         keywordsPanel.add(new JScrollPane(tableKeyword), gbcTable);
 
+        GridBagConstraints keywordTextSetup = new GridBagConstraints();
+        keywordTextSetup.anchor = GridBagConstraints.EAST;
+        keywordTextArea = new JTextArea(30, 20);
+        keywordTextArea.setEditable(false);
+        keywordTextArea.setLineWrap(true);
+
+        JScrollPane scrollPane = new JScrollPane(keywordTextArea);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        
+        keywordsPanel.add(scrollPane);
+
+       // keywordsPanel.add(keywordTextArea, keywordTextSetup);
+        keywordTextArea.setText("Perfect Match Suggestions:\n\n");
+
     }
 
     /**
      * Sets up the Login tab.
-     * 
      * @param tabbedPane
      *            the tabbedPane to add the Login tab to.
      */
@@ -771,6 +796,9 @@ public class TmdbApp {
             if (which == searchButton || which == txtSearchMoviesPeople) {
                 search.stringSearch(txtSearchMoviesPeople.getText());
                 keyword.searchKeyword(txtSearchMoviesPeople.getText());
+                suggestedList = keyword.getSuggested();
+                updateSuggestions();
+
             }
             if (which == loginButton || which == passwordTextField) {
                 if (!userNameTextField.getText().isEmpty() && passwordTextField.getPassword().length > 0) {
@@ -928,6 +956,17 @@ public class TmdbApp {
 
         if (sessionToken != null) {
             watchButton.setVisible(true);
-        }
+    }
+    }
+    
+    void updateSuggestions(){
+    	
+    	 keywordTextArea.setText("Perfect Match Suggestions: \n\n");
+    	 int listlength = suggestedList.size();
+         int i;
+         
+         for(i=0;i<listlength;i++){
+         keywordTextArea.append(suggestedList.get(i));
+         }
     }
 }
