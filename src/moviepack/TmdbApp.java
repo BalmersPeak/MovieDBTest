@@ -153,11 +153,11 @@ public class TmdbApp {
      * Label for clicked on searched results picture.
      */
     private JLabel resultsPicLabel;
-    
+
     /**
-     * area for loading suggested keywords
+     * area for loading suggested keywords.
      */
-    JTextArea keywordTextArea;
+    private JTextArea keywordTextArea;
 
     /**
      * Url for pictures of results.
@@ -203,9 +203,9 @@ public class TmdbApp {
      * removes watchlist movie.
      */
     private JButton removeWatchList;
-   
+
     /**
-     * keyword suggestions
+     * keyword suggestions.
      */
     private List<String> suggestedList = new ArrayList<String>();
 
@@ -297,7 +297,7 @@ public class TmdbApp {
 
     /**
      * Sets up the Home tab.
-     * 
+     *
      * @param tabbedPane
      *            the tabbedPane to add the home tab to.
      */
@@ -450,7 +450,7 @@ public class TmdbApp {
 
     /**
      * Sets up the Search tab.
-     * 
+     *
      * @param tabbedPane
      *            the tabbedPane to add the search tab to.
      */
@@ -517,7 +517,7 @@ public class TmdbApp {
 
     /**
      * Sets up the movie tab in the search tab.
-     * 
+     *
      * @param searchResultTabPane
      *            tab to but the movie search results.
      */
@@ -552,7 +552,7 @@ public class TmdbApp {
 
     /**
      * Sets up the people tab in the search tab.
-     * 
+     *
      * @param searchResultTabPane
      *            tab to but the people search results.
      */
@@ -585,7 +585,7 @@ public class TmdbApp {
 
     /**
      * Sets up the tv tab in the search tab.
-     * 
+     *
      * @param searchResultTabPane
      *            tab to but the tv search results.
      */
@@ -618,7 +618,7 @@ public class TmdbApp {
 
     /**
      * Sets up the keywords tab in the search tab.
-     * 
+     *
      * @param searchResultTabPane
      *            tab to but the keywords search results.
      */
@@ -656,8 +656,9 @@ public class TmdbApp {
         keywordTextArea.setLineWrap(true);
 
         JScrollPane scrollPane = new JScrollPane(keywordTextArea);
-        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        
+        scrollPane.setVerticalScrollBarPolicy(
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
         keywordsPanel.add(scrollPane);
 
        // keywordsPanel.add(keywordTextArea, keywordTextSetup);
@@ -807,6 +808,8 @@ public class TmdbApp {
                 accountId = new AccountID(
                         account.getAccount(sessionToken).getId());
 
+                watchModel.clear();
+
                 MovieResultsPage moviePage = account
                         .getWatchListMovies(sessionToken, accountId, 0);
                 Iterator<MovieDb> movieIt = moviePage.iterator();
@@ -860,7 +863,7 @@ public class TmdbApp {
 
     /**
      * When movie is clicked the resultLabel is filled with movie info.
-     * 
+     *
      * @param movie
      *            Movie that is clicked.
      */
@@ -951,14 +954,17 @@ public class TmdbApp {
             watchButton.setVisible(true);
     }
     }
-    
-    void updateSuggestions(){
-    	
-    	 keywordTextArea.setText("Perfect Match Suggestions: \n\n");
-    	 int listlength = suggestedList.size();
+
+    /**
+     * Updates keyword suggestion.
+     */
+    private void updateSuggestions() {
+
+         keywordTextArea.setText("Perfect Match Suggestions: \n\n");
+         int listlength = suggestedList.size();
          int i;
-         
-         for(i=0;i<listlength;i++){
+
+         for (i = 0; i < listlength; i++) {
          keywordTextArea.append(suggestedList.get(i));
          }
     }
