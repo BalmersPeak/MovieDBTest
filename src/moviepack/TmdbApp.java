@@ -801,14 +801,15 @@ public class TmdbApp {
 
             }
             if (which == loginButton || which == passwordTextField) {
-                if (!userNameTextField.getText().isEmpty() && passwordTextField.getPassword().length > 0) {
+                if (!userNameTextField.getText().isEmpty()
+                        && passwordTextField.getPassword().length > 0) {
 
                 try {
-            	sessionToken = login.getSessionToken(
-            			userNameTextField.getText(),
+                sessionToken = login.getSessionToken(
+                        userNameTextField.getText(),
                         passwordTextField.getPassword());
-                } catch (MovieDbException ex) {
-                	ex.printStackTrace();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
 
                 accountId = new AccountID(
