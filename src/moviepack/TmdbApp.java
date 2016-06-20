@@ -809,9 +809,6 @@ public class TmdbApp {
                 sessionToken = login.getSessionToken(
                         userNameTextField.getText(),
                         passwordTextField.getPassword());
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
 
                 accountId = new AccountID(
                         account.getAccount(sessionToken).getId());
@@ -820,12 +817,18 @@ public class TmdbApp {
 
                 MovieResultsPage moviePage = account
                         .getWatchListMovies(sessionToken, accountId, 0);
+
+
                 Iterator<MovieDb> movieIt = moviePage.iterator();
 
                 while (movieIt.hasNext()) {
                     MovieDb movie = movieIt.next();
 
                     watchModel.add(movie);
+                }
+
+                } catch (Exception ex) {
+                    //ex.printStackTrace();
                 }
                 }
             }
