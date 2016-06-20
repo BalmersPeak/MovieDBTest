@@ -15,6 +15,7 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -30,8 +31,12 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import info.movito.themoviedbapi.TmdbAccount;
 import info.movito.themoviedbapi.TmdbApi;
 import info.movito.themoviedbapi.model.MovieDb;
+import info.movito.themoviedbapi.model.core.AccountID;
+import info.movito.themoviedbapi.model.core.MovieResultsPage;
+import info.movito.themoviedbapi.model.core.SessionToken;
 import info.movito.themoviedbapi.model.people.PersonPeople;
 
 /**
@@ -71,7 +76,7 @@ public class TmdbApp {
      * Search class for searching strings.
      */
     private Search search;
-    
+
     /**
      * Login class for logging in.
      */
@@ -106,16 +111,16 @@ public class TmdbApp {
      * button for searching.
      */
     private JButton searchButton;
-    
+
     /**
      * button for logging in.
      */
     private JButton loginButton;
-    
+
     /**
      * button for starting a guest session.
      */
-    private JButton guestButton;
+    // private JButton guestButton;
 
     /**
      * table for movies.
@@ -153,6 +158,46 @@ public class TmdbApp {
     private URL resultsUrl = null;
 
     /**
+     * Session token for login.
+     */
+    private SessionToken sessionToken;
+
+    /**
+     * AccountId for account.
+     */
+    private AccountID accountId;
+
+    /**
+     * Table for watch later movies.
+     */
+    private JTable tableWatch;
+
+    /**
+     * model for favorite movies.
+     */
+    private MovieModel watchModel;
+
+    /**
+     * Account for watchlist.
+     */
+    private TmdbAccount account;
+
+    /**
+     * Button to add to Watchlist.
+     */
+    private JButton watchButton;
+
+    /**
+     * last clicked movie.
+     */
+    private MovieDb lastClickedMovie = null;
+
+    /**
+     * removes watchlist movie.
+     */
+    private JButton removeWatchList;
+
+    /**
      * Launch the application.
      *
      * @param args
@@ -171,13 +216,12 @@ public class TmdbApp {
         });
     }
 
-// Check:OFF: MagicNumber
+    // Check:OFF: MagicNumber
 
     /**
      * Create the application.
      */
     public TmdbApp() {
-
 
         // User Defined
 
@@ -187,10 +231,12 @@ public class TmdbApp {
         peopleModel = new PeopleModel();
         tvModel = new TvModel();
         keywordModel = new MovieModel();
+        watchModel = new MovieModel();
 
         search = new Search(tmdbApi, movieModel, peopleModel, tvModel);
         keyword = new KeywordMatch(tmdbApi, keywordModel);
-        
+        account = tmdbApi.getAccount();
+
         login = new Login(tmdbApi);
 
         initialize();
@@ -199,6 +245,7 @@ public class TmdbApp {
         tablePeople.setModel(peopleModel);
         tableTv.setModel(tvModel);
         tableKeyword.setModel(keywordModel);
+        tableWatch.setModel(watchModel);
     }
 
     /**
@@ -228,11 +275,17 @@ public class TmdbApp {
         resultLabel = new JLabel();
         frmL.add(resultLabel, BorderLayout.CENTER);
 
-//        frmL.pack();
+        watchButton = new JButton("Add to Watch Later");
+        watchButton.addActionListener(actionHandler);
+        watchButton.setPreferredSize(new Dimension(185, 50));
+        watchButton.setVisible(false);
+        frmL.add(watchButton, BorderLayout.EAST);
+
     }
 
     /**
      * Sets up the Home tab.
+     * 
      * @param tabbedPane
      *            the tabbedPane to add the home tab to.
      */
@@ -243,8 +296,7 @@ public class TmdbApp {
         gblPanel1.columnWidths = new int[] {0, 0, 0};
         gblPanel1.rowHeights = new int[] {0, 0, 0, 0};
         gblPanel1.columnWeights = new double[] {0.0, 0.0, 0.0};
-        gblPanel1.rowWeights = new double[] {0.0, 0.0, 0.0,
-                Double.MIN_VALUE};
+        gblPanel1.rowWeights = new double[] {0.0, 0.0, 0.0, Double.MIN_VALUE};
         homePanel.setLayout(gblPanel1);
 
         JLabel lblNewReleases = new JLabel("New Releases");
@@ -386,6 +438,7 @@ public class TmdbApp {
 
     /**
      * Sets up the Search tab.
+     * 
      * @param tabbedPane
      *            the tabbedPane to add the search tab to.
      */
@@ -448,11 +501,11 @@ public class TmdbApp {
         setupSearchTvTab(searchResultTabPane);
         setupSearchKeywordsTab(searchResultTabPane);
 
-
     }
 
     /**
      * Sets up the movie tab in the search tab.
+     * 
      * @param searchResultTabPane
      *            tab to but the movie search results.
      */
@@ -487,6 +540,7 @@ public class TmdbApp {
 
     /**
      * Sets up the people tab in the search tab.
+     * 
      * @param searchResultTabPane
      *            tab to but the people search results.
      */
@@ -519,6 +573,7 @@ public class TmdbApp {
 
     /**
      * Sets up the tv tab in the search tab.
+     * 
      * @param searchResultTabPane
      *            tab to but the tv search results.
      */
@@ -551,6 +606,7 @@ public class TmdbApp {
 
     /**
      * Sets up the keywords tab in the search tab.
+     * 
      * @param searchResultTabPane
      *            tab to but the keywords search results.
      */
@@ -585,6 +641,7 @@ public class TmdbApp {
 
     /**
      * Sets up the Login tab.
+     * 
      * @param tabbedPane
      *            the tabbedPane to add the Login tab to.
      */
@@ -649,19 +706,59 @@ public class TmdbApp {
         gbcBtnNewButton.gridy = 2;
         loginPanel.add(loginButton, gbcBtnNewButton);
 
-        guestButton = new JButton("Guest Session");
-        GridBagConstraints gbcBtnNewButton2 = new GridBagConstraints();
-        guestButton.addActionListener(actionHandler);
-        gbcBtnNewButton2.anchor = GridBagConstraints.NORTH;
-        gbcBtnNewButton2.ipadx = 59;
-        gbcBtnNewButton2.gridwidth = 2;
-        gbcBtnNewButton2.insets = new Insets(0, 0, 5, 0);
-        gbcBtnNewButton2.gridx = 0;
-        gbcBtnNewButton2.gridy = 3;
-        loginPanel.add(guestButton, gbcBtnNewButton2);
+        // guestButton = new JButton("Guest Session");
+        // GridBagConstraints gbcBtnNewButton2 = new GridBagConstraints();
+        // guestButton.addActionListener(actionHandler);
+        // gbcBtnNewButton2.anchor = GridBagConstraints.NORTH;
+        // gbcBtnNewButton2.ipadx = 59;
+        // gbcBtnNewButton2.gridwidth = 2;
+        // gbcBtnNewButton2.insets = new Insets(0, 0, 5, 0);
+        // gbcBtnNewButton2.gridx = 0;
+        // gbcBtnNewButton2.gridy = 3;
+        // loginPanel.add(guestButton, gbcBtnNewButton2);
+
+        JLabel favTitle = new JLabel("Watch Later Movies");
+        GridBagConstraints gbcBtnlabel = new GridBagConstraints();
+        gbcBtnlabel.anchor = GridBagConstraints.CENTER;
+        gbcBtnlabel.ipadx = 59;
+        gbcBtnlabel.gridwidth = 2;
+        gbcBtnlabel.insets = new Insets(0, 0, 5, 0);
+        gbcBtnlabel.gridx = 1;
+        gbcBtnlabel.gridy = 4;
+        loginPanel.add(favTitle, gbcBtnlabel);
+
+        tableWatch = new JTable();
+        tableWatch.setToolTipText("");
+        tableWatch.setSelectionMode(
+                javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tableWatch.getTableHeader().setReorderingAllowed(false);
+        tableWatch.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(final MouseEvent e) {
+                movieClicked(watchModel.get(tableWatch.getSelectedRow()));
+            }
+        });
+        GridBagConstraints gbcBtnTable = new GridBagConstraints();
+        gbcBtnTable.anchor = GridBagConstraints.NORTH;
+        gbcBtnTable.ipadx = 59;
+        gbcBtnTable.gridwidth = 2;
+        gbcBtnTable.insets = new Insets(0, 0, 5, 0);
+        gbcBtnTable.gridx = 1;
+        gbcBtnTable.gridy = 5;
+        loginPanel.add(new JScrollPane(tableWatch), gbcBtnTable);
+
+        removeWatchList = new JButton("Remove");
+        removeWatchList.addActionListener(actionHandler);
+        GridBagConstraints gbcBtnNewButton3 = new GridBagConstraints();
+        gbcBtnNewButton3.insets = new Insets(0, 0, 5, 0);
+        gbcBtnNewButton3.ipadx = 95;
+        gbcBtnNewButton3.anchor = GridBagConstraints.CENTER;
+        gbcBtnNewButton3.gridwidth = 2;
+        gbcBtnNewButton3.gridx = 0;
+        gbcBtnNewButton3.gridy = 5;
+        loginPanel.add(removeWatchList, gbcBtnNewButton3);
     }
 
-//Check:ON: MagicNumber
+    // Check:ON: MagicNumber
 
     /**
      * Reacts to actions from searching.
@@ -675,25 +772,74 @@ public class TmdbApp {
                 keyword.searchKeyword(txtSearchMoviesPeople.getText());
             }
             if (which == loginButton || which == passwordTextField) {
-            	login.getSessionToken(userNameTextField.getText(), passwordTextField.getPassword());
+                sessionToken = login.getSessionToken(
+                        userNameTextField.getText(),
+                        passwordTextField.getPassword());
+
+                accountId = new AccountID(
+                        account.getAccount(sessionToken).getId());
+
+                MovieResultsPage moviePage = account
+                        .getWatchListMovies(sessionToken, accountId, 0);
+                Iterator<MovieDb> movieIt = moviePage.iterator();
+
+                while (movieIt.hasNext()) {
+                    MovieDb movie = movieIt.next();
+
+                    watchModel.add(movie);
+                }
 
             }
-            if (which == guestButton) {
-            	login.getSessionToken();
-            	
+            // if (which == guestButton) {
+            // sessionToken = login.getSessionToken();
+            //
+            // }
+            if (which == watchButton) {
+                account.addToWatchList(sessionToken, accountId,
+                        lastClickedMovie.getId(), TmdbAccount.MediaType.MOVIE);
+
+                watchModel.clear();
+
+                MovieResultsPage moviePage = account
+                        .getWatchListMovies(sessionToken, accountId, 0);
+                Iterator<MovieDb> movieIt = moviePage.iterator();
+
+                while (movieIt.hasNext()) {
+                    MovieDb movie = movieIt.next();
+
+                    watchModel.add(movie);
+                }
             }
-       }	
-        
+            if (which == removeWatchList && lastClickedMovie != null) {
+                account.removeFromWatchList(sessionToken, accountId,
+                        lastClickedMovie.getId(), TmdbAccount.MediaType.MOVIE);
+
+                watchModel.clear();
+
+                MovieResultsPage moviePage = account
+                        .getWatchListMovies(sessionToken, accountId, 0);
+                Iterator<MovieDb> movieIt = moviePage.iterator();
+
+                while (movieIt.hasNext()) {
+                    MovieDb movie = movieIt.next();
+
+                    watchModel.add(movie);
+                }
+            }
+        }
 
     };
 
     /**
      * When movie is clicked the resultLabel is filled with movie info.
-     * @param movie Movie that is clicked.
+     * 
+     * @param movie
+     *            Movie that is clicked.
      */
     private void movieClicked(final MovieDb movie) {
 
         String resultStr = search.getMovieResults(movie.getId());
+        lastClickedMovie = movie;
         resultLabel.setText(resultStr);
 
         try {
@@ -704,6 +850,10 @@ public class TmdbApp {
         ImageIcon icon = new ImageIcon(resultsUrl);
         resultsPicLabel.setVisible(true);
         resultsPicLabel.setIcon(icon);
+
+        if (sessionToken != null) {
+            watchButton.setVisible(true);
+        }
     }
 
     /**
@@ -724,6 +874,8 @@ public class TmdbApp {
         ImageIcon icon = new ImageIcon(resultsUrl);
         resultsPicLabel.setVisible(true);
         resultsPicLabel.setIcon(icon);
+
+        watchButton.setVisible(false);
     }
 
     /**
@@ -743,6 +895,8 @@ public class TmdbApp {
         ImageIcon icon = new ImageIcon(resultsUrl);
         resultsPicLabel.setVisible(true);
         resultsPicLabel.setIcon(icon);
+
+        watchButton.setVisible(false);
     }
 
     /**
@@ -753,6 +907,8 @@ public class TmdbApp {
                 keywordModel.get(tableKeyword.getSelectedRow()).getId());
         resultLabel.setText(resultStr);
 
+        lastClickedMovie = keywordModel.get(tableKeyword.getSelectedRow());
+
         try {
             resultsUrl = new URL(search.getMultiImageUrl(
                     keywordModel.get(tableKeyword.getSelectedRow())));
@@ -762,5 +918,9 @@ public class TmdbApp {
         ImageIcon icon = new ImageIcon(resultsUrl);
         resultsPicLabel.setVisible(true);
         resultsPicLabel.setIcon(icon);
+
+        if (sessionToken != null) {
+            watchButton.setVisible(true);
+        }
     }
 }
