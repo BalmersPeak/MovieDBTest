@@ -1,7 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>TmdbApp.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">tests (May 31, 2016 9:50:09 PM)</a> &gt; <a href="../../index.html" class="el_group">MovieDBTest</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">moviepack</a> &gt; <span class="el_source">TmdbApp.java</span></div><h1>TmdbApp.java</h1><pre class="source lang-java linenums"><span class="pc" id="L1">package moviepack;</span>
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>TmdbApp.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">tests (Jun 20, 2016 6:49:53 PM)</a> &gt; <a href="../../index.html" class="el_group">MovieDBTest</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">moviepack</a> &gt; <span class="el_source">TmdbApp.java</span></div><h1>TmdbApp.java</h1><pre class="source lang-java linenums"><span class="pc" id="L1">package moviepack;</span>
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -14,23 +15,32 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import info.movito.themoviedbapi.TmdbAccount;
 import info.movito.themoviedbapi.TmdbApi;
 import info.movito.themoviedbapi.model.MovieDb;
+import info.movito.themoviedbapi.model.core.AccountID;
+import info.movito.themoviedbapi.model.core.MovieResultsPage;
+import info.movito.themoviedbapi.model.core.SessionToken;
 import info.movito.themoviedbapi.model.people.PersonPeople;
+import info.movito.themoviedbapi.tools.MovieDbException;
 
 /**
  * GUI for the tmdbApi.
@@ -71,6 +81,11 @@ public class TmdbApp {
     private Search search;
 
     /**
+     * Login class for logging in.
+     */
+    private Login login;
+
+    /**
      * Keyword class for searching keywords.
      */
     private KeywordMatch keyword;
@@ -88,7 +103,7 @@ public class TmdbApp {
     /**
      * text field for password.
      */
-    private JTextField passwordTextField;
+    private JPasswordField passwordTextField;
 
     /**
      * text field for search.
@@ -96,9 +111,19 @@ public class TmdbApp {
     private JTextField txtSearchMoviesPeople;
 
     /**
-     * buttom for searching.
+     * button for searching.
      */
     private JButton searchButton;
+
+    /**
+     * button for logging in.
+     */
+    private JButton loginButton;
+
+    /**
+     * button for starting a guest session.
+     */
+    // private JButton guestButton;
 
     /**
      * table for movies.
@@ -131,9 +156,59 @@ public class TmdbApp {
     private JLabel resultsPicLabel;
 
     /**
+     * area for loading suggested keywords.
+     */
+    private JTextArea keywordTextArea;
+
+    /**
      * Url for pictures of results.
      */
-<span class="fc" id="L136">    private URL resultsUrl = null;</span>
+<span class="fc" id="L166">    private URL resultsUrl = null;</span>
+
+    /**
+     * Session token for login.
+     */
+    private SessionToken sessionToken;
+
+    /**
+     * AccountId for account.
+     */
+    private AccountID accountId;
+
+    /**
+     * Table for watch later movies.
+     */
+    private JTable tableWatch;
+
+    /**
+     * model for favorite movies.
+     */
+    private MovieModel watchModel;
+
+    /**
+     * Account for watchlist.
+     */
+    private TmdbAccount account;
+
+    /**
+     * Button to add to Watchlist.
+     */
+    private JButton watchButton;
+
+    /**
+     * last clicked movie.
+     */
+<span class="fc" id="L201">    private MovieDb lastClickedMovie = null;</span>
+
+    /**
+     * removes watchlist movie.
+     */
+    private JButton removeWatchList;
+
+    /**
+     * keyword suggestions.
+     */
+<span class="fc" id="L211">    private List&lt;String&gt; suggestedList = new ArrayList&lt;String&gt;();</span>
 
     /**
      * Launch the application.
@@ -142,421 +217,455 @@ public class TmdbApp {
      *            String of arguments.
      */
     public static void main(final String[] args) {
-<span class="nc" id="L145">        EventQueue.invokeLater(new Runnable() {</span>
+<span class="nc" id="L220">        EventQueue.invokeLater(new Runnable() {</span>
             public void run() {
                 try {
-<span class="nc" id="L148">                    TmdbApp window = new TmdbApp();</span>
-<span class="nc" id="L149">                    window.frmL.setVisible(true);</span>
-<span class="nc" id="L150">                } catch (Exception e) {</span>
-<span class="nc" id="L151">                    e.printStackTrace();</span>
+<span class="nc" id="L223">                    TmdbApp window = new TmdbApp();</span>
+<span class="nc" id="L224">                    window.frmL.setVisible(true);</span>
+<span class="nc" id="L225">                } catch (Exception e) {</span>
+<span class="nc" id="L226">                    e.printStackTrace();</span>
                 }
-<span class="nc" id="L153">            }</span>
+<span class="nc" id="L228">            }</span>
         });
-<span class="nc" id="L155">    }</span>
+<span class="nc" id="L230">    }</span>
 
-// Check:OFF: MagicNumber
+    // Check:OFF: MagicNumber
 
     /**
      * Create the application.
      */
-<span class="fc" id="L162">    public TmdbApp() {</span>
-
+<span class="fc" id="L237">    public TmdbApp() {</span>
 
         // User Defined
 
-<span class="fc" id="L167">        tmdbApi = new TmdbApi(&quot;811ffa781385ed56e1ec64c193eb93f4&quot;);</span>
+<span class="fc" id="L241">        tmdbApi = new TmdbApi(&quot;811ffa781385ed56e1ec64c193eb93f4&quot;);</span>
 
-<span class="fc" id="L169">        movieModel = new MovieModel();</span>
-<span class="fc" id="L170">        peopleModel = new PeopleModel();</span>
-<span class="fc" id="L171">        tvModel = new TvModel();</span>
-<span class="fc" id="L172">        keywordModel = new MovieModel();</span>
+<span class="fc" id="L243">        movieModel = new MovieModel();</span>
+<span class="fc" id="L244">        peopleModel = new PeopleModel();</span>
+<span class="fc" id="L245">        tvModel = new TvModel();</span>
+<span class="fc" id="L246">        keywordModel = new MovieModel();</span>
+<span class="fc" id="L247">        watchModel = new MovieModel();</span>
 
-<span class="fc" id="L174">        search = new Search(tmdbApi, movieModel, peopleModel, tvModel);</span>
-<span class="fc" id="L175">        keyword = new KeywordMatch(tmdbApi, keywordModel);</span>
+<span class="fc" id="L249">        search = new Search(tmdbApi, movieModel, peopleModel, tvModel);</span>
+<span class="fc" id="L250">        keyword = new KeywordMatch(tmdbApi, keywordModel);</span>
+<span class="fc" id="L251">        account = tmdbApi.getAccount();</span>
 
-<span class="fc" id="L177">        initialize();</span>
+<span class="fc" id="L253">        login = new Login(tmdbApi);</span>
 
-<span class="fc" id="L179">        tableMovie.setModel(movieModel);</span>
-<span class="fc" id="L180">        tablePeople.setModel(peopleModel);</span>
-<span class="fc" id="L181">        tableTv.setModel(tvModel);</span>
-<span class="fc" id="L182">        tableKeyword.setModel(keywordModel);</span>
-<span class="fc" id="L183">    }</span>
+<span class="fc" id="L255">        initialize();</span>
+
+<span class="fc" id="L257">        tableMovie.setModel(movieModel);</span>
+<span class="fc" id="L258">        tablePeople.setModel(peopleModel);</span>
+<span class="fc" id="L259">        tableTv.setModel(tvModel);</span>
+<span class="fc" id="L260">        tableKeyword.setModel(keywordModel);</span>
+<span class="fc" id="L261">        tableWatch.setModel(watchModel);</span>
+<span class="fc" id="L262">    }</span>
 
     /**
      * Initialize the contents of the frame.
      */
     private void initialize() {
-<span class="fc" id="L189">        frmL = new JFrame();</span>
-<span class="fc" id="L190">        frmL.setTitle(&quot;ReelMatch&quot;);</span>
-<span class="fc" id="L191">        frmL.setBounds(100, 100, 827, 645);</span>
-<span class="fc" id="L192">        frmL.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);</span>
-<span class="fc" id="L193">        frmL.getContentPane().setLayout(new BorderLayout(0, 0));</span>
+<span class="fc" id="L268">        frmL = new JFrame();</span>
+<span class="fc" id="L269">        frmL.setTitle(&quot;ReelMatch&quot;);</span>
+<span class="fc" id="L270">        frmL.setBounds(100, 100, 827, 1000);</span>
+<span class="fc" id="L271">        frmL.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);</span>
+<span class="fc" id="L272">        frmL.getContentPane().setLayout(new BorderLayout(0, 0));</span>
 
-<span class="fc" id="L195">        JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);</span>
-<span class="fc" id="L196">        frmL.getContentPane().add(tabbedPane, BorderLayout.CENTER);</span>
+<span class="fc" id="L274">        JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);</span>
+<span class="fc" id="L275">        frmL.getContentPane().add(tabbedPane, BorderLayout.NORTH);</span>
 
-<span class="fc" id="L198">        setupHomeTab(tabbedPane);</span>
+<span class="fc" id="L277">        setupHomeTab(tabbedPane);</span>
 
-<span class="fc" id="L200">        setupSearchTab(tabbedPane);</span>
+<span class="fc" id="L279">        setupSearchTab(tabbedPane);</span>
 
-<span class="fc" id="L202">        setupLoginTab(tabbedPane);</span>
-<span class="fc" id="L203">    }</span>
+<span class="fc" id="L281">        setupLoginTab(tabbedPane);</span>
+
+<span class="fc" id="L283">        resultsPicLabel = new JLabel();</span>
+<span class="fc" id="L284">        resultsPicLabel.setPreferredSize(new Dimension(185, 280));</span>
+<span class="fc" id="L285">        resultsPicLabel.setVisible(true);</span>
+<span class="fc" id="L286">        frmL.add(resultsPicLabel, BorderLayout.WEST);</span>
+
+<span class="fc" id="L288">        resultLabel = new JLabel();</span>
+<span class="fc" id="L289">        frmL.add(resultLabel, BorderLayout.CENTER);</span>
+
+<span class="fc" id="L291">        watchButton = new JButton(&quot;Add to Watch Later&quot;);</span>
+<span class="fc" id="L292">        watchButton.addActionListener(actionHandler);</span>
+<span class="fc" id="L293">        watchButton.setPreferredSize(new Dimension(185, 50));</span>
+<span class="fc" id="L294">        watchButton.setVisible(false);</span>
+<span class="fc" id="L295">        frmL.add(watchButton, BorderLayout.EAST);</span>
+
+<span class="fc" id="L297">    }</span>
 
     /**
      * Sets up the Home tab.
+     *
      * @param tabbedPane
      *            the tabbedPane to add the home tab to.
      */
     private void setupHomeTab(final JTabbedPane tabbedPane) {
-<span class="fc" id="L211">        JPanel homePanel = new JPanel();</span>
-<span class="fc" id="L212">        tabbedPane.addTab(&quot;Home&quot;, null, homePanel, null);</span>
-<span class="fc" id="L213">        GridBagLayout gblPanel1 = new GridBagLayout();</span>
-<span class="fc" id="L214">        gblPanel1.columnWidths = new int[] {0, 0, 0};</span>
-<span class="fc" id="L215">        gblPanel1.rowHeights = new int[] {0, 0, 0, 0};</span>
-<span class="fc" id="L216">        gblPanel1.columnWeights = new double[] {0.0, 0.0, 0.0};</span>
-<span class="fc" id="L217">        gblPanel1.rowWeights = new double[] {0.0, 0.0, 0.0,</span>
-<span class="fc" id="L218">                Double.MIN_VALUE};</span>
-<span class="fc" id="L219">        homePanel.setLayout(gblPanel1);</span>
+<span class="fc" id="L306">        JPanel homePanel = new JPanel();</span>
+<span class="fc" id="L307">        tabbedPane.addTab(&quot;Home&quot;, null, homePanel, null);</span>
+<span class="fc" id="L308">        GridBagLayout gblPanel1 = new GridBagLayout();</span>
+<span class="fc" id="L309">        gblPanel1.columnWidths = new int[] {0, 0, 0};</span>
+<span class="fc" id="L310">        gblPanel1.rowHeights = new int[] {0, 0, 0, 0};</span>
+<span class="fc" id="L311">        gblPanel1.columnWeights = new double[] {0.0, 0.0, 0.0};</span>
+<span class="fc" id="L312">        gblPanel1.rowWeights = new double[] {0.0, 0.0, 0.0, Double.MIN_VALUE};</span>
+<span class="fc" id="L313">        homePanel.setLayout(gblPanel1);</span>
 
-<span class="fc" id="L221">        JLabel lblNewReleases = new JLabel(&quot;New Releases&quot;);</span>
-<span class="fc" id="L222">        lblNewReleases.setFont(new Font(&quot;Tahoma&quot;, Font.PLAIN, 18));</span>
-<span class="fc" id="L223">        lblNewReleases.setHorizontalAlignment(SwingConstants.CENTER);</span>
-<span class="fc" id="L224">        GridBagConstraints gbcLblNewReleases = new GridBagConstraints();</span>
-<span class="fc" id="L225">        gbcLblNewReleases.insets = new Insets(0, 0, 5, 0);</span>
-<span class="fc" id="L226">        gbcLblNewReleases.gridwidth = 3;</span>
-<span class="fc" id="L227">        gbcLblNewReleases.gridx = 0;</span>
-<span class="fc" id="L228">        gbcLblNewReleases.gridy = 0;</span>
-<span class="fc" id="L229">        homePanel.add(lblNewReleases, gbcLblNewReleases);</span>
+<span class="fc" id="L315">        JLabel lblNewReleases = new JLabel(&quot;New Releases&quot;);</span>
+<span class="fc" id="L316">        lblNewReleases.setFont(new Font(&quot;Tahoma&quot;, Font.PLAIN, 18));</span>
+<span class="fc" id="L317">        lblNewReleases.setHorizontalAlignment(SwingConstants.CENTER);</span>
+<span class="fc" id="L318">        GridBagConstraints gbcLblNewReleases = new GridBagConstraints();</span>
+<span class="fc" id="L319">        gbcLblNewReleases.insets = new Insets(0, 0, 5, 0);</span>
+<span class="fc" id="L320">        gbcLblNewReleases.gridwidth = 3;</span>
+<span class="fc" id="L321">        gbcLblNewReleases.gridx = 0;</span>
+<span class="fc" id="L322">        gbcLblNewReleases.gridy = 0;</span>
+<span class="fc" id="L323">        homePanel.add(lblNewReleases, gbcLblNewReleases);</span>
 
-<span class="fc" id="L231">        search.getPopularMovies();</span>
+<span class="fc" id="L325">        search.getPopularMovies();</span>
 
-<span class="fc" id="L233">        ArrayList&lt;MovieDb&gt; movieList = new ArrayList&lt;MovieDb&gt;(</span>
-<span class="fc" id="L234">                search.getPopularMovies());</span>
+<span class="fc" id="L327">        ArrayList&lt;MovieDb&gt; movieList = new ArrayList&lt;MovieDb&gt;(</span>
+<span class="fc" id="L328">                search.getPopularMovies());</span>
 
-<span class="fc" id="L236">        JLabel lblPic = new JLabel();</span>
+<span class="fc" id="L330">        JLabel lblPic = new JLabel();</span>
         try {
-<span class="fc" id="L238">            URL url = new URL(search.getMultiImageUrl(movieList.get(0)));</span>
-<span class="fc" id="L239">            ImageIcon icon = new ImageIcon(url);</span>
-<span class="fc" id="L240">            lblPic.setIcon(icon);</span>
-<span class="pc" id="L241">        } catch (IOException e) {</span>
+<span class="fc" id="L332">            URL url = new URL(search.getMultiImageUrl(movieList.get(0)));</span>
+<span class="fc" id="L333">            ImageIcon icon = new ImageIcon(url);</span>
+<span class="fc" id="L334">            lblPic.setIcon(icon);</span>
+<span class="pc" id="L335">        } catch (IOException e) {</span>
 
         }
+<span class="fc" id="L338">        lblPic.addMouseListener(new java.awt.event.MouseAdapter() {</span>
+            public void mouseClicked(final MouseEvent e) {
+<span class="nc" id="L340">                movieClicked(movieList.get(0));</span>
+<span class="nc" id="L341">            }</span>
+        });
 
-<span class="fc" id="L245">        GridBagConstraints gbcLblPic = new GridBagConstraints();</span>
-<span class="fc" id="L246">        gbcLblPic.fill = SwingConstants.CENTER;</span>
-<span class="fc" id="L247">        gbcLblPic.insets = new Insets(0, 0, 5, 5);</span>
-<span class="fc" id="L248">        gbcLblPic.gridx = 0;</span>
-<span class="fc" id="L249">        gbcLblPic.gridy = 1;</span>
-<span class="fc" id="L250">        homePanel.add(lblPic, gbcLblPic);</span>
+<span class="fc" id="L344">        GridBagConstraints gbcLblPic = new GridBagConstraints();</span>
+<span class="fc" id="L345">        gbcLblPic.fill = SwingConstants.CENTER;</span>
+<span class="fc" id="L346">        gbcLblPic.insets = new Insets(0, 0, 5, 5);</span>
+<span class="fc" id="L347">        gbcLblPic.gridx = 0;</span>
+<span class="fc" id="L348">        gbcLblPic.gridy = 1;</span>
+<span class="fc" id="L349">        homePanel.add(lblPic, gbcLblPic);</span>
 
-<span class="fc" id="L252">        JLabel lblPic1 = new JLabel();</span>
+<span class="fc" id="L351">        JLabel lblPic1 = new JLabel();</span>
         try {
-<span class="fc" id="L254">            URL url = new URL(search.getMultiImageUrl(movieList.get(1)));</span>
-<span class="fc" id="L255">            ImageIcon icon = new ImageIcon(url);</span>
-<span class="fc" id="L256">            lblPic1.setIcon(icon);</span>
-<span class="pc" id="L257">        } catch (IOException e) {</span>
+<span class="fc" id="L353">            URL url = new URL(search.getMultiImageUrl(movieList.get(1)));</span>
+<span class="fc" id="L354">            ImageIcon icon = new ImageIcon(url);</span>
+<span class="fc" id="L355">            lblPic1.setIcon(icon);</span>
+<span class="pc" id="L356">        } catch (IOException e) {</span>
 
         }
+<span class="fc" id="L359">        lblPic1.addMouseListener(new java.awt.event.MouseAdapter() {</span>
+            public void mouseClicked(final MouseEvent e) {
+<span class="nc" id="L361">                movieClicked(movieList.get(1));</span>
+<span class="nc" id="L362">            }</span>
+        });
 
-<span class="fc" id="L261">        GridBagConstraints gbcLblPic1 = new GridBagConstraints();</span>
-<span class="fc" id="L262">        gbcLblPic1.fill = SwingConstants.CENTER;</span>
-<span class="fc" id="L263">        gbcLblPic1.insets = new Insets(0, 0, 5, 5);</span>
-<span class="fc" id="L264">        gbcLblPic1.gridx = 1;</span>
-<span class="fc" id="L265">        gbcLblPic1.gridy = 1;</span>
-<span class="fc" id="L266">        homePanel.add(lblPic1, gbcLblPic1);</span>
+<span class="fc" id="L365">        GridBagConstraints gbcLblPic1 = new GridBagConstraints();</span>
+<span class="fc" id="L366">        gbcLblPic1.fill = SwingConstants.CENTER;</span>
+<span class="fc" id="L367">        gbcLblPic1.insets = new Insets(0, 0, 5, 5);</span>
+<span class="fc" id="L368">        gbcLblPic1.gridx = 1;</span>
+<span class="fc" id="L369">        gbcLblPic1.gridy = 1;</span>
+<span class="fc" id="L370">        homePanel.add(lblPic1, gbcLblPic1);</span>
 
-<span class="fc" id="L268">        JLabel lblPic2 = new JLabel();</span>
+<span class="fc" id="L372">        JLabel lblPic2 = new JLabel();</span>
         try {
-<span class="fc" id="L270">            URL url = new URL(search.getMultiImageUrl(movieList.get(2)));</span>
-<span class="fc" id="L271">            ImageIcon icon = new ImageIcon(url);</span>
-<span class="fc" id="L272">            lblPic2.setIcon(icon);</span>
-<span class="pc" id="L273">        } catch (IOException e) {</span>
+<span class="fc" id="L374">            URL url = new URL(search.getMultiImageUrl(movieList.get(2)));</span>
+<span class="fc" id="L375">            ImageIcon icon = new ImageIcon(url);</span>
+<span class="fc" id="L376">            lblPic2.setIcon(icon);</span>
+<span class="pc" id="L377">        } catch (IOException e) {</span>
 
         }
+<span class="fc" id="L380">        lblPic2.addMouseListener(new java.awt.event.MouseAdapter() {</span>
+            public void mouseClicked(final MouseEvent e) {
+<span class="nc" id="L382">                movieClicked(movieList.get(2));</span>
+<span class="nc" id="L383">            }</span>
+        });
 
-<span class="fc" id="L277">        GridBagConstraints gbcLblPic2 = new GridBagConstraints();</span>
-<span class="fc" id="L278">        gbcLblPic2.insets = new Insets(0, 0, 5, 0);</span>
-<span class="fc" id="L279">        gbcLblPic2.gridx = 2;</span>
-<span class="fc" id="L280">        gbcLblPic2.gridy = 1;</span>
-<span class="fc" id="L281">        homePanel.add(lblPic2, gbcLblPic2);</span>
+<span class="fc" id="L386">        GridBagConstraints gbcLblPic2 = new GridBagConstraints();</span>
+<span class="fc" id="L387">        gbcLblPic2.insets = new Insets(0, 0, 5, 0);</span>
+<span class="fc" id="L388">        gbcLblPic2.gridx = 2;</span>
+<span class="fc" id="L389">        gbcLblPic2.gridy = 1;</span>
+<span class="fc" id="L390">        homePanel.add(lblPic2, gbcLblPic2);</span>
 
-<span class="fc" id="L283">        JLabel lblPic3 = new JLabel();</span>
+<span class="fc" id="L392">        JLabel lblPic3 = new JLabel();</span>
         try {
-<span class="fc" id="L285">            URL url = new URL(search.getMultiImageUrl(movieList.get(3)));</span>
-<span class="fc" id="L286">            ImageIcon icon = new ImageIcon(url);</span>
-<span class="fc" id="L287">            lblPic3.setIcon(icon);</span>
-<span class="pc" id="L288">        } catch (IOException e) {</span>
+<span class="fc" id="L394">            URL url = new URL(search.getMultiImageUrl(movieList.get(3)));</span>
+<span class="fc" id="L395">            ImageIcon icon = new ImageIcon(url);</span>
+<span class="fc" id="L396">            lblPic3.setIcon(icon);</span>
+<span class="pc" id="L397">        } catch (IOException e) {</span>
 
         }
-<span class="fc" id="L291">        GridBagConstraints gbcLblPic3 = new GridBagConstraints();</span>
-<span class="fc" id="L292">        gbcLblPic3.insets = new Insets(0, 0, 0, 5);</span>
-<span class="fc" id="L293">        gbcLblPic3.gridx = 0;</span>
-<span class="fc" id="L294">        gbcLblPic3.gridy = 2;</span>
-<span class="fc" id="L295">        homePanel.add(lblPic3, gbcLblPic3);</span>
+<span class="fc" id="L400">        lblPic3.addMouseListener(new java.awt.event.MouseAdapter() {</span>
+            public void mouseClicked(final MouseEvent e) {
+<span class="nc" id="L402">                movieClicked(movieList.get(3));</span>
+<span class="nc" id="L403">            }</span>
+        });
 
-<span class="fc" id="L297">        JLabel lblPic4 = new JLabel();</span>
+<span class="fc" id="L406">        GridBagConstraints gbcLblPic3 = new GridBagConstraints();</span>
+<span class="fc" id="L407">        gbcLblPic3.insets = new Insets(0, 0, 0, 5);</span>
+<span class="fc" id="L408">        gbcLblPic3.gridx = 0;</span>
+<span class="fc" id="L409">        gbcLblPic3.gridy = 2;</span>
+<span class="fc" id="L410">        homePanel.add(lblPic3, gbcLblPic3);</span>
+
+<span class="fc" id="L412">        JLabel lblPic4 = new JLabel();</span>
         try {
-<span class="fc" id="L299">            URL url = new URL(search.getMultiImageUrl(movieList.get(4)));</span>
-<span class="fc" id="L300">            ImageIcon icon = new ImageIcon(url);</span>
-<span class="fc" id="L301">            lblPic4.setIcon(icon);</span>
-<span class="pc" id="L302">        } catch (IOException e) {</span>
+<span class="fc" id="L414">            URL url = new URL(search.getMultiImageUrl(movieList.get(4)));</span>
+<span class="fc" id="L415">            ImageIcon icon = new ImageIcon(url);</span>
+<span class="fc" id="L416">            lblPic4.setIcon(icon);</span>
+<span class="pc" id="L417">        } catch (IOException e) {</span>
 
         }
-<span class="fc" id="L305">        GridBagConstraints gbcLblPic4 = new GridBagConstraints();</span>
-<span class="fc" id="L306">        gbcLblPic4.insets = new Insets(0, 0, 0, 5);</span>
-<span class="fc" id="L307">        gbcLblPic4.gridx = 1;</span>
-<span class="fc" id="L308">        gbcLblPic4.gridy = 2;</span>
-<span class="fc" id="L309">        homePanel.add(lblPic4, gbcLblPic4);</span>
+<span class="fc" id="L420">        lblPic4.addMouseListener(new java.awt.event.MouseAdapter() {</span>
+            public void mouseClicked(final MouseEvent e) {
+<span class="nc" id="L422">                movieClicked(movieList.get(4));</span>
+<span class="nc" id="L423">            }</span>
+        });
 
-<span class="fc" id="L311">        JLabel lblPic5 = new JLabel();</span>
+<span class="fc" id="L426">        GridBagConstraints gbcLblPic4 = new GridBagConstraints();</span>
+<span class="fc" id="L427">        gbcLblPic4.insets = new Insets(0, 0, 0, 5);</span>
+<span class="fc" id="L428">        gbcLblPic4.gridx = 1;</span>
+<span class="fc" id="L429">        gbcLblPic4.gridy = 2;</span>
+<span class="fc" id="L430">        homePanel.add(lblPic4, gbcLblPic4);</span>
+
+<span class="fc" id="L432">        JLabel lblPic5 = new JLabel();</span>
         try {
-<span class="fc" id="L313">            URL url = new URL(search.getMultiImageUrl(movieList.get(5)));</span>
-<span class="fc" id="L314">            ImageIcon icon = new ImageIcon(url);</span>
-<span class="fc" id="L315">            lblPic5.setIcon(icon);</span>
-<span class="pc" id="L316">        } catch (IOException e) {</span>
+<span class="fc" id="L434">            URL url = new URL(search.getMultiImageUrl(movieList.get(5)));</span>
+<span class="fc" id="L435">            ImageIcon icon = new ImageIcon(url);</span>
+<span class="fc" id="L436">            lblPic5.setIcon(icon);</span>
+<span class="pc" id="L437">        } catch (IOException e) {</span>
 
         }
-<span class="fc" id="L319">        GridBagConstraints gbcLblPic5 = new GridBagConstraints();</span>
-<span class="fc" id="L320">        gbcLblPic5.gridx = 2;</span>
-<span class="fc" id="L321">        gbcLblPic5.gridy = 2;</span>
-<span class="fc" id="L322">        homePanel.add(lblPic5, gbcLblPic5);</span>
-<span class="fc" id="L323">    }</span>
+<span class="fc" id="L440">        lblPic5.addMouseListener(new java.awt.event.MouseAdapter() {</span>
+            public void mouseClicked(final MouseEvent e) {
+<span class="nc" id="L442">                movieClicked(movieList.get(5));</span>
+<span class="nc" id="L443">            }</span>
+        });
+
+<span class="fc" id="L446">        GridBagConstraints gbcLblPic5 = new GridBagConstraints();</span>
+<span class="fc" id="L447">        gbcLblPic5.gridx = 2;</span>
+<span class="fc" id="L448">        gbcLblPic5.gridy = 2;</span>
+<span class="fc" id="L449">        homePanel.add(lblPic5, gbcLblPic5);</span>
+<span class="fc" id="L450">    }</span>
 
     /**
      * Sets up the Search tab.
+     *
      * @param tabbedPane
      *            the tabbedPane to add the search tab to.
      */
     private void setupSearchTab(final JTabbedPane tabbedPane) {
-<span class="fc" id="L331">        JPanel searchPanel = new JPanel();</span>
-<span class="fc" id="L332">        searchPanel.setBorder(new EmptyBorder(2, 3, 2, 3));</span>
-<span class="fc" id="L333">        tabbedPane.addTab(&quot;Search&quot;, null, searchPanel, null);</span>
-<span class="fc" id="L334">        GridBagLayout gblPanel = new GridBagLayout();</span>
-<span class="fc" id="L335">        gblPanel.columnWidths = new int[] {0, 0, 0, 0};</span>
-<span class="fc" id="L336">        gblPanel.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0};</span>
-<span class="fc" id="L337">        gblPanel.columnWeights = new double[] {1.0, 0.0, 1.0, Double.MIN_VALUE};</span>
-<span class="fc" id="L338">        gblPanel.rowWeights = new double[] {0.0, 1.0, 0.0, 0.0, 0.0, 0.0,</span>
-<span class="fc" id="L339">                Double.MIN_VALUE};</span>
-<span class="fc" id="L340">        searchPanel.setLayout(gblPanel);</span>
+<span class="fc" id="L459">        JPanel searchPanel = new JPanel();</span>
+<span class="fc" id="L460">        searchPanel.setBorder(new EmptyBorder(2, 3, 2, 3));</span>
+<span class="fc" id="L461">        tabbedPane.addTab(&quot;Search&quot;, null, searchPanel, null);</span>
+<span class="fc" id="L462">        GridBagLayout gblPanel = new GridBagLayout();</span>
+<span class="fc" id="L463">        gblPanel.columnWidths = new int[] {0, 0, 0, 0};</span>
+<span class="fc" id="L464">        gblPanel.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0};</span>
+<span class="fc" id="L465">        gblPanel.columnWeights = new double[] {1.0, 0.0, 1.0, Double.MIN_VALUE};</span>
+<span class="fc" id="L466">        gblPanel.rowWeights = new double[] {0.0, 1.0, 0.0, 0.0, 0.0, 0.0,</span>
+<span class="fc" id="L467">                Double.MIN_VALUE};</span>
+<span class="fc" id="L468">        searchPanel.setLayout(gblPanel);</span>
 
-<span class="fc" id="L342">        String defaultSearchStr = &quot;Search Movies, People, TV Shows, &quot;</span>
+<span class="fc" id="L470">        String defaultSearchStr = &quot;Search Movies, People, TV Shows, &quot;</span>
                 + &quot;and Keyword(separated by commas)&quot;;
-<span class="fc" id="L344">        txtSearchMoviesPeople = new JTextField();</span>
-<span class="fc" id="L345">        txtSearchMoviesPeople.setText(defaultSearchStr);</span>
-<span class="fc" id="L346">        txtSearchMoviesPeople.addActionListener(actionHandler);</span>
-<span class="fc" id="L347">        txtSearchMoviesPeople.addMouseListener(new MouseAdapter() {</span>
+<span class="fc" id="L472">        txtSearchMoviesPeople = new JTextField();</span>
+<span class="fc" id="L473">        txtSearchMoviesPeople.setText(defaultSearchStr);</span>
+<span class="fc" id="L474">        txtSearchMoviesPeople.addActionListener(actionHandler);</span>
+<span class="fc" id="L475">        txtSearchMoviesPeople.addMouseListener(new MouseAdapter() {</span>
             public void mouseClicked(final MouseEvent e) {
-<span class="nc bnc" id="L349" title="All 2 branches missed.">                if (txtSearchMoviesPeople.getText().equals(defaultSearchStr)) {</span>
-<span class="nc" id="L350">                    txtSearchMoviesPeople.setText(&quot;&quot;);</span>
+<span class="nc bnc" id="L477" title="All 2 branches missed.">                if (txtSearchMoviesPeople.getText().equals(defaultSearchStr)) {</span>
+<span class="nc" id="L478">                    txtSearchMoviesPeople.setText(&quot;&quot;);</span>
                 }
-<span class="nc" id="L352">            }</span>
+<span class="nc" id="L480">            }</span>
         });
-<span class="fc" id="L354">        GridBagConstraints gbcTxtSearchMoviesPeople = new GridBagConstraints();</span>
-<span class="fc" id="L355">        gbcTxtSearchMoviesPeople.weightx = 81.0;</span>
-<span class="fc" id="L356">        gbcTxtSearchMoviesPeople.ipadx = 80;</span>
-<span class="fc" id="L357">        gbcTxtSearchMoviesPeople.insets = new Insets(0, 0, 5, 5);</span>
-<span class="fc" id="L358">        gbcTxtSearchMoviesPeople.fill = GridBagConstraints.HORIZONTAL;</span>
-<span class="fc" id="L359">        gbcTxtSearchMoviesPeople.gridwidth = 2;</span>
-<span class="fc" id="L360">        gbcTxtSearchMoviesPeople.gridx = 0;</span>
-<span class="fc" id="L361">        gbcTxtSearchMoviesPeople.gridy = 0;</span>
-<span class="fc" id="L362">        searchPanel.add(txtSearchMoviesPeople, gbcTxtSearchMoviesPeople);</span>
-<span class="fc" id="L363">        txtSearchMoviesPeople.setColumns(10);</span>
+<span class="fc" id="L482">        GridBagConstraints gbcTxtSearchMoviesPeople = new GridBagConstraints();</span>
+<span class="fc" id="L483">        gbcTxtSearchMoviesPeople.weightx = 81.0;</span>
+<span class="fc" id="L484">        gbcTxtSearchMoviesPeople.ipadx = 80;</span>
+<span class="fc" id="L485">        gbcTxtSearchMoviesPeople.insets = new Insets(0, 0, 5, 5);</span>
+<span class="fc" id="L486">        gbcTxtSearchMoviesPeople.fill = GridBagConstraints.HORIZONTAL;</span>
+<span class="fc" id="L487">        gbcTxtSearchMoviesPeople.gridwidth = 2;</span>
+<span class="fc" id="L488">        gbcTxtSearchMoviesPeople.gridx = 0;</span>
+<span class="fc" id="L489">        gbcTxtSearchMoviesPeople.gridy = 0;</span>
+<span class="fc" id="L490">        searchPanel.add(txtSearchMoviesPeople, gbcTxtSearchMoviesPeople);</span>
+<span class="fc" id="L491">        txtSearchMoviesPeople.setColumns(10);</span>
 
-<span class="fc" id="L365">        searchButton = new JButton(&quot;Search&quot;);</span>
-<span class="fc" id="L366">        searchButton.addActionListener(actionHandler);</span>
-<span class="fc" id="L367">        GridBagConstraints gbcBtnNewButton1 = new GridBagConstraints();</span>
-<span class="fc" id="L368">        gbcBtnNewButton1.insets = new Insets(0, 0, 5, 0);</span>
-<span class="fc" id="L369">        gbcBtnNewButton1.fill = GridBagConstraints.HORIZONTAL;</span>
-<span class="fc" id="L370">        gbcBtnNewButton1.gridx = 2;</span>
-<span class="fc" id="L371">        gbcBtnNewButton1.gridy = 0;</span>
-<span class="fc" id="L372">        searchPanel.add(searchButton, gbcBtnNewButton1);</span>
+<span class="fc" id="L493">        searchButton = new JButton(&quot;Search&quot;);</span>
+<span class="fc" id="L494">        searchButton.addActionListener(actionHandler);</span>
+<span class="fc" id="L495">        GridBagConstraints gbcBtnNewButton1 = new GridBagConstraints();</span>
+<span class="fc" id="L496">        gbcBtnNewButton1.insets = new Insets(0, 0, 5, 0);</span>
+<span class="fc" id="L497">        gbcBtnNewButton1.fill = GridBagConstraints.HORIZONTAL;</span>
+<span class="fc" id="L498">        gbcBtnNewButton1.gridx = 2;</span>
+<span class="fc" id="L499">        gbcBtnNewButton1.gridy = 0;</span>
+<span class="fc" id="L500">        searchPanel.add(searchButton, gbcBtnNewButton1);</span>
 
-<span class="fc" id="L374">        JTabbedPane searchResultTabPane = new JTabbedPane(JTabbedPane.TOP);</span>
-<span class="fc" id="L375">        GridBagConstraints gbcTabbedPane1 = new GridBagConstraints();</span>
-<span class="fc" id="L376">        gbcTabbedPane1.ipady = 99;</span>
-<span class="fc" id="L377">        gbcTabbedPane1.insets = new Insets(0, 0, 5, 0);</span>
-<span class="fc" id="L378">        gbcTabbedPane1.gridwidth = 3;</span>
-<span class="fc" id="L379">        gbcTabbedPane1.fill = GridBagConstraints.BOTH;</span>
-<span class="fc" id="L380">        gbcTabbedPane1.gridx = 0;</span>
-<span class="fc" id="L381">        gbcTabbedPane1.gridy = 1;</span>
-<span class="fc" id="L382">        searchPanel.add(searchResultTabPane, gbcTabbedPane1);</span>
+<span class="fc" id="L502">        JTabbedPane searchResultTabPane = new JTabbedPane(JTabbedPane.TOP);</span>
+<span class="fc" id="L503">        GridBagConstraints gbcTabbedPane1 = new GridBagConstraints();</span>
+<span class="fc" id="L504">        gbcTabbedPane1.ipady = 50;</span>
+<span class="fc" id="L505">        gbcTabbedPane1.insets = new Insets(0, 0, 5, 0);</span>
+<span class="fc" id="L506">        gbcTabbedPane1.gridwidth = 3;</span>
+<span class="fc" id="L507">        gbcTabbedPane1.fill = GridBagConstraints.BOTH;</span>
+<span class="fc" id="L508">        gbcTabbedPane1.gridx = 0;</span>
+<span class="fc" id="L509">        gbcTabbedPane1.gridy = 1;</span>
+<span class="fc" id="L510">        searchPanel.add(searchResultTabPane, gbcTabbedPane1);</span>
 
-<span class="fc" id="L384">        setupSearchMovieTab(searchResultTabPane);</span>
-<span class="fc" id="L385">        setupSearchPeopleTab(searchResultTabPane);</span>
-<span class="fc" id="L386">        setupSearchTvTab(searchResultTabPane);</span>
-<span class="fc" id="L387">        setupSearchKeywordsTab(searchResultTabPane);</span>
+<span class="fc" id="L512">        setupSearchMovieTab(searchResultTabPane);</span>
+<span class="fc" id="L513">        setupSearchPeopleTab(searchResultTabPane);</span>
+<span class="fc" id="L514">        setupSearchTvTab(searchResultTabPane);</span>
+<span class="fc" id="L515">        setupSearchKeywordsTab(searchResultTabPane);</span>
 
-<span class="fc" id="L389">        JPanel resultClickedPanel = new JPanel();</span>
-<span class="fc" id="L390">        resultClickedPanel.setBorder(new EmptyBorder(2, 2, 2, 2));</span>
-<span class="fc" id="L391">        GridBagConstraints gbcPanel6 = new GridBagConstraints();</span>
-<span class="fc" id="L392">        gbcPanel6.gridheight = 0;</span>
-<span class="fc" id="L393">        gbcPanel6.fill = GridBagConstraints.BOTH;</span>
-<span class="fc" id="L394">        gbcPanel6.gridwidth = 3;</span>
-<span class="fc" id="L395">        gbcPanel6.insets = new Insets(0, 0, 5, 5);</span>
-<span class="fc" id="L396">        gbcPanel6.gridx = 0;</span>
-<span class="fc" id="L397">        gbcPanel6.gridy = 2;</span>
-<span class="fc" id="L398">        searchPanel.add(resultClickedPanel, gbcPanel6);</span>
-<span class="fc" id="L399">        GridBagLayout gblPanel6 = new GridBagLayout();</span>
-<span class="fc" id="L400">        gblPanel6.columnWidths = new int[] {0, 0, 0};</span>
-<span class="fc" id="L401">        gblPanel6.rowHeights = new int[] {0, 0, 0, 0, 0};</span>
-<span class="fc" id="L402">        gblPanel6.columnWeights = new double[] {0.0, 1.0, Double.MIN_VALUE};</span>
-<span class="fc" id="L403">        gblPanel6.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0,</span>
-<span class="fc" id="L404">                Double.MIN_VALUE};</span>
-<span class="fc" id="L405">        resultClickedPanel.setLayout(gblPanel6);</span>
-
-<span class="fc" id="L407">        resultsPicLabel = new JLabel();</span>
-<span class="fc" id="L408">        resultsPicLabel.setVisible(false);</span>
-
-<span class="fc" id="L410">        resultLabel = new JLabel();</span>
-<span class="fc" id="L411">        GridBagConstraints gbcLblTitle = new GridBagConstraints();</span>
-
-<span class="fc" id="L413">        gbcLblTitle.anchor = GridBagConstraints.EAST;</span>
-<span class="fc" id="L414">        gbcLblTitle.insets = new Insets(0, 0, 5, 5);</span>
-<span class="fc" id="L415">        gbcLblTitle.gridx = 1;</span>
-<span class="fc" id="L416">        gbcLblTitle.gridy = 0;</span>
-<span class="fc" id="L417">        resultClickedPanel.add(resultsPicLabel, gbcLblTitle);</span>
-
-<span class="fc" id="L419">        GridBagConstraints gbcLblTitle2 = new GridBagConstraints();</span>
-
-<span class="fc" id="L421">        gbcLblTitle2.anchor = GridBagConstraints.WEST;</span>
-<span class="fc" id="L422">        gbcLblTitle2.insets = new Insets(0, 0, 5, 5);</span>
-<span class="fc" id="L423">        gbcLblTitle2.gridx = 0;</span>
-<span class="fc" id="L424">        gbcLblTitle2.gridy = 0;</span>
-<span class="fc" id="L425">        resultClickedPanel.add(resultLabel, gbcLblTitle2);</span>
-
-<span class="fc" id="L427">    }</span>
+<span class="fc" id="L517">    }</span>
 
     /**
      * Sets up the movie tab in the search tab.
+     *
      * @param searchResultTabPane
      *            tab to but the movie search results.
      */
     private void setupSearchMovieTab(final JTabbedPane searchResultTabPane) {
-<span class="fc" id="L435">        JPanel moviePanel = new JPanel();</span>
-<span class="fc" id="L436">        searchResultTabPane.addTab(&quot;Movies&quot;, null, moviePanel, null);</span>
-<span class="fc" id="L437">        GridBagLayout gblPanel3 = new GridBagLayout();</span>
-<span class="fc" id="L438">        gblPanel3.columnWidths = new int[] {0, 0};</span>
-<span class="fc" id="L439">        gblPanel3.rowHeights = new int[] {0, 0};</span>
-<span class="fc" id="L440">        gblPanel3.columnWeights = new double[] {1.0, Double.MIN_VALUE};</span>
-<span class="fc" id="L441">        gblPanel3.rowWeights = new double[] {1.0, Double.MIN_VALUE};</span>
-<span class="fc" id="L442">        moviePanel.setLayout(gblPanel3);</span>
+<span class="fc" id="L526">        JPanel moviePanel = new JPanel();</span>
+<span class="fc" id="L527">        searchResultTabPane.addTab(&quot;Movies&quot;, null, moviePanel, null);</span>
+<span class="fc" id="L528">        GridBagLayout gblPanel3 = new GridBagLayout();</span>
+<span class="fc" id="L529">        gblPanel3.columnWidths = new int[] {0, 0};</span>
+<span class="fc" id="L530">        gblPanel3.rowHeights = new int[] {0, 0};</span>
+<span class="fc" id="L531">        gblPanel3.columnWeights = new double[] {1.0, Double.MIN_VALUE};</span>
+<span class="fc" id="L532">        gblPanel3.rowWeights = new double[] {1.0, Double.MIN_VALUE};</span>
+<span class="fc" id="L533">        moviePanel.setLayout(gblPanel3);</span>
 
-<span class="fc" id="L444">        tableMovie = new JTable();</span>
-<span class="fc" id="L445">        tableMovie.setToolTipText(&quot;&quot;);</span>
-<span class="fc" id="L446">        tableMovie.setSelectionMode(</span>
-<span class="fc" id="L447">                javax.swing.ListSelectionModel.SINGLE_SELECTION);</span>
-<span class="fc" id="L448">        tableMovie.getTableHeader().setReorderingAllowed(false);</span>
-<span class="fc" id="L449">        tableMovie.addMouseListener(new java.awt.event.MouseAdapter() {</span>
+<span class="fc" id="L535">        tableMovie = new JTable();</span>
+<span class="fc" id="L536">        tableMovie.setToolTipText(&quot;&quot;);</span>
+<span class="fc" id="L537">        tableMovie.setSelectionMode(</span>
+<span class="fc" id="L538">                javax.swing.ListSelectionModel.SINGLE_SELECTION);</span>
+<span class="fc" id="L539">        tableMovie.getTableHeader().setReorderingAllowed(false);</span>
+<span class="fc" id="L540">        tableMovie.addMouseListener(new java.awt.event.MouseAdapter() {</span>
             public void mouseClicked(final MouseEvent e) {
-<span class="nc" id="L451">                movieClicked();</span>
-<span class="nc" id="L452">            }</span>
+<span class="nc" id="L542">                movieClicked(movieModel.get(tableMovie.getSelectedRow()));</span>
+<span class="nc" id="L543">            }</span>
         });
-<span class="fc" id="L454">        GridBagConstraints gbcTable = new GridBagConstraints();</span>
-<span class="fc" id="L455">        gbcTable.ipady = 90;</span>
-<span class="fc" id="L456">        gbcTable.fill = GridBagConstraints.BOTH;</span>
-<span class="fc" id="L457">        gbcTable.gridx = 0;</span>
-<span class="fc" id="L458">        gbcTable.gridy = 0;</span>
-<span class="fc" id="L459">        moviePanel.add(new JScrollPane(tableMovie), gbcTable);</span>
+<span class="fc" id="L545">        GridBagConstraints gbcTable = new GridBagConstraints();</span>
+<span class="fc" id="L546">        gbcTable.ipady = 90;</span>
+<span class="fc" id="L547">        gbcTable.fill = GridBagConstraints.BOTH;</span>
+<span class="fc" id="L548">        gbcTable.gridx = 0;</span>
+<span class="fc" id="L549">        gbcTable.gridy = 0;</span>
+<span class="fc" id="L550">        moviePanel.add(new JScrollPane(tableMovie), gbcTable);</span>
 
-<span class="fc" id="L461">    }</span>
+<span class="fc" id="L552">    }</span>
 
     /**
      * Sets up the people tab in the search tab.
+     *
      * @param searchResultTabPane
      *            tab to but the people search results.
      */
     private void setupSearchPeopleTab(final JTabbedPane searchResultTabPane) {
-<span class="fc" id="L469">        JPanel peoplePanel = new JPanel();</span>
-<span class="fc" id="L470">        searchResultTabPane.addTab(&quot;People&quot;, null, peoplePanel, null);</span>
-<span class="fc" id="L471">        GridBagLayout gblPanel4 = new GridBagLayout();</span>
-<span class="fc" id="L472">        gblPanel4.columnWidths = new int[] {0, 0};</span>
-<span class="fc" id="L473">        gblPanel4.rowHeights = new int[] {0, 0};</span>
-<span class="fc" id="L474">        gblPanel4.columnWeights = new double[] {1.0, Double.MIN_VALUE};</span>
-<span class="fc" id="L475">        gblPanel4.rowWeights = new double[] {1.0, Double.MIN_VALUE};</span>
-<span class="fc" id="L476">        peoplePanel.setLayout(gblPanel4);</span>
+<span class="fc" id="L561">        JPanel peoplePanel = new JPanel();</span>
+<span class="fc" id="L562">        searchResultTabPane.addTab(&quot;People&quot;, null, peoplePanel, null);</span>
+<span class="fc" id="L563">        GridBagLayout gblPanel4 = new GridBagLayout();</span>
+<span class="fc" id="L564">        gblPanel4.columnWidths = new int[] {0, 0};</span>
+<span class="fc" id="L565">        gblPanel4.rowHeights = new int[] {0, 0};</span>
+<span class="fc" id="L566">        gblPanel4.columnWeights = new double[] {1.0, Double.MIN_VALUE};</span>
+<span class="fc" id="L567">        gblPanel4.rowWeights = new double[] {1.0, Double.MIN_VALUE};</span>
+<span class="fc" id="L568">        peoplePanel.setLayout(gblPanel4);</span>
 
-<span class="fc" id="L478">        tablePeople = new JTable();</span>
-<span class="fc" id="L479">        tablePeople.setToolTipText(&quot;&quot;);</span>
-<span class="fc" id="L480">        tablePeople.setSelectionMode(</span>
-<span class="fc" id="L481">                javax.swing.ListSelectionModel.SINGLE_SELECTION);</span>
-<span class="fc" id="L482">        tablePeople.getTableHeader().setReorderingAllowed(false);</span>
-<span class="fc" id="L483">        tablePeople.addMouseListener(new java.awt.event.MouseAdapter() {</span>
+<span class="fc" id="L570">        tablePeople = new JTable();</span>
+<span class="fc" id="L571">        tablePeople.setToolTipText(&quot;&quot;);</span>
+<span class="fc" id="L572">        tablePeople.setSelectionMode(</span>
+<span class="fc" id="L573">                javax.swing.ListSelectionModel.SINGLE_SELECTION);</span>
+<span class="fc" id="L574">        tablePeople.getTableHeader().setReorderingAllowed(false);</span>
+<span class="fc" id="L575">        tablePeople.addMouseListener(new java.awt.event.MouseAdapter() {</span>
             public void mouseClicked(final MouseEvent e) {
-<span class="nc" id="L485">                personClicked();</span>
-<span class="nc" id="L486">            }</span>
+<span class="nc" id="L577">                personClicked();</span>
+<span class="nc" id="L578">            }</span>
         });
-<span class="fc" id="L488">        GridBagConstraints gbcTable1 = new GridBagConstraints();</span>
-<span class="fc" id="L489">        gbcTable1.fill = GridBagConstraints.BOTH;</span>
-<span class="fc" id="L490">        gbcTable1.gridx = 0;</span>
-<span class="fc" id="L491">        gbcTable1.gridy = 0;</span>
-<span class="fc" id="L492">        peoplePanel.add(new JScrollPane(tablePeople), gbcTable1);</span>
-<span class="fc" id="L493">    }</span>
+<span class="fc" id="L580">        GridBagConstraints gbcTable1 = new GridBagConstraints();</span>
+<span class="fc" id="L581">        gbcTable1.fill = GridBagConstraints.BOTH;</span>
+<span class="fc" id="L582">        gbcTable1.gridx = 0;</span>
+<span class="fc" id="L583">        gbcTable1.gridy = 0;</span>
+<span class="fc" id="L584">        peoplePanel.add(new JScrollPane(tablePeople), gbcTable1);</span>
+<span class="fc" id="L585">    }</span>
 
     /**
      * Sets up the tv tab in the search tab.
+     *
      * @param searchResultTabPane
      *            tab to but the tv search results.
      */
     private void setupSearchTvTab(final JTabbedPane searchResultTabPane) {
-<span class="fc" id="L501">        JPanel tvPanel = new JPanel();</span>
-<span class="fc" id="L502">        searchResultTabPane.addTab(&quot;TV Shows&quot;, null, tvPanel, null);</span>
-<span class="fc" id="L503">        GridBagLayout gblPanel5 = new GridBagLayout();</span>
-<span class="fc" id="L504">        gblPanel5.columnWidths = new int[] {0, 0};</span>
-<span class="fc" id="L505">        gblPanel5.rowHeights = new int[] {0, 0};</span>
-<span class="fc" id="L506">        gblPanel5.columnWeights = new double[] {1.0, Double.MIN_VALUE};</span>
-<span class="fc" id="L507">        gblPanel5.rowWeights = new double[] {1.0, Double.MIN_VALUE};</span>
-<span class="fc" id="L508">        tvPanel.setLayout(gblPanel5);</span>
+<span class="fc" id="L594">        JPanel tvPanel = new JPanel();</span>
+<span class="fc" id="L595">        searchResultTabPane.addTab(&quot;TV Shows&quot;, null, tvPanel, null);</span>
+<span class="fc" id="L596">        GridBagLayout gblPanel5 = new GridBagLayout();</span>
+<span class="fc" id="L597">        gblPanel5.columnWidths = new int[] {0, 0};</span>
+<span class="fc" id="L598">        gblPanel5.rowHeights = new int[] {0, 0};</span>
+<span class="fc" id="L599">        gblPanel5.columnWeights = new double[] {1.0, Double.MIN_VALUE};</span>
+<span class="fc" id="L600">        gblPanel5.rowWeights = new double[] {1.0, Double.MIN_VALUE};</span>
+<span class="fc" id="L601">        tvPanel.setLayout(gblPanel5);</span>
 
-<span class="fc" id="L510">        tableTv = new JTable();</span>
-<span class="fc" id="L511">        tableTv.setToolTipText(&quot;&quot;);</span>
-<span class="fc" id="L512">        tableTv.setSelectionMode(</span>
-<span class="fc" id="L513">                javax.swing.ListSelectionModel.SINGLE_SELECTION);</span>
-<span class="fc" id="L514">        tableTv.getTableHeader().setReorderingAllowed(false);</span>
-<span class="fc" id="L515">        tableTv.addMouseListener(new java.awt.event.MouseAdapter() {</span>
+<span class="fc" id="L603">        tableTv = new JTable();</span>
+<span class="fc" id="L604">        tableTv.setToolTipText(&quot;&quot;);</span>
+<span class="fc" id="L605">        tableTv.setSelectionMode(</span>
+<span class="fc" id="L606">                javax.swing.ListSelectionModel.SINGLE_SELECTION);</span>
+<span class="fc" id="L607">        tableTv.getTableHeader().setReorderingAllowed(false);</span>
+<span class="fc" id="L608">        tableTv.addMouseListener(new java.awt.event.MouseAdapter() {</span>
             public void mouseClicked(final MouseEvent e) {
-<span class="nc" id="L517">                tvClicked();</span>
-<span class="nc" id="L518">            }</span>
+<span class="nc" id="L610">                tvClicked();</span>
+<span class="nc" id="L611">            }</span>
         });
-<span class="fc" id="L520">        GridBagConstraints gbcTable2 = new GridBagConstraints();</span>
-<span class="fc" id="L521">        gbcTable2.fill = GridBagConstraints.BOTH;</span>
-<span class="fc" id="L522">        gbcTable2.gridx = 0;</span>
-<span class="fc" id="L523">        gbcTable2.gridy = 0;</span>
-<span class="fc" id="L524">        tvPanel.add(new JScrollPane(tableTv), gbcTable2);</span>
-<span class="fc" id="L525">    }</span>
+<span class="fc" id="L613">        GridBagConstraints gbcTable2 = new GridBagConstraints();</span>
+<span class="fc" id="L614">        gbcTable2.fill = GridBagConstraints.BOTH;</span>
+<span class="fc" id="L615">        gbcTable2.gridx = 0;</span>
+<span class="fc" id="L616">        gbcTable2.gridy = 0;</span>
+<span class="fc" id="L617">        tvPanel.add(new JScrollPane(tableTv), gbcTable2);</span>
+<span class="fc" id="L618">    }</span>
 
     /**
      * Sets up the keywords tab in the search tab.
+     *
      * @param searchResultTabPane
      *            tab to but the keywords search results.
      */
     private void setupSearchKeywordsTab(final JTabbedPane searchResultTabPane) {
-<span class="fc" id="L533">        JPanel keywordsPanel = new JPanel();</span>
-<span class="fc" id="L534">        searchResultTabPane.addTab(&quot;Keywords&quot;, null, keywordsPanel, null);</span>
-<span class="fc" id="L535">        GridBagLayout gblPanel3 = new GridBagLayout();</span>
-<span class="fc" id="L536">        gblPanel3.columnWidths = new int[] {0, 0};</span>
-<span class="fc" id="L537">        gblPanel3.rowHeights = new int[] {0, 0};</span>
-<span class="fc" id="L538">        gblPanel3.columnWeights = new double[] {1.0, Double.MIN_VALUE};</span>
-<span class="fc" id="L539">        gblPanel3.rowWeights = new double[] {1.0, Double.MIN_VALUE};</span>
-<span class="fc" id="L540">        keywordsPanel.setLayout(gblPanel3);</span>
+<span class="fc" id="L627">        JPanel keywordsPanel = new JPanel();</span>
+<span class="fc" id="L628">        searchResultTabPane.addTab(&quot;Keywords&quot;, null, keywordsPanel, null);</span>
+<span class="fc" id="L629">        GridBagLayout gblPanel3 = new GridBagLayout();</span>
+<span class="fc" id="L630">        gblPanel3.columnWidths = new int[] {0, 0};</span>
+<span class="fc" id="L631">        gblPanel3.rowHeights = new int[] {0, 0};</span>
+<span class="fc" id="L632">        gblPanel3.columnWeights = new double[] {1.0, Double.MIN_VALUE};</span>
+<span class="fc" id="L633">        gblPanel3.rowWeights = new double[] {1.0, Double.MIN_VALUE};</span>
+<span class="fc" id="L634">        keywordsPanel.setLayout(gblPanel3);</span>
 
-<span class="fc" id="L542">        tableKeyword = new JTable();</span>
-<span class="fc" id="L543">        tableKeyword.setToolTipText(&quot;&quot;);</span>
-<span class="fc" id="L544">        tableKeyword.setSelectionMode(</span>
-<span class="fc" id="L545">                javax.swing.ListSelectionModel.SINGLE_SELECTION);</span>
-<span class="fc" id="L546">        tableKeyword.getTableHeader().setReorderingAllowed(false);</span>
-<span class="fc" id="L547">        tableKeyword.addMouseListener(new java.awt.event.MouseAdapter() {</span>
+<span class="fc" id="L636">        tableKeyword = new JTable();</span>
+<span class="fc" id="L637">        tableKeyword.setToolTipText(&quot;&quot;);</span>
+<span class="fc" id="L638">        tableKeyword.setSelectionMode(</span>
+<span class="fc" id="L639">                javax.swing.ListSelectionModel.SINGLE_SELECTION);</span>
+<span class="fc" id="L640">        tableKeyword.getTableHeader().setReorderingAllowed(false);</span>
+<span class="fc" id="L641">        tableKeyword.addMouseListener(new java.awt.event.MouseAdapter() {</span>
             public void mouseClicked(final MouseEvent e) {
-<span class="nc" id="L549">                keywordClicked();</span>
-<span class="nc" id="L550">            }</span>
+<span class="nc" id="L643">                keywordClicked();</span>
+<span class="nc" id="L644">            }</span>
         });
-<span class="fc" id="L552">        GridBagConstraints gbcTable = new GridBagConstraints();</span>
-<span class="fc" id="L553">        gbcTable.ipady = 90;</span>
-<span class="fc" id="L554">        gbcTable.fill = GridBagConstraints.BOTH;</span>
-<span class="fc" id="L555">        gbcTable.gridx = 0;</span>
-<span class="fc" id="L556">        gbcTable.gridy = 0;</span>
-<span class="fc" id="L557">        keywordsPanel.add(new JScrollPane(tableKeyword), gbcTable);</span>
+<span class="fc" id="L646">        GridBagConstraints gbcTable = new GridBagConstraints();</span>
+<span class="fc" id="L647">        gbcTable.ipady = 90;</span>
+<span class="fc" id="L648">        gbcTable.fill = GridBagConstraints.BOTH;</span>
+<span class="fc" id="L649">        gbcTable.gridx = 0;</span>
+<span class="fc" id="L650">        gbcTable.gridy = 0;</span>
+<span class="fc" id="L651">        keywordsPanel.add(new JScrollPane(tableKeyword), gbcTable);</span>
 
-<span class="fc" id="L559">    }</span>
+<span class="fc" id="L653">        GridBagConstraints keywordTextSetup = new GridBagConstraints();</span>
+<span class="fc" id="L654">        keywordTextSetup.anchor = GridBagConstraints.EAST;</span>
+<span class="fc" id="L655">        keywordTextArea = new JTextArea(30, 20);</span>
+<span class="fc" id="L656">        keywordTextArea.setEditable(false);</span>
+<span class="fc" id="L657">        keywordTextArea.setLineWrap(true);</span>
+
+<span class="fc" id="L659">        JScrollPane scrollPane = new JScrollPane(keywordTextArea);</span>
+<span class="fc" id="L660">        scrollPane.setVerticalScrollBarPolicy(</span>
+<span class="fc" id="L661">                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);</span>
+
+<span class="fc" id="L663">        keywordsPanel.add(scrollPane);</span>
+
+       // keywordsPanel.add(keywordTextArea, keywordTextSetup);
+<span class="fc" id="L666">        keywordTextArea.setText(&quot;Perfect Match Suggestions:\n\n&quot;);</span>
+
+<span class="fc" id="L668">    }</span>
 
     /**
      * Sets up the Login tab.
@@ -564,164 +673,311 @@ public class TmdbApp {
      *            the tabbedPane to add the Login tab to.
      */
     private void setupLoginTab(final JTabbedPane tabbedPane) {
-<span class="fc" id="L567">        JPanel loginPanel = new JPanel();</span>
-<span class="fc" id="L568">        loginPanel.setForeground(Color.LIGHT_GRAY);</span>
-<span class="fc" id="L569">        loginPanel.setBorder(new EmptyBorder(2, 4, 2, 4));</span>
-<span class="fc" id="L570">        tabbedPane.addTab(&quot;Log in&quot;, null, loginPanel, null);</span>
-<span class="fc" id="L571">        GridBagLayout gblPanel2 = new GridBagLayout();</span>
-<span class="fc" id="L572">        gblPanel2.columnWidths = new int[] {48, 86, 0};</span>
-<span class="fc" id="L573">        gblPanel2.rowHeights = new int[] {20, 20, 23, 0, 0};</span>
-<span class="fc" id="L574">        gblPanel2.columnWeights = new double[] {0.0, 0.0, Double.MIN_VALUE};</span>
-<span class="fc" id="L575">        gblPanel2.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0,</span>
-<span class="fc" id="L576">                Double.MIN_VALUE};</span>
-<span class="fc" id="L577">        loginPanel.setLayout(gblPanel2);</span>
+<span class="fc" id="L676">        JPanel loginPanel = new JPanel();</span>
+<span class="fc" id="L677">        loginPanel.setForeground(Color.LIGHT_GRAY);</span>
+<span class="fc" id="L678">        loginPanel.setBorder(new EmptyBorder(2, 4, 2, 4));</span>
+<span class="fc" id="L679">        tabbedPane.addTab(&quot;Log in&quot;, null, loginPanel, null);</span>
+<span class="fc" id="L680">        GridBagLayout gblPanel2 = new GridBagLayout();</span>
+<span class="fc" id="L681">        gblPanel2.columnWidths = new int[] {48, 86, 0};</span>
+<span class="fc" id="L682">        gblPanel2.rowHeights = new int[] {20, 20, 23, 0, 0};</span>
+<span class="fc" id="L683">        gblPanel2.columnWeights = new double[] {0.0, 0.0, Double.MIN_VALUE};</span>
+<span class="fc" id="L684">        gblPanel2.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0,</span>
+<span class="fc" id="L685">                Double.MIN_VALUE};</span>
+<span class="fc" id="L686">        loginPanel.setLayout(gblPanel2);</span>
 
-<span class="fc" id="L579">        JLabel lblUsername = new JLabel(&quot;Username&quot;);</span>
-<span class="fc" id="L580">        GridBagConstraints gbcLblUsername = new GridBagConstraints();</span>
-<span class="fc" id="L581">        gbcLblUsername.anchor = GridBagConstraints.WEST;</span>
-<span class="fc" id="L582">        gbcLblUsername.insets = new Insets(0, 0, 5, 5);</span>
-<span class="fc" id="L583">        gbcLblUsername.gridx = 0;</span>
-<span class="fc" id="L584">        gbcLblUsername.gridy = 0;</span>
-<span class="fc" id="L585">        loginPanel.add(lblUsername, gbcLblUsername);</span>
+<span class="fc" id="L688">        JLabel lblUsername = new JLabel(&quot;Username&quot;);</span>
+<span class="fc" id="L689">        GridBagConstraints gbcLblUsername = new GridBagConstraints();</span>
+<span class="fc" id="L690">        gbcLblUsername.anchor = GridBagConstraints.WEST;</span>
+<span class="fc" id="L691">        gbcLblUsername.insets = new Insets(0, 0, 5, 5);</span>
+<span class="fc" id="L692">        gbcLblUsername.gridx = 0;</span>
+<span class="fc" id="L693">        gbcLblUsername.gridy = 0;</span>
+<span class="fc" id="L694">        loginPanel.add(lblUsername, gbcLblUsername);</span>
 
-<span class="fc" id="L587">        userNameTextField = new JTextField();</span>
-<span class="fc" id="L588">        GridBagConstraints gbcTextField3 = new GridBagConstraints();</span>
-<span class="fc" id="L589">        gbcTextField3.anchor = GridBagConstraints.NORTHWEST;</span>
-<span class="fc" id="L590">        gbcTextField3.insets = new Insets(0, 0, 5, 0);</span>
-<span class="fc" id="L591">        gbcTextField3.gridx = 1;</span>
-<span class="fc" id="L592">        gbcTextField3.gridy = 0;</span>
-<span class="fc" id="L593">        loginPanel.add(userNameTextField, gbcTextField3);</span>
-<span class="fc" id="L594">        userNameTextField.setColumns(10);</span>
+<span class="fc" id="L696">        userNameTextField = new JTextField();</span>
+<span class="fc" id="L697">        GridBagConstraints gbcTextField3 = new GridBagConstraints();</span>
+<span class="fc" id="L698">        gbcTextField3.anchor = GridBagConstraints.NORTHWEST;</span>
+<span class="fc" id="L699">        gbcTextField3.insets = new Insets(0, 0, 5, 0);</span>
+<span class="fc" id="L700">        gbcTextField3.gridx = 1;</span>
+<span class="fc" id="L701">        gbcTextField3.gridy = 0;</span>
+<span class="fc" id="L702">        loginPanel.add(userNameTextField, gbcTextField3);</span>
+<span class="fc" id="L703">        userNameTextField.setColumns(10);</span>
 
-<span class="fc" id="L596">        JLabel lblPassword = new JLabel(&quot;Password&quot;);</span>
-<span class="fc" id="L597">        GridBagConstraints gbcLblPassword = new GridBagConstraints();</span>
-<span class="fc" id="L598">        gbcLblPassword.anchor = GridBagConstraints.EAST;</span>
-<span class="fc" id="L599">        gbcLblPassword.insets = new Insets(0, 0, 5, 5);</span>
-<span class="fc" id="L600">        gbcLblPassword.gridx = 0;</span>
-<span class="fc" id="L601">        gbcLblPassword.gridy = 1;</span>
-<span class="fc" id="L602">        loginPanel.add(lblPassword, gbcLblPassword);</span>
+<span class="fc" id="L705">        JLabel lblPassword = new JLabel(&quot;Password&quot;);</span>
+<span class="fc" id="L706">        GridBagConstraints gbcLblPassword = new GridBagConstraints();</span>
+<span class="fc" id="L707">        gbcLblPassword.anchor = GridBagConstraints.EAST;</span>
+<span class="fc" id="L708">        gbcLblPassword.insets = new Insets(0, 0, 5, 5);</span>
+<span class="fc" id="L709">        gbcLblPassword.gridx = 0;</span>
+<span class="fc" id="L710">        gbcLblPassword.gridy = 1;</span>
+<span class="fc" id="L711">        loginPanel.add(lblPassword, gbcLblPassword);</span>
 
-<span class="fc" id="L604">        passwordTextField = new JTextField();</span>
-<span class="fc" id="L605">        GridBagConstraints gbcTextField4 = new GridBagConstraints();</span>
-<span class="fc" id="L606">        gbcTextField4.anchor = GridBagConstraints.NORTHWEST;</span>
-<span class="fc" id="L607">        gbcTextField4.insets = new Insets(0, 0, 5, 0);</span>
-<span class="fc" id="L608">        gbcTextField4.gridx = 1;</span>
-<span class="fc" id="L609">        gbcTextField4.gridy = 1;</span>
-<span class="fc" id="L610">        loginPanel.add(passwordTextField, gbcTextField4);</span>
-<span class="fc" id="L611">        passwordTextField.setColumns(10);</span>
+<span class="fc" id="L713">        passwordTextField = new JPasswordField();</span>
+<span class="fc" id="L714">        passwordTextField.setFont(new Font(&quot;Dialog&quot;, Font.PLAIN, 12));</span>
+<span class="fc" id="L715">        passwordTextField.setEchoChar('*');</span>
+<span class="fc" id="L716">        passwordTextField.addActionListener(actionHandler);</span>
+<span class="fc" id="L717">        GridBagConstraints gbcTextField4 = new GridBagConstraints();</span>
+<span class="fc" id="L718">        gbcTextField4.anchor = GridBagConstraints.NORTHWEST;</span>
+<span class="fc" id="L719">        gbcTextField4.insets = new Insets(0, 0, 5, 0);</span>
+<span class="fc" id="L720">        gbcTextField4.gridx = 1;</span>
+<span class="fc" id="L721">        gbcTextField4.gridy = 1;</span>
+<span class="fc" id="L722">        loginPanel.add(passwordTextField, gbcTextField4);</span>
+<span class="fc" id="L723">        passwordTextField.setColumns(10);</span>
 
-<span class="fc" id="L613">        JButton loginButton = new JButton(&quot;Log in&quot;);</span>
-<span class="fc" id="L614">        GridBagConstraints gbcBtnNewButton = new GridBagConstraints();</span>
-<span class="fc" id="L615">        gbcBtnNewButton.insets = new Insets(0, 0, 5, 0);</span>
-<span class="fc" id="L616">        gbcBtnNewButton.ipadx = 78;</span>
-<span class="fc" id="L617">        gbcBtnNewButton.anchor = GridBagConstraints.NORTH;</span>
-<span class="fc" id="L618">        gbcBtnNewButton.gridwidth = 2;</span>
-<span class="fc" id="L619">        gbcBtnNewButton.gridx = 0;</span>
-<span class="fc" id="L620">        gbcBtnNewButton.gridy = 2;</span>
-<span class="fc" id="L621">        loginPanel.add(loginButton, gbcBtnNewButton);</span>
+<span class="fc" id="L725">        loginButton = new JButton(&quot;  Log in  &quot;);</span>
+<span class="fc" id="L726">        GridBagConstraints gbcBtnNewButton = new GridBagConstraints();</span>
+<span class="fc" id="L727">        loginButton.addActionListener(actionHandler);</span>
+<span class="fc" id="L728">        gbcBtnNewButton.insets = new Insets(0, 0, 5, 0);</span>
+<span class="fc" id="L729">        gbcBtnNewButton.ipadx = 95;</span>
+<span class="fc" id="L730">        gbcBtnNewButton.anchor = GridBagConstraints.NORTH;</span>
+<span class="fc" id="L731">        gbcBtnNewButton.gridwidth = 2;</span>
+<span class="fc" id="L732">        gbcBtnNewButton.gridx = 0;</span>
+<span class="fc" id="L733">        gbcBtnNewButton.gridy = 2;</span>
+<span class="fc" id="L734">        loginPanel.add(loginButton, gbcBtnNewButton);</span>
 
-<span class="fc" id="L623">        JButton guestButton = new JButton(&quot;Guest Session&quot;);</span>
-<span class="fc" id="L624">        GridBagConstraints gbcBtnNewButton2 = new GridBagConstraints();</span>
-<span class="fc" id="L625">        gbcBtnNewButton2.gridwidth = 2;</span>
-<span class="fc" id="L626">        gbcBtnNewButton2.insets = new Insets(0, 0, 0, 5);</span>
-<span class="fc" id="L627">        gbcBtnNewButton2.gridx = 0;</span>
-<span class="fc" id="L628">        gbcBtnNewButton2.gridy = 3;</span>
-<span class="fc" id="L629">        loginPanel.add(guestButton, gbcBtnNewButton2);</span>
-<span class="fc" id="L630">    }</span>
+        // guestButton = new JButton(&quot;Guest Session&quot;);
+        // GridBagConstraints gbcBtnNewButton2 = new GridBagConstraints();
+        // guestButton.addActionListener(actionHandler);
+        // gbcBtnNewButton2.anchor = GridBagConstraints.NORTH;
+        // gbcBtnNewButton2.ipadx = 59;
+        // gbcBtnNewButton2.gridwidth = 2;
+        // gbcBtnNewButton2.insets = new Insets(0, 0, 5, 0);
+        // gbcBtnNewButton2.gridx = 0;
+        // gbcBtnNewButton2.gridy = 3;
+        // loginPanel.add(guestButton, gbcBtnNewButton2);
 
-//Check:ON: MagicNumber
+<span class="fc" id="L747">        JLabel favTitle = new JLabel(&quot;Watch Later Movies&quot;);</span>
+<span class="fc" id="L748">        GridBagConstraints gbcBtnlabel = new GridBagConstraints();</span>
+<span class="fc" id="L749">        gbcBtnlabel.anchor = GridBagConstraints.CENTER;</span>
+<span class="fc" id="L750">        gbcBtnlabel.ipadx = 59;</span>
+<span class="fc" id="L751">        gbcBtnlabel.gridwidth = 2;</span>
+<span class="fc" id="L752">        gbcBtnlabel.insets = new Insets(0, 0, 5, 0);</span>
+<span class="fc" id="L753">        gbcBtnlabel.gridx = 1;</span>
+<span class="fc" id="L754">        gbcBtnlabel.gridy = 4;</span>
+<span class="fc" id="L755">        loginPanel.add(favTitle, gbcBtnlabel);</span>
+
+<span class="fc" id="L757">        tableWatch = new JTable();</span>
+<span class="fc" id="L758">        tableWatch.setToolTipText(&quot;&quot;);</span>
+<span class="fc" id="L759">        tableWatch.setSelectionMode(</span>
+<span class="fc" id="L760">                javax.swing.ListSelectionModel.SINGLE_SELECTION);</span>
+<span class="fc" id="L761">        tableWatch.getTableHeader().setReorderingAllowed(false);</span>
+<span class="fc" id="L762">        tableWatch.addMouseListener(new java.awt.event.MouseAdapter() {</span>
+            public void mouseClicked(final MouseEvent e) {
+<span class="nc" id="L764">                movieClicked(watchModel.get(tableWatch.getSelectedRow()));</span>
+<span class="nc" id="L765">            }</span>
+        });
+<span class="fc" id="L767">        GridBagConstraints gbcBtnTable = new GridBagConstraints();</span>
+<span class="fc" id="L768">        gbcBtnTable.anchor = GridBagConstraints.NORTH;</span>
+<span class="fc" id="L769">        gbcBtnTable.ipadx = 59;</span>
+<span class="fc" id="L770">        gbcBtnTable.gridwidth = 2;</span>
+<span class="fc" id="L771">        gbcBtnTable.insets = new Insets(0, 0, 5, 0);</span>
+<span class="fc" id="L772">        gbcBtnTable.gridx = 1;</span>
+<span class="fc" id="L773">        gbcBtnTable.gridy = 5;</span>
+<span class="fc" id="L774">        loginPanel.add(new JScrollPane(tableWatch), gbcBtnTable);</span>
+
+<span class="fc" id="L776">        removeWatchList = new JButton(&quot;Remove&quot;);</span>
+<span class="fc" id="L777">        removeWatchList.addActionListener(actionHandler);</span>
+<span class="fc" id="L778">        GridBagConstraints gbcBtnNewButton3 = new GridBagConstraints();</span>
+<span class="fc" id="L779">        gbcBtnNewButton3.insets = new Insets(0, 0, 5, 0);</span>
+<span class="fc" id="L780">        gbcBtnNewButton3.ipadx = 95;</span>
+<span class="fc" id="L781">        gbcBtnNewButton3.anchor = GridBagConstraints.CENTER;</span>
+<span class="fc" id="L782">        gbcBtnNewButton3.gridwidth = 2;</span>
+<span class="fc" id="L783">        gbcBtnNewButton3.gridx = 0;</span>
+<span class="fc" id="L784">        gbcBtnNewButton3.gridy = 5;</span>
+<span class="fc" id="L785">        loginPanel.add(removeWatchList, gbcBtnNewButton3);</span>
+<span class="fc" id="L786">    }</span>
+
+    // Check:ON: MagicNumber
 
     /**
      * Reacts to actions from searching.
      */
-<span class="fc" id="L637">    private ActionListener actionHandler = new ActionListener() {</span>
+<span class="fc" id="L793">    private ActionListener actionHandler = new ActionListener() {</span>
 
         public void actionPerformed(final ActionEvent e) {
-<span class="nc" id="L640">            Object which = e.getSource();</span>
-<span class="nc bnc" id="L641" title="All 4 branches missed.">            if (which == searchButton || which == txtSearchMoviesPeople) {</span>
-<span class="nc" id="L642">                search.stringSearch(txtSearchMoviesPeople.getText());</span>
-<span class="nc" id="L643">                keyword.searchKeyword(txtSearchMoviesPeople.getText());</span>
+<span class="nc" id="L796">            Object which = e.getSource();</span>
+<span class="nc bnc" id="L797" title="All 4 branches missed.">            if (which == searchButton || which == txtSearchMoviesPeople) {</span>
+<span class="nc" id="L798">                search.stringSearch(txtSearchMoviesPeople.getText());</span>
+<span class="nc" id="L799">                keyword.searchKeyword(txtSearchMoviesPeople.getText());</span>
+<span class="nc" id="L800">                suggestedList = keyword.getSuggested();</span>
+<span class="nc" id="L801">                updateSuggestions();</span>
+
             }
-<span class="nc" id="L645">        }</span>
+<span class="nc bnc" id="L804" title="All 4 branches missed.">            if (which == loginButton || which == passwordTextField) {</span>
+<span class="nc bnc" id="L805" title="All 2 branches missed.">                if (!userNameTextField.getText().isEmpty()</span>
+<span class="nc bnc" id="L806" title="All 2 branches missed.">                        &amp;&amp; passwordTextField.getPassword().length &gt; 0) {</span>
+
+                try {
+<span class="nc" id="L809">                sessionToken = login.getSessionToken(</span>
+<span class="nc" id="L810">                        userNameTextField.getText(),</span>
+<span class="nc" id="L811">                        passwordTextField.getPassword());</span>
+
+<span class="nc" id="L813">                accountId = new AccountID(</span>
+<span class="nc" id="L814">                        account.getAccount(sessionToken).getId());</span>
+
+<span class="nc" id="L816">                watchModel.clear();</span>
+
+<span class="nc" id="L818">                MovieResultsPage moviePage = account</span>
+<span class="nc" id="L819">                        .getWatchListMovies(sessionToken, accountId, 0);</span>
+
+
+<span class="nc" id="L822">                Iterator&lt;MovieDb&gt; movieIt = moviePage.iterator();</span>
+
+<span class="nc bnc" id="L824" title="All 2 branches missed.">                while (movieIt.hasNext()) {</span>
+<span class="nc" id="L825">                    MovieDb movie = movieIt.next();</span>
+
+<span class="nc" id="L827">                    watchModel.add(movie);</span>
+                }
+
+<span class="nc" id="L830">                } catch (Exception ex) {</span>
+                    //ex.printStackTrace();
+                }
+                }
+            }
+            // if (which == guestButton) {
+            // sessionToken = login.getSessionToken();
+            //
+            // }
+<span class="nc bnc" id="L839" title="All 2 branches missed.">            if (which == watchButton) {</span>
+<span class="nc" id="L840">                account.addToWatchList(sessionToken, accountId,</span>
+<span class="nc" id="L841">                        lastClickedMovie.getId(), TmdbAccount.MediaType.MOVIE);</span>
+
+<span class="nc" id="L843">                watchModel.clear();</span>
+
+<span class="nc" id="L845">                MovieResultsPage moviePage = account</span>
+<span class="nc" id="L846">                        .getWatchListMovies(sessionToken, accountId, 0);</span>
+<span class="nc" id="L847">                Iterator&lt;MovieDb&gt; movieIt = moviePage.iterator();</span>
+
+<span class="nc bnc" id="L849" title="All 2 branches missed.">                while (movieIt.hasNext()) {</span>
+<span class="nc" id="L850">                    MovieDb movie = movieIt.next();</span>
+
+<span class="nc" id="L852">                    watchModel.add(movie);</span>
+                }
+            }
+<span class="nc bnc" id="L855" title="All 4 branches missed.">            if (which == removeWatchList &amp;&amp; lastClickedMovie != null) {</span>
+<span class="nc" id="L856">                account.removeFromWatchList(sessionToken, accountId,</span>
+<span class="nc" id="L857">                        lastClickedMovie.getId(), TmdbAccount.MediaType.MOVIE);</span>
+
+<span class="nc" id="L859">                watchModel.clear();</span>
+
+<span class="nc" id="L861">                MovieResultsPage moviePage = account</span>
+<span class="nc" id="L862">                        .getWatchListMovies(sessionToken, accountId, 0);</span>
+<span class="nc" id="L863">                Iterator&lt;MovieDb&gt; movieIt = moviePage.iterator();</span>
+
+<span class="nc bnc" id="L865" title="All 2 branches missed.">                while (movieIt.hasNext()) {</span>
+<span class="nc" id="L866">                    MovieDb movie = movieIt.next();</span>
+
+<span class="nc" id="L868">                    watchModel.add(movie);</span>
+                }
+            }
+<span class="nc" id="L871">        }</span>
 
     };
 
     /**
      * When movie is clicked the resultLabel is filled with movie info.
+     *
+     * @param movie
+     *            Movie that is clicked.
      */
-    private void movieClicked() {
+    private void movieClicked(final MovieDb movie) {
 
-<span class="nc" id="L654">        String resultStr = search.getMovieResults(</span>
-<span class="nc" id="L655">                movieModel.get(tableMovie.getSelectedRow()).getId());</span>
-<span class="nc" id="L656">        resultLabel.setText(resultStr);</span>
+<span class="nc" id="L883">        String resultStr = search.getMovieResults(movie.getId());</span>
+<span class="nc" id="L884">        lastClickedMovie = movie;</span>
+<span class="nc" id="L885">        resultLabel.setText(resultStr);</span>
 
         try {
-<span class="nc" id="L659">            resultsUrl = new URL(search.getMultiImageUrl(</span>
-<span class="nc" id="L660">                    movieModel.get(tableMovie.getSelectedRow())));</span>
-<span class="nc" id="L661">        } catch (IOException e) {</span>
+<span class="nc" id="L888">            resultsUrl = new URL(search.getMultiImageUrl(movie));</span>
+<span class="nc" id="L889">        } catch (IOException e) {</span>
 
         }
-<span class="nc" id="L664">        ImageIcon icon = new ImageIcon(resultsUrl);</span>
-<span class="nc" id="L665">        resultsPicLabel.setVisible(true);</span>
-<span class="nc" id="L666">        resultsPicLabel.setIcon(icon);</span>
-<span class="nc" id="L667">    }</span>
+<span class="nc" id="L892">        ImageIcon icon = new ImageIcon(resultsUrl);</span>
+<span class="nc" id="L893">        resultsPicLabel.setVisible(true);</span>
+<span class="nc" id="L894">        resultsPicLabel.setIcon(icon);</span>
+
+<span class="nc bnc" id="L896" title="All 2 branches missed.">        if (sessionToken != null) {</span>
+<span class="nc" id="L897">            watchButton.setVisible(true);</span>
+        }
+<span class="nc" id="L899">    }</span>
 
     /**
      * When person is clicked the resultLabel is filled with person info.
      */
     private void personClicked() {
-<span class="nc" id="L673">        String resultStr = search.getPersonResults(</span>
-<span class="nc" id="L674">                peopleModel.get(tablePeople.getSelectedRow()).getId());</span>
-<span class="nc" id="L675">        resultLabel.setText(resultStr);</span>
+<span class="nc" id="L905">        String resultStr = search.getPersonResults(</span>
+<span class="nc" id="L906">                peopleModel.get(tablePeople.getSelectedRow()).getId());</span>
+<span class="nc" id="L907">        resultLabel.setText(resultStr);</span>
 
-<span class="nc" id="L677">        PersonPeople p = search</span>
-<span class="nc" id="L678">                .getPersonPeople(peopleModel.get(tablePeople.getSelectedRow()));</span>
+<span class="nc" id="L909">        PersonPeople p = search</span>
+<span class="nc" id="L910">                .getPersonPeople(peopleModel.get(tablePeople.getSelectedRow()));</span>
         try {
-<span class="nc" id="L680">            resultsUrl = new URL(search.getMultiImageUrl(p));</span>
-<span class="nc" id="L681">        } catch (IOException e) {</span>
+<span class="nc" id="L912">            resultsUrl = new URL(search.getMultiImageUrl(p));</span>
+<span class="nc" id="L913">        } catch (IOException e) {</span>
 
         }
-<span class="nc" id="L684">        ImageIcon icon = new ImageIcon(resultsUrl);</span>
-<span class="nc" id="L685">        resultsPicLabel.setVisible(true);</span>
-<span class="nc" id="L686">        resultsPicLabel.setIcon(icon);</span>
-<span class="nc" id="L687">    }</span>
+<span class="nc" id="L916">        ImageIcon icon = new ImageIcon(resultsUrl);</span>
+<span class="nc" id="L917">        resultsPicLabel.setVisible(true);</span>
+<span class="nc" id="L918">        resultsPicLabel.setIcon(icon);</span>
+
+<span class="nc" id="L920">        watchButton.setVisible(false);</span>
+<span class="nc" id="L921">    }</span>
 
     /**
      * When tv is clicked the resultLabel is filled with tv info.
      */
     private void tvClicked() {
-<span class="nc" id="L693">        String resultStr = search</span>
-<span class="nc" id="L694">                .getTvResults(tvModel.get(tableTv.getSelectedRow()).getId());</span>
-<span class="nc" id="L695">        resultLabel.setText(resultStr);</span>
+<span class="nc" id="L927">        String resultStr = search</span>
+<span class="nc" id="L928">                .getTvResults(tvModel.get(tableTv.getSelectedRow()).getId());</span>
+<span class="nc" id="L929">        resultLabel.setText(resultStr);</span>
 
         try {
-<span class="nc" id="L698">            resultsUrl = new URL(search</span>
-<span class="nc" id="L699">                    .getMultiImageUrl(tvModel.get(tableTv.getSelectedRow())));</span>
-<span class="nc" id="L700">        } catch (IOException e) {</span>
+<span class="nc" id="L932">            resultsUrl = new URL(search</span>
+<span class="nc" id="L933">                    .getMultiImageUrl(tvModel.get(tableTv.getSelectedRow())));</span>
+<span class="nc" id="L934">        } catch (IOException e) {</span>
 
         }
-<span class="nc" id="L703">        ImageIcon icon = new ImageIcon(resultsUrl);</span>
-<span class="nc" id="L704">        resultsPicLabel.setVisible(true);</span>
-<span class="nc" id="L705">        resultsPicLabel.setIcon(icon);</span>
-<span class="nc" id="L706">    }</span>
+<span class="nc" id="L937">        ImageIcon icon = new ImageIcon(resultsUrl);</span>
+<span class="nc" id="L938">        resultsPicLabel.setVisible(true);</span>
+<span class="nc" id="L939">        resultsPicLabel.setIcon(icon);</span>
+
+<span class="nc" id="L941">        watchButton.setVisible(false);</span>
+<span class="nc" id="L942">    }</span>
 
     /**
      * When keyword movie is clicked the resultLabel is filled with movie info.
      */
     private void keywordClicked() {
-<span class="nc" id="L712">        String resultStr = search.getMovieResults(</span>
-<span class="nc" id="L713">                keywordModel.get(tableKeyword.getSelectedRow()).getId());</span>
-<span class="nc" id="L714">        resultLabel.setText(resultStr);</span>
+<span class="nc" id="L948">        String resultStr = search.getMovieResults(</span>
+<span class="nc" id="L949">                keywordModel.get(tableKeyword.getSelectedRow()).getId());</span>
+<span class="nc" id="L950">        resultLabel.setText(resultStr);</span>
+
+<span class="nc" id="L952">        lastClickedMovie = keywordModel.get(tableKeyword.getSelectedRow());</span>
 
         try {
-<span class="nc" id="L717">            resultsUrl = new URL(search.getMultiImageUrl(</span>
-<span class="nc" id="L718">                    keywordModel.get(tableKeyword.getSelectedRow())));</span>
-<span class="nc" id="L719">        } catch (IOException e) {</span>
+<span class="nc" id="L955">            resultsUrl = new URL(search.getMultiImageUrl(</span>
+<span class="nc" id="L956">                    keywordModel.get(tableKeyword.getSelectedRow())));</span>
+<span class="nc" id="L957">        } catch (IOException e) {</span>
 
         }
-<span class="nc" id="L722">        ImageIcon icon = new ImageIcon(resultsUrl);</span>
-<span class="nc" id="L723">        resultsPicLabel.setVisible(true);</span>
-<span class="nc" id="L724">        resultsPicLabel.setIcon(icon);</span>
-<span class="nc" id="L725">    }</span>
+<span class="nc" id="L960">        ImageIcon icon = new ImageIcon(resultsUrl);</span>
+<span class="nc" id="L961">        resultsPicLabel.setVisible(true);</span>
+<span class="nc" id="L962">        resultsPicLabel.setIcon(icon);</span>
+
+<span class="nc bnc" id="L964" title="All 2 branches missed.">        if (sessionToken != null) {</span>
+<span class="nc" id="L965">            watchButton.setVisible(true);</span>
+    }
+<span class="nc" id="L967">    }</span>
+
+    /**
+     * Updates keyword suggestion.
+     */
+    private void updateSuggestions() {
+
+<span class="nc" id="L974">         keywordTextArea.setText(&quot;Perfect Match Suggestions: \n\n&quot;);</span>
+<span class="nc" id="L975">         int listlength = suggestedList.size();</span>
+         int i;
+
+<span class="nc bnc" id="L978" title="All 2 branches missed.">         for (i = 0; i &lt; listlength; i++) {</span>
+<span class="nc" id="L979">         keywordTextArea.append(suggestedList.get(i));</span>
+         }
+<span class="nc" id="L981">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>tests (May 31, 2016 9:50:09 PM)</div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>tests (Jun 20, 2016 6:49:53 PM)</div></body></html>

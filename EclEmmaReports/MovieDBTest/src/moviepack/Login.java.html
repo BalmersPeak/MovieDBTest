@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Login.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">tests (Jun 20, 2016 6:49:53 PM)</a> &gt; <a href="../../index.html" class="el_group">MovieDBTest</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">moviepack</a> &gt; <span class="el_source">Login.java</span></div><h1>Login.java</h1><pre class="source lang-java linenums">package moviepack;
+
+import info.movito.themoviedbapi.TmdbApi;
+import info.movito.themoviedbapi.TmdbAuthentication;
+import info.movito.themoviedbapi.model.config.TokenAuthorisation;
+import info.movito.themoviedbapi.model.config.TokenSession;
+import info.movito.themoviedbapi.model.core.SessionToken;
+
+/**
+ * Class for login into tmdb.
+ *
+ * @author James Jetton
+ *
+ */
+public class Login {
+
+    /**
+     * tmdbApi class.
+     */
+    private static TmdbApi tmdbApi;
+
+    /**
+     * Initialize login.
+     *
+     * @param tmdb
+     *            tmdb key.
+     */
+<span class="fc" id="L28">    public Login(final TmdbApi tmdb) {</span>
+<span class="fc" id="L29">        Login.tmdbApi = tmdb;</span>
+
+<span class="fc" id="L31">    }</span>
+
+    /**
+     * Logs in a user.
+     * @param username username of account.
+     * @param password password of account.
+     * @return SessionToken of the account login.
+     */
+    public final SessionToken getSessionToken(final String username,
+            final char[] password) {
+        // There are two ways to generate session id
+
+        // Generating session id using only API calls (requires username and
+        // password)
+
+        // TJett themoviedb1
+
+<span class="fc" id="L48">        TmdbAuthentication tmdbAuth = tmdbApi.getAuthentication();</span>
+<span class="fc" id="L49">        TokenAuthorisation tokenAuth = tmdbAuth.getLoginToken(</span>
+<span class="fc" id="L50">                tmdbAuth.getAuthorisationToken(), username,</span>
+<span class="fc" id="L51">                String.valueOf(password));</span>
+<span class="fc" id="L52">        TokenSession tokenSession = tmdbAuth.getSessionToken(tokenAuth);</span>
+        // TokenSession tokenSession = tmdbAuth.getGuestSessionToken();
+<span class="fc" id="L54">        String sessionId = tokenSession.getSessionId();</span>
+<span class="fc" id="L55">        SessionToken sessionToken = new SessionToken(sessionId);</span>
+
+<span class="fc" id="L57">        return sessionToken;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>tests (Jun 20, 2016 6:49:53 PM)</div></body></html>
